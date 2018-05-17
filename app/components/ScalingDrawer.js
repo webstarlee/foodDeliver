@@ -245,8 +245,9 @@ const styles = StyleSheet.create({
     },
     shadowColor: '#000',
     shadowOpacity: 0.7,
-    shadowRadius: 3,
+    shadowRadius: 7,
     left: 0,
+    borderRadius: 10,
   }
 });
 

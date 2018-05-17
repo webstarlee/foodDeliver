@@ -20,6 +20,57 @@ import {BASE_API_URL, ITEM_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT}  from './StaticV
 export default class SideMenu extends Component {
   constructor() {
     super();
+    this.state={
+      isLogin: false,
+    }
+  }
+
+  renderLogin = () => {
+    return (
+      <View>
+        <View
+          style={{
+            paddingVertical: 10,
+            paddingLeft: 20,
+            borderBottomColor: '#01917c',
+            borderBottomWidth: 1,
+            shadowColor: '#000',
+            shadowOffset: {width: 0, height: 1,},
+            shadowOpacity: 0.3,
+            shadowRadius: 1,}}>
+          <Text style={{color: '#fff', fontSize: 22, fontWeight: 'bold'}}>User account</Text>
+        </View>
+        <View style={{paddingTop: 20, paddingHorizontal: 20, paddingBottom: 10}}>
+          <TextInput placeholder='Email' underlineColorAndroid={'transparent'} placeholderTextColor='#6f6f6f' style={styles.sideMenuTextInput} />
+          <TextInput placeholder='Password' secureTextEntry={true} underlineColorAndroid={'transparent'} placeholderTextColor='#6f6f6f' style={styles.sideMenuTextInput} />
+          <TouchableOpacity style={styles.sidemenuLoginButton} onPress={() => this.setState({isLogin: true})}><Text style={{color: '#fff', fontSize: 22, fontWeight: 'bold'}}>LOGIN</Text></TouchableOpacity>
+          <TouchableOpacity style={{marginTop: 20, paddingVertical: 5,}}><Text style={{color: '#fff'}}>>Register your account here.</Text></TouchableOpacity>
+          <TouchableOpacity style={{paddingVertical: 5,}}><Text style={{color: '#fff'}}>>Foget your password?</Text></TouchableOpacity>
+        </View>
+      </View>
+    )
+  }
+
+  renderUser = () => {
+    return (
+      <View>
+        <View
+          style={{
+            paddingVertical: 10,
+            paddingLeft: 20,
+            borderBottomColor: '#01917c',
+            borderBottomWidth: 1,
+            shadowColor: '#000',
+            shadowOffset: {width: 0, height: 1,},
+            shadowOpacity: 0.3,
+            shadowRadius: 1,}}>
+          <Text style={{color: '#fff', fontSize: 22, fontWeight: 'bold'}}>nkprive@gmail.com</Text>
+        </View>
+        <View style={{paddingTop: 20, paddingHorizontal: 20, paddingBottom: 10}}>
+          <TouchableOpacity style={styles.sidemenuLogoutButton} onPress={() => this.setState({isLogin: false})}><Text style={{color: '#fff', fontSize: 22, fontWeight: 'bold'}}>SIGN OUT</Text></TouchableOpacity>
+        </View>
+      </View>
+    )
   }
 
   render() {
@@ -31,25 +82,7 @@ export default class SideMenu extends Component {
             <View style={styles.backgroundBlur}/>
             <View style={{width: '100%',}}>
               <Image style={styles.sideMenuLogo} source={{uri: BASE_API_URL+'/storage/main_images/logo.png'}} />
-              <View
-                style={{
-                  paddingVertical: 10,
-                  paddingLeft: 20,
-                  borderBottomColor: '#01917c',
-                  borderBottomWidth: 1,
-                  shadowColor: '#000',
-                  shadowOffset: {width: 0, height: 1,},
-                  shadowOpacity: 0.3,
-                  shadowRadius: 1,}}>
-                <Text style={{color: '#fff', fontSize: 22, fontWeight: 'bold'}}>User account</Text>
-              </View>
-              <View style={{paddingTop: 20, paddingHorizontal: 20, paddingBottom: 10}}>
-                <TextInput placeholder='Email' underlineColorAndroid={'transparent'} placeholderTextColor='#6f6f6f' style={styles.sideMenuTextInput} />
-                <TextInput placeholder='Password' secureTextEntry={true} underlineColorAndroid={'transparent'} placeholderTextColor='#6f6f6f' style={styles.sideMenuTextInput} />
-                <TouchableOpacity style={styles.sidemenuLoginButton}><Text style={{color: '#fff', fontSize: 22, fontWeight: 'bold'}}>LOGIN</Text></TouchableOpacity>
-                <TouchableOpacity style={{marginTop: 20, paddingVertical: 5,}}><Text style={{color: '#fff'}}>>Register your account here.</Text></TouchableOpacity>
-                <TouchableOpacity style={{paddingVertical: 5,}}><Text style={{color: '#fff'}}>>Foget your password?</Text></TouchableOpacity>
-              </View>
+              {this.state.isLogin ? this.renderUser(): this.renderLogin()}
             </View>
           </View>
         </View>
@@ -106,6 +139,16 @@ const styles = StyleSheet.create({
   },
   sidemenuLoginButton: {
     backgroundColor: '#0aa0ff',
+    padding: 10,
+    borderRadius: 3,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 1,},
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
+    alignItems: 'center'
+  },
+  sidemenuLogoutButton: {
+    backgroundColor: '#ff4a08',
     padding: 10,
     borderRadius: 3,
     shadowColor: '#000',

@@ -32,10 +32,14 @@ import NavigationService from "./components/NavigationService";
 export default class App extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      isopenSidebar: false
+    }
   }
 
   openSideBar() {
     this._drawer.open();
+    this.setState({isopenSidebar: true})
   }
 
   render() {
@@ -45,8 +49,9 @@ export default class App extends Component {
         content={<SideMenu />}
         swipeOffset={20}
         scalingFactor={0.6}
-        minimizeFactor={0.5} >
-        <View style={styles.container}>
+        minimizeFactor={0.5}
+        onClose={() => this.setState({isopenSidebar: false})} >
+        <View style={this.state.isopenSidebar? styles.containerOpen : styles.container}>
           <HomeStack ref={navigatorRef => {
             NavigationService.setTopLevelNavigator(navigatorRef)
           }}/>
@@ -62,5 +67,11 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F5FCFF',
     overflow: 'hidden',
+  },
+  containerOpen: {
+    flex: 1,
+    backgroundColor: '#F5FCFF',
+    overflow: 'hidden',
+    borderRadius: 10,
   },
 });

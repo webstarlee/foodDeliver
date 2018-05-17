@@ -21,6 +21,7 @@ import { ifIphoneX } from 'react-native-iphone-x-helper';
 import CheckBox from 'react-native-check-box'
 import {BASE_API_URL, HEADER_EXPANDED_HEIGHT, HEADER_COLLAPSED_HEIGHT, ITEM_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT}  from '../components/StaticValues';
 import Loaing from '../components/Loaing';
+import * as Animatable from 'react-native-animatable';
 
 export default class Main extends Component {
   constructor() {
@@ -33,6 +34,7 @@ export default class Main extends Component {
       isloading: true,
       modalVisible: false,
       selectedItem: {},
+      cartClicked: false,
     }
   }
 
@@ -164,6 +166,12 @@ export default class Main extends Component {
       extrapolate: 'clamp'
     });
 
+    const imageBlur = this.state.scrollY.interpolate({
+      inputRange: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      outputRange: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.1, 1.2, 2, 3, 4, 5],
+      extrapolate: 'clamp'
+    })
+
     return (
       this.state.isloading?
       <Loaing />
@@ -171,7 +179,7 @@ export default class Main extends Component {
       <View style={styles.container}>
         <Animated.View style={[styles.header, { height: headerHeight }]}>
           <View style={styles.headerImageView} >
-            <Image style={styles.headerImage} source={{uri: BASE_API_URL+'/storage/main_images/header.png'}}/>
+            <Animated.Image style={styles.headerImage} source={{uri: BASE_API_URL+'/storage/main_images/header.png'}} blurRadius={imageBlur} />
             <Image style={styles.headerOverlayImage} source={require('../resources/images/overlay.png')} />
             <TextInput placeholder='Searchable' underlineColorAndroid={'transparent'} placeholderTextColor='#fff' style={styles.headerSearch} onChangeText={(text)=>this.searchData(text)}/>
           </View>
@@ -203,10 +211,24 @@ export default class Main extends Component {
           renderSectionHeader={this.renderSectionHeader}
           keyExtractor={(item, index) => index}
           getItemLayout={this.getItemLayout}
-          onViewableItemsChanged={({viewableItems, changed})=>{
-            console.log(viewableItems)
-          }}
         />
+        <Animatable.View transition={['top','left','rotate']} style={this.state.cartClicked? styles.cartFlastButtonClicked: styles.cartFlastButton} >
+          <TouchableOpacity style={{flex: 1, borderRadius: 40, overflow: 'hidden'}} onPress={() => this.setState({cartClicked: this.state.cartClicked? false: true })}>
+            <Animatable.Image animation="pulse" easing="ease-out" iterationCount="infinite" style={styles.basketImg} source={require('../resources/images/basket.png')} />
+            <View style={{
+              flex: 1,
+              transform: [
+                {rotate: '-13deg'}
+              ],
+              alignItems: 'center',
+              justifyContent: 'flex-end',
+              paddingBottom: 10,
+            }}>
+              <Text style={{color: '#4AA0FA', marginBottom: 5,}}>12</Text>
+              <Text style={{color: '#fff', fontWeight: 'bold'}}>€12.50</Text>
+            </View>
+          </TouchableOpacity>
+        </Animatable.View>
         <Modal
           animationType="fade"
           transparent={true}
@@ -241,6 +263,49 @@ export default class Main extends Component {
 }
 
 const styles = StyleSheet.create({
+  basketImg: {
+    position: 'absolute',
+    width: 45,
+    height: 45,
+    top: 10,
+    left: 15,
+    resizeMode: 'contain',
+  },
+  cartFlastButton: {
+    position: 'absolute',
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#4AA0FA',
+    top: HEADER_COLLAPSED_HEIGHT-10,
+    left: SCREEN_WIDTH-110,
+    zIndex: 10001,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 1,},
+    shadowOpacity: 0.8,
+    shadowRadius: 5,
+  },
+  cartFlastButtonClicked: {
+    position: 'absolute',
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#4AA0FA',
+    ...ifIphoneX({
+      top: 40,
+    }, {
+      top: 30,
+    }),
+    left: 30,
+    zIndex: 10001,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 1,},
+    shadowOpacity: 0.8,
+    shadowRadius: 5,
+    transform: [
+      {rotate: '13deg'}
+    ]
+  },
   modalcloseButton: {
     position: 'absolute',
     top: 10,
@@ -400,7 +465,7 @@ const styles = StyleSheet.create({
     width: SCREEN_WIDTH,
     top: 0,
     left: 0,
-    zIndex: 9999
+    zIndex: 9998
   },
   title: {
     marginVertical: 16,
