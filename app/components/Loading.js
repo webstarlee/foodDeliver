@@ -5,7 +5,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 
-export default class Info extends Component {
+export default class Loading extends Component {
   constructor() {
     super();
   }
@@ -13,7 +13,7 @@ export default class Info extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <ActivityIndicator size="large" color="#000" />
+        <ActivityIndicator size="large" color="#fff" />
       </View>
     );
   }
@@ -24,6 +24,5 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#fff',
   },
 });

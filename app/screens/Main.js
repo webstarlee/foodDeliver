@@ -20,7 +20,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { ifIphoneX } from 'react-native-iphone-x-helper';
 import CheckBox from 'react-native-check-box'
 import {BASE_API_URL, HEADER_EXPANDED_HEIGHT, HEADER_COLLAPSED_HEIGHT, ITEM_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT}  from '../components/StaticValues';
-import Loaing from '../components/Loaing';
+import Loaing from '../components/Loading';
 import * as Animatable from 'react-native-animatable';
 
 export default class Main extends Component {
