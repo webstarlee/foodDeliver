@@ -16,6 +16,7 @@ import {
   Modal,
   TouchableWithoutFeedback,
   Alert,
+  AsyncStorage,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { ifIphoneX } from 'react-native-iphone-x-helper';
@@ -30,6 +31,7 @@ import {
 import Loaing from '../components/Loading';
 import * as Animatable from 'react-native-animatable';
 import Utils from "@utils";
+import SingleTon from "../components/SingleTon";
 
 export default class Main extends Component {
   constructor() {
@@ -49,9 +51,14 @@ export default class Main extends Component {
       selectedProductForCart: {},
       checkedExtra: {},
       checkOutModalVisible: false,
+      deliveryCost: "FREE",
+      isLogin: false,
+      cupon: 0,
+      iscupon: false,
+      discountString: "",
     }
   }
-
+  
   handleViewRef = ref => this.flatview = ref;
 //component mount part
   componentWillmount() {
@@ -61,9 +68,10 @@ export default class Main extends Component {
   componentDidMount() {
     this.mounted = true;
     
-    const url = BASE_API_URL+'/api/catalog/1';
+    const foodFetchUrl = BASE_API_URL+'/api/catalog/1';
+    const restaurantInfourl = BASE_API_URL+'/api/storeinfo/1/storeinfo';
     
-    fetch(url)
+    fetch(foodFetchUrl)
     .then((response) => response.json())
     .then((responseJson) => {
       if(this.mounted) {
@@ -76,6 +84,52 @@ export default class Main extends Component {
     })
     .catch((error) => {
       console.error(error);
+    });
+
+    fetch(restaurantInfourl)
+    .then((response) => response.json())
+    .then((responseJson) => {
+      this.setState({
+        isloading: false,
+        deliveryCost: responseJson.data.deliveryCost,
+      });
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+
+    AsyncStorage.getItem('loginToken') 
+    .then((val) => {
+      if(val != null) {
+        this.setState({authToken: val});
+        const userCheckurl = BASE_API_URL+'/api/details';
+        return fetch(userCheckurl,{
+          method: 'GET',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer '+this.state.authToken
+          }});
+      }
+    })
+    .then((response) => {
+      if(response != null)
+      {
+        return response.json()
+      } else {
+        return {"result": 'error'};
+      }
+    })
+    .then((responseJson) => {
+      if(responseJson.result == "success") {
+        this.setState({
+          isLogin: true,
+        });
+        console.log("asdfasdfasdf");
+      }
+    })
+    .catch((error) => {
+      console.log(error);
     });
   }
 
@@ -285,6 +339,11 @@ export default class Main extends Component {
         totalPrice += price*product.count;
       }
 
+      totalPrice = totalPrice - totalPrice*this.state.cupon/100;
+
+      if(!isNaN(this.state.deliveryCost) && totalPrice > 0) {
+        totalPrice = totalPrice + parseFloat(this.state.deliveryCost);
+      }
 
       //set totalcart list and set empty of selected food, extra source, cart number and total price etc
       this.setState({
@@ -294,7 +353,7 @@ export default class Main extends Component {
         checkedExtra: {},
         selectedProductForCart: {},
         currentCartItemBumber: totalCartedNumber,
-        currentCartItemPrice: totalPrice.toFixed(2),
+        currentCartItemPrice: totalPrice,
       });
     }
   }
@@ -385,6 +444,12 @@ export default class Main extends Component {
       totalPrice += price*product.count;
     }
 
+    totalPrice = totalPrice - totalPrice*this.state.cupon/100;
+
+    if(!isNaN(this.state.deliveryCost) && totalPrice > 0) {
+      totalPrice = totalPrice + parseFloat(this.state.deliveryCost);
+    }
+
     //set totalcart list and set empty of selected food, extra source, cart number and total price etc
     this.setState({
       totalCarList: totalCartArray,
@@ -393,7 +458,7 @@ export default class Main extends Component {
       checkedExtra: {},
       selectedProductForCart: {},
       currentCartItemBumber: totalCartedNumber,
-      currentCartItemPrice: totalPrice.toFixed(2),
+      currentCartItemPrice: totalPrice,
     });
   }
   //end
@@ -428,7 +493,7 @@ export default class Main extends Component {
     this.setState({
       cartClicked: this.state.cartClicked? false: true,
       checkOutModalVisible: this.state.checkOutModalVisible? false: true
-    })
+    });
   }
   //end
 
@@ -481,9 +546,15 @@ export default class Main extends Component {
       totalNumber += product.count;
     }
 
+    totalPrice = totalPrice - totalPrice*this.state.cupon/100;
+
+    if(!isNaN(this.state.deliveryCost) && totalPrice > 0) {
+      totalPrice = totalPrice + parseFloat(this.state.deliveryCost);
+    }
+
     this.setState({
       currentCartItemBumber: totalNumber,
-      currentCartItemPrice: totalPrice.toFixed(2),
+      currentCartItemPrice: totalPrice,
     });
   }
   //end
@@ -513,10 +584,16 @@ export default class Main extends Component {
         totalNumber += product.count;
       }
 
+      totalPrice = totalPrice - totalPrice*this.state.cupon/100;
+
+      if(!isNaN(this.state.deliveryCost) && totalPrice > 0) {
+        totalPrice = totalPrice + parseFloat(this.state.deliveryCost);
+      }
+
       this.setState({
         totalCarList: totalCartedList,
         currentCartItemBumber: totalNumber,
-        currentCartItemPrice: totalPrice.toFixed(2),
+        currentCartItemPrice: totalPrice,
       });
     }
   }
@@ -545,10 +622,153 @@ export default class Main extends Component {
       totalNumber += product.count;
     }
 
+    totalPrice = totalPrice - totalPrice*this.state.cupon/100;
+
+    if(!isNaN(this.state.deliveryCost) && totalPrice > 0) {
+      totalPrice = totalPrice + parseFloat(this.state.deliveryCost);
+    }
+
     this.setState({
       totalCarList: totalCartedList,
       currentCartItemBumber: totalNumber,
-      currentCartItemPrice: totalPrice.toFixed(2),
+      currentCartItemPrice: totalPrice,
+    });
+  }
+  //end
+
+  //checkCupon
+  checkCupon(text) {
+    this.setState({
+      discountString: text,
+    });
+    const cuponCheckUrl = BASE_API_URL+'/api/couponCheck/'+text;
+    AsyncStorage.getItem('loginToken') 
+    .then((val) => {
+      if(val != null) {
+        if(this.state.isLogin) {
+          return "logedin";
+        } else {
+          this.setState({authToken: val});
+          const userCheckurl = BASE_API_URL+'/api/details';
+          return fetch(userCheckurl,{
+            method: 'GET',
+            headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json',
+              Authorization: 'Bearer '+this.state.authToken
+            }
+          });
+        }
+      }
+    })
+    .then((response) => {
+      if(response == "logedin") {
+        console.log(this.state.authToken);
+        
+        return fetch(cuponCheckUrl,{
+          method: 'GET',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer '+this.state.authToken
+          }
+        });
+      }else if(response != "logedin" && response != null)
+      {
+        this.setState({
+          isLogin: true,
+        });
+        return fetch(cuponCheckUrl,{
+          method: 'GET',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer '+this.state.authToken
+          }
+        });
+      } else {
+        this.setState({
+          isLogin: false,
+        });
+        this.colseCheckOutDetail();
+
+        setTimeout(function(){
+          Alert.alert(
+            'Alert',
+            'Need to Login !',
+            [
+              {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+              {text: 'Login', onPress: () => {
+                SingleTon.sideMenu.open();
+              }},
+            ],
+            { cancelable: false }
+          )
+        }, 700)
+      }
+    })
+    .then((response) => {
+      if(response != null) {
+        return response.json()
+      } else {
+        return {"result": "error"}
+      }
+    })
+    .then((responseJson) => {
+      if(responseJson.result == "success") {
+        this.setState({
+          cupon: parseInt(responseJson.cupon.percentage),
+          iscupon: true,
+        });
+        var totalCartArray = Utils.copy(this.state.totalCarList);
+        var totalPrice = 0;
+        for (const product of totalCartArray) {
+          var price = 0;
+          price = price + parseFloat(product.price);
+          for (const extra of product.extras) {
+            price = price + parseFloat(extra.price);
+          }
+          totalPrice += price*product.count;
+        }
+
+        totalPrice = totalPrice - totalPrice*this.state.cupon/100;
+
+        if(!isNaN(this.state.deliveryCost) && totalPrice > 0) {
+          totalPrice = totalPrice + parseFloat(this.state.deliveryCost);
+        }
+
+        this.setState({
+          currentCartItemPrice: totalPrice,
+        });
+      } else {
+        this.setState({
+          iscupon: false,
+          cupon: 0,
+        });
+        var totalCartArray = Utils.copy(this.state.totalCarList);
+        var totalPrice = 0;
+        for (const product of totalCartArray) {
+          var price = 0;
+          price = price + parseFloat(product.price);
+          for (const extra of product.extras) {
+            price = price + parseFloat(extra.price);
+          }
+          totalPrice += price*product.count;
+        }
+
+        totalPrice = totalPrice - totalPrice*this.state.cupon/100;
+
+        if(!isNaN(this.state.deliveryCost) && totalPrice > 0) {
+          totalPrice = totalPrice + parseFloat(this.state.deliveryCost);
+        }
+
+        this.setState({
+          currentCartItemPrice: totalPrice,
+        });
+      }
+    })
+    .catch((error) => {
+      console.log(error);
     });
   }
   //end
@@ -566,6 +786,12 @@ export default class Main extends Component {
       outputRange: [0, 5],
       extrapolate: 'clamp'
     })
+
+    var basketImg = this.state.iscupon? require('../resources/images/basketcuponed.png') : require('../resources/images/basket.png');
+
+    var cutNumberColor = this.state.iscupon? '#36e952' : '#4AA0FA';
+
+    var delivercost = isNaN(this.state.deliveryCost)? this.state.deliveryCost: "€"+this.state.deliveryCost;
 
     return (
       this.state.isloading?
@@ -615,20 +841,30 @@ export default class Main extends Component {
           getItemLayout={this.getItemLayout}
         />
         <Animatable.View transition={['top','left','rotate']} style={this.state.cartClicked? styles.cartFlastButtonClicked: styles.cartFlastButton} >
+          {this.state.iscupon &&
+            <Animatable.View transition="right" style={[
+              {backgroundColor: cutNumberColor},
+              this.state.cartClicked? styles.cartCupponTextOpened : styles.cartCupponTextCLosed]}><Text style={{color: '#fff'}} >-{this.state.cupon}%</Text></Animatable.View>
+          }
           <TouchableOpacity  style={{flex: 1, borderRadius: 40,}} onPress={() => this.setState({cartClicked: this.state.cartClicked? false: true, checkOutModalVisible: this.state.checkOutModalVisible? false: true })}>
-            <Animatable.View style={styles.cartFlatButtonView} ref={this.handleViewRef}>
-              <Animatable.Image animation="pulse" easing="ease-out" iterationCount="infinite" style={styles.basketImg} source={require('../resources/images/basket.png')} />
+            <Animatable.View
+              style={[
+                styles.cartFlatButtonView,
+                this.state.iscupon? styles.isCupon: styles.notCupon
+              ]}
+              ref={this.handleViewRef}>
+              <Animatable.Image animation="pulse" easing="ease-out" iterationCount="infinite" style={styles.basketImg} source={basketImg} />
               <Animatable.View style={{
                 flex: 1,
                 transform: [
-                  {rotate: '-13deg'}
+                  {rotate: '-12deg'}
                 ],
                 alignItems: 'center',
                 justifyContent: 'flex-end',
                 paddingBottom: 10,
               }}>
-                <Text style={{color: '#4AA0FA', marginBottom: 5,}}>{this.state.currentCartItemBumber}</Text>
-                <Text style={{color: '#fff', fontWeight: 'bold'}}>€{this.state.currentCartItemPrice}</Text>
+                <Text style={{color: cutNumberColor, marginBottom: 5,}}>{this.state.currentCartItemBumber}</Text>
+                <Text style={{color: '#fff', fontWeight: 'bold'}}>€{this.state.currentCartItemPrice.toFixed(2)}</Text>
               </Animatable.View>
             </Animatable.View>
           </TouchableOpacity>
@@ -674,7 +910,7 @@ export default class Main extends Component {
               <View style={styles.checkOutModalOlverlay} />
             </TouchableWithoutFeedback>
             <View style={styles.checkOutModalView}>
-              <TouchableOpacity style={styles.modalcloseButton} onPress={() => this.colseCheckOutDetail()} ><Icon name="md-close" style={styles.modalcloseButtonIcon} ></Icon></TouchableOpacity>
+              <TouchableOpacity style={styles.modalcloseButton} onPress={() => this.colseCheckOutDetail()} ><Icon name="md-close" style={[styles.modalcloseButtonIcon, {color: cutNumberColor},]} ></Icon></TouchableOpacity>
               <View>
               {this.state.checkOutModalVisible && this.state.totalCarList.length > 0?
                   <FlatList
@@ -689,20 +925,25 @@ export default class Main extends Component {
               <View style={styles.checkOutDeliveryView}>
                 <View style={{flex: 1, flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10,}}>
                   <Text style={{fontSize: 16}}>Delivery costs</Text>
-                  <Text style={{fontSize: 16}}>FREE</Text>
+                  <Text style={{fontSize: 16}}>{delivercost}</Text>
                 </View>
                 <View>
-                  <TextInput placeholder="Enter your discount code" style={{
-                    padding: 10,
-                    fontSize: 16,
-                    backgroundColor: '#fff',
-                    borderColor: '#ddd',
-                    borderRadius: 5,
-                    borderWidth: 1,
-                  }} />
+                  <TextInput
+                    placeholder="Enter your discount code" 
+                    style={{
+                      padding: 10,
+                      fontSize: 16,
+                      backgroundColor: '#fff',
+                      borderColor: '#ddd',
+                      borderRadius: 5,
+                      borderWidth: 1,
+                    }}
+                    onChangeText={(text)=>this.checkCupon(text)}
+                    autoCapitalize="none"
+                    value={this.state.discountString}/>
                 </View>
               </View>
-              <TouchableOpacity style={styles.addtocartButton}>
+              <TouchableOpacity style={[styles.addtocartButton, {backgroundColor: cutNumberColor},]}>
                 <Text style={{color: '#fff', fontSize: 17, fontWeight: 'bold'}} >Check Out</Text>
               </TouchableOpacity>
             </View>
@@ -805,7 +1046,7 @@ const styles = StyleSheet.create({
   },
   cartFlastButton: {
     position: 'absolute',
-    top: HEADER_COLLAPSED_HEIGHT-10,
+    top: HEADER_COLLAPSED_HEIGHT-1,
     left: SCREEN_WIDTH-110,
     zIndex: 10001,
     overflow: 'visible',
@@ -814,12 +1055,56 @@ const styles = StyleSheet.create({
     flex: 1,
     width: 80,
     height: 80,
+  },
+  notCupon: {
+    backgroundColor: '#4AA0FA',
+    shadowColor: '#034f9e',
+    shadowOffset: {width: 0, height: 1,},
+    shadowOpacity: 1,
+    shadowRadius: 3,
+    borderRadius: 40,
+  },
+  isCupon: {
+    backgroundColor: '#36e952',
+    shadowColor: '#0dac26',
+    shadowOffset: {width: 0, height: 1,},
+    shadowOpacity: 1,
+    shadowRadius: 3,
+    borderRadius: 40,
+  },
+  cartCupponTextCLosed: {
+    width:50,
+    height: 25,
+    position: 'absolute',
+    top: 5,
+    right: 70,
+    borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
     shadowColor: '#000',
     shadowOffset: {width: 0, height: 1,},
-    shadowOpacity: 0.8,
-    shadowRadius: 5,
-    borderRadius: 40,
-    backgroundColor: '#4AA0FA',
+    shadowOpacity: 0.4,
+    shadowRadius: 2,
+    transform: [
+      {rotate: '-12deg'}
+    ],
+  },
+  cartCupponTextOpened: {
+    width:50,
+    height: 25,
+    position: 'absolute',
+    transform: [
+      {rotate: '-12deg'}
+    ],
+    top: -7,
+    right:-35,
+    borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 1,},
+    shadowOpacity: 0.4,
+    shadowRadius: 2,
   },
   cartFlastButtonClicked: {
     position: 'absolute',

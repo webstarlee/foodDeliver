@@ -55,7 +55,14 @@ export default class SideMenu extends Component {
           }});
       }
     })
-    .then((response) => response.json())
+    .then((response) => {
+      if(response != null)
+      {
+        return response.json()
+      } else {
+        return {"result": 'error'};
+      }
+    })
     .then((responseJson) => {
       if(responseJson.result == "success") {
         this.setState({currentUser: responseJson.user, isLogin: true});
@@ -149,7 +156,9 @@ export default class SideMenu extends Component {
             placeholderTextColor='#6f6f6f'
             style={styles.sideMenuTextInput}
             onChangeText={this.handleEmail}
-            autoCapitalize="none" />
+            autoCapitalize="none"
+            autoCorrect={false}
+            keyboardType="email-address" />
           <TextInput
             placeholder='Password'
             secureTextEntry={true}

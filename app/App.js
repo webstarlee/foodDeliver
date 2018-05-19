@@ -28,6 +28,7 @@ import TabBar from './components/Tabbar';
 import HomeStack from './components/Router';
 import SideMenu from './components/SideMenu';
 import NavigationService from "./components/NavigationService";
+import SingleTon from "./components/SingleTon";
 
 export default class App extends Component {
   constructor(props) {
@@ -45,7 +46,10 @@ export default class App extends Component {
   render() {
     return (
       <ScalingDrawer
-        ref={ref => this._drawer = ref}
+        ref={ref => {
+          this._drawer = ref
+          SingleTon.sideMenu = ref
+        }}
         content={<SideMenu />}
         swipeOffset={20}
         scalingFactor={0.6}
