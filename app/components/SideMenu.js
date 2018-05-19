@@ -57,7 +57,11 @@ export default class SideMenu extends Component {
     })
     .then((response) => response.json())
     .then((responseJson) => {
-      this.setState({currentUser: responseJson.success, isLogin: true});
+      if(responseJson.result == "success") {
+        this.setState({currentUser: responseJson.user, isLogin: true});
+      } else {
+        this.handleLogout();
+      }
     })
     .catch((error) => {
       console.log(error);
@@ -120,7 +124,7 @@ export default class SideMenu extends Component {
       authToken: null,
       currentUser: [],
       isLogin: false
-    })
+    });
   }
 
   renderLogin = () => {
@@ -168,6 +172,7 @@ export default class SideMenu extends Component {
 
   renderUser = () => {
     return (
+      this.state.currentUser != null &&
       <View>
         <View
           style={{
@@ -192,7 +197,7 @@ export default class SideMenu extends Component {
     return (
       <View style={{flex: 1, position: 'absolute', top:0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center'}}>
         <View style={{flex: 1,backgroundColor: '#000', position: 'absolute', top: 0, right: 0, left: 0, bottom: 0, opacity: 0.5}}></View>
-        <Loaing />
+        <Loaing color={'#fff'} />
       </View>
     )
   }

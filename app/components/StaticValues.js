@@ -1,5 +1,6 @@
 import { isIphoneX } from 'react-native-iphone-x-helper';
 import { Dimensions } from 'react-native';
+// const BASE_API_URL = "http://192.168.0.171";
 const BASE_API_URL = "http://fooddeliver.leezhur.com";
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("screen");
 let HEADER_EXPANDED_HEIGHT = 240;
