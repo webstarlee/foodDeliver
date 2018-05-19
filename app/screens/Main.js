@@ -51,6 +51,8 @@ export default class Main extends Component {
       checkOutModalVisible: false,
     }
   }
+
+  handleViewRef = ref => this.flatview = ref;
 //component mount part
   componentWillmount() {
     this.mounted = true;
@@ -92,7 +94,7 @@ export default class Main extends Component {
           <Text style={{fontSize: 14}}>{item.description}</Text>
         </View>
         <View>
-          <TouchableOpacity style={styles.itemPriceButtn} ><Text style={{color: '#fff'}} >€ {item.price}</Text></TouchableOpacity>
+          <TouchableOpacity style={styles.itemPriceButtn} onPress={()=>this.selectItemForCart(item)} ><Text style={{color: '#fff'}} >€ {item.price}</Text></TouchableOpacity>
           <Image
             style={{width: 80, height: 80, resizeMode: "cover"}}
             source={{uri: item.image}} />
@@ -168,7 +170,7 @@ export default class Main extends Component {
               <Icon style={{color: '#b3b0b0', fontSize: 25}} name="ios-arrow-dropright-circle-outline"/>
             </TouchableOpacity>
           </View>
-          <TouchableOpacity onPress={() => this.remoceOneFood(index)} style={styles.checkoutFoodNumberArrowButton} >
+          <TouchableOpacity onPress={() => this.removeOneFood(index)} style={styles.checkoutFoodNumberArrowButton} >
             <Icon style={{color: '#b3b0b0', fontSize: 25}} name="md-close"/>
           </TouchableOpacity>
         </View>
@@ -195,16 +197,32 @@ export default class Main extends Component {
     index,
   });
   //end
+
+  bounce = () => this.flatview.bounce(1000).then(endState => console.log(endState.finished ? 'bounce finished' : 'bounce cancelled'));
+  jello = () => this.flatview.jello(1000).then(endState => console.log(endState.finished ? 'bounce finished' : 'bounce cancelled'));
 //end
 
 //function part
   //when select one food from the section list
   selectItemForCart(item) {
-    var currentList = [];
-    this.setState({
-      modalVisible: true,
-      selectedItem: item,
-      selectedProductForCart: {
+    if(item.extras.length > 0) {
+      this.setState({
+        modalVisible: true,
+        selectedItem: item,
+        selectedProductForCart: {
+          count: 1,
+          id: item.id,
+          title: item.title,
+          description: item.description,
+          price: item.price,
+          discount: item.discount,
+          image: item.image,
+        },
+      });
+    } else {
+      this.bounce();
+
+      var singleProductForCart = {
         count: 1,
         id: item.id,
         title: item.title,
@@ -212,8 +230,73 @@ export default class Main extends Component {
         price: item.price,
         discount: item.discount,
         image: item.image,
-      },
-    })
+        extras: [],
+      }
+
+      console.log(singleProductForCart)
+
+      var totalCartArray = this.state.totalCarList;//get of your total carted food with all extra
+
+      var finalMatchCheck = 0;
+
+      var i = 0;
+      var totalCartedNumber = 0;
+
+      for (const food of totalCartArray) {
+        if(food.id == singleProductForCart.id && food.extras.length == singleProductForCart.extras.length) {
+          var isExtraMatched = true
+          for (const gotExtra of singleProductForCart.extras) {
+            var sameExtra = food.extras.find(function(element) {
+              return element.id == gotExtra.id;
+            });
+            if(sameExtra == null){
+              isExtraMatched = false
+              break
+            }
+          }
+          if (isExtraMatched) {
+            totalCartArray[i].count += 1;
+            finalMatchCheck += 1;
+          }
+        }
+        totalCartedNumber += totalCartArray[i].count;
+        i ++;
+      }
+
+      if(finalMatchCheck == 0) {
+        totalCartArray.push(singleProductForCart);//add new food to existing cart list
+        totalCartedNumber += 1;
+      }
+
+      console.log(totalCartArray);
+
+      // var cartNumber = totalCartArray.length;//get total cart food amount of kind
+
+      var totalPrice = 0;//set initial price to 0
+
+      //calculate all price of food and extra source
+      for (const product of totalCartArray) {
+        var price = 0;
+        price = price + parseFloat(product.price);
+        for (const extra of product.extras) {
+          price = price + parseFloat(extra.price);
+        }
+
+        totalPrice += price*product.count;
+      }
+
+
+      //set totalcart list and set empty of selected food, extra source, cart number and total price etc
+      this.setState({
+        totalCarList: totalCartArray,
+        modalVisible: false,
+        selectedItem: {},
+        checkedExtra: {},
+        selectedProductForCart: {},
+        currentCartItemBumber: totalCartedNumber,
+        currentCartItemPrice: totalPrice.toFixed(2),
+      });
+    }
   }
   //end
 
@@ -244,11 +327,13 @@ export default class Main extends Component {
 
   //function when click add to cart button
   addToCart() {
+    this.bounce();
+
     var singleProductForCart = this.state.selectedProductForCart;//get all data of selected food food and extra source etc
 
     singleProductForCart["extras"] = Object.values(this.state.checkedExtra);//add extra source to the existing products
 
-    this.setState({selectedProductForCart: singleProductForCart});
+    console.log(this.state.selectedProductForCart);
 
     var totalCartArray = this.state.totalCarList;//get of your total carted food with all extra
 
@@ -359,13 +444,14 @@ export default class Main extends Component {
   //end
 
   //function when click delete btn from the checkout view
-  remoceOneFood(index) {
+  removeOneFood(index) {
     Alert.alert(
       'Alert',
       'Are you Sure ?',
       [
         {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
         {text: 'Yes Delete', onPress: () => {
+          this.jello();
           var totalCartedList = this.state.totalCarList;
           totalCartedList.splice(index, 1);
           this.setState({
@@ -408,8 +494,9 @@ export default class Main extends Component {
     var currentNumber = totalCartedList[index].count;
     currentNumber -= 1;
     if(currentNumber <= 0) {
-      this.remoceOneFood(index);
+      this.removeOneFood(index);
     } else {
+      this.jello();
       totalCartedList[index].count = currentNumber;
 
       var totalPrice = 0;
@@ -437,6 +524,7 @@ export default class Main extends Component {
 
   //function when click decrease button from the checkout view
   increaseFoodNumber(index) {
+    this.jello();
     var totalCartedList = Utils.copy(this.state.totalCarList);
     var currentNumber = totalCartedList[index].count;
     currentNumber += 1;
@@ -527,20 +615,22 @@ export default class Main extends Component {
           getItemLayout={this.getItemLayout}
         />
         <Animatable.View transition={['top','left','rotate']} style={this.state.cartClicked? styles.cartFlastButtonClicked: styles.cartFlastButton} >
-          <TouchableOpacity style={{flex: 1, borderRadius: 40, overflow: 'hidden'}} onPress={() => this.setState({cartClicked: this.state.cartClicked? false: true, checkOutModalVisible: this.state.checkOutModalVisible? false: true })}>
-            <Animatable.Image animation="pulse" easing="ease-out" iterationCount="infinite" style={styles.basketImg} source={require('../resources/images/basket.png')} />
-            <View style={{
-              flex: 1,
-              transform: [
-                {rotate: '-13deg'}
-              ],
-              alignItems: 'center',
-              justifyContent: 'flex-end',
-              paddingBottom: 10,
-            }}>
-              <Text style={{color: '#4AA0FA', marginBottom: 5,}}>{this.state.currentCartItemBumber}</Text>
-              <Text style={{color: '#fff', fontWeight: 'bold'}}>€{this.state.currentCartItemPrice}</Text>
-            </View>
+          <TouchableOpacity  style={{flex: 1, borderRadius: 40,}} onPress={() => this.setState({cartClicked: this.state.cartClicked? false: true, checkOutModalVisible: this.state.checkOutModalVisible? false: true })}>
+            <Animatable.View style={styles.cartFlatButtonView} ref={this.handleViewRef}>
+              <Animatable.Image animation="pulse" easing="ease-out" iterationCount="infinite" style={styles.basketImg} source={require('../resources/images/basket.png')} />
+              <Animatable.View style={{
+                flex: 1,
+                transform: [
+                  {rotate: '-13deg'}
+                ],
+                alignItems: 'center',
+                justifyContent: 'flex-end',
+                paddingBottom: 10,
+              }}>
+                <Text style={{color: '#4AA0FA', marginBottom: 5,}}>{this.state.currentCartItemBumber}</Text>
+                <Text style={{color: '#fff', fontWeight: 'bold'}}>€{this.state.currentCartItemPrice}</Text>
+              </Animatable.View>
+            </Animatable.View>
           </TouchableOpacity>
         </Animatable.View>
         <Animatable.View transition={['opacity','scale', 'borderRadius']} style={this.state.checkOutModalVisible? styles.checkOutFlatbehindOverlayOpen : styles.checkOutFlatbehindOverlayClosed}></Animatable.View>
@@ -596,6 +686,22 @@ export default class Main extends Component {
                   <View style={{alignItems:'center'}}><Text>Your cart is empty</Text></View>
                 }
               </View>
+              <View style={styles.checkOutDeliveryView}>
+                <View style={{flex: 1, flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10,}}>
+                  <Text style={{fontSize: 16}}>Delivery costs</Text>
+                  <Text style={{fontSize: 16}}>FREE</Text>
+                </View>
+                <View>
+                  <TextInput placeholder="Enter your discount code" style={{
+                    padding: 10,
+                    fontSize: 16,
+                    backgroundColor: '#fff',
+                    borderColor: '#ddd',
+                    borderRadius: 5,
+                    borderWidth: 1,
+                  }} />
+                </View>
+              </View>
               <TouchableOpacity style={styles.addtocartButton}>
                 <Text style={{color: '#fff', fontSize: 17, fontWeight: 'bold'}} >Check Out</Text>
               </TouchableOpacity>
@@ -608,6 +714,15 @@ export default class Main extends Component {
 }
 
 const styles = StyleSheet.create({
+  checkOutDeliveryView: {
+    position: 'absolute',
+    width: '100%',
+    left: 15,
+    bottom: 65,
+    borderTopColor: '#d9d9d9',
+    borderTopWidth: 1,
+    paddingTop: 10,
+  },
   checkoutFoodNumberArrowButton: {
     paddingHorizontal: 3,
     alignItems: 'center',
@@ -677,7 +792,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 15,
     paddingTop: 50,
-    paddingBottom: 70,
+    paddingBottom: 160,
     maxHeight: SCREEN_HEIGHT*5/7,
   },
   basketImg: {
@@ -690,24 +805,24 @@ const styles = StyleSheet.create({
   },
   cartFlastButton: {
     position: 'absolute',
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: '#4AA0FA',
     top: HEADER_COLLAPSED_HEIGHT-10,
     left: SCREEN_WIDTH-110,
     zIndex: 10001,
+    overflow: 'visible',
+  },
+  cartFlatButtonView: {
+    flex: 1,
+    width: 80,
+    height: 80,
     shadowColor: '#000',
     shadowOffset: {width: 0, height: 1,},
     shadowOpacity: 0.8,
     shadowRadius: 5,
+    borderRadius: 40,
+    backgroundColor: '#4AA0FA',
   },
   cartFlastButtonClicked: {
     position: 'absolute',
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: '#4AA0FA',
     ...ifIphoneX({
       top: 40,
     }, {
@@ -715,10 +830,6 @@ const styles = StyleSheet.create({
     }),
     left: 30,
     zIndex: 10001,
-    shadowColor: '#000',
-    shadowOffset: {width: 0, height: 1,},
-    shadowOpacity: 0.8,
-    shadowRadius: 5,
     transform: [
       {rotate: '13deg'}
     ]
