@@ -52,8 +52,8 @@ export default class App extends Component {
         }}
         content={<SideMenu />}
         swipeOffset={20}
-        scalingFactor={0.6}
-        minimizeFactor={0.5}
+        scalingFactor={0.78}
+        minimizeFactor={0.6}
         onClose={() => this.setState({isopenSidebar: false})} >
         <View style={this.state.isopenSidebar? styles.containerOpen : styles.container}>
           <HomeStack ref={navigatorRef => {

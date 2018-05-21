@@ -9,7 +9,7 @@ if (isIphoneX()) {
     HEADER_EXPANDED_HEIGHT = 250;
     HEADER_COLLAPSED_HEIGHT = 115;
 }
-const ITEM_HEIGHT = 135;
+const ITEM_HEIGHT = 150;
 
 export {
     BASE_API_URL,

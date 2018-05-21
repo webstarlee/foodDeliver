@@ -32,6 +32,7 @@ import Loaing from '../components/Loading';
 import * as Animatable from 'react-native-animatable';
 import Utils from "@utils";
 import SingleTon from "../components/SingleTon";
+import sectionListGetItemLayout from 'react-native-section-list-get-item-layout'
 
 export default class Main extends Component {
   constructor() {
@@ -56,10 +57,15 @@ export default class Main extends Component {
       cupon: 0,
       iscupon: false,
       discountString: "",
+      isSearch: false,
+      searchText: "",
+      currentCatalog: 0,
+      imageBlur: 0,
     }
   }
   
   handleViewRef = ref => this.flatview = ref;
+
 //component mount part
   componentWillmount() {
     this.mounted = true;
@@ -159,17 +165,25 @@ export default class Main extends Component {
   //end
 
   //render section list header
-  renderSectionHeader = ({section}) => {
+  renderSectionHeader = ({item}) => {
     return (
-      <View style={styles.itemCatalogView}>
-        <Image
-          style={{width: '100%', height: 70, resizeMode: "cover"}}
-          source={{uri: section.catalog.image}}
-        />
-        <View style={styles.itemCatalogTextView} >
-          <Text style={{fontSize: 20,fontWeight: 'bold',marginBottom: 5,}}>{section.catalog.title}</Text>
-          <Text>{section.catalog.body}</Text>
+      <View>
+        <View style={styles.itemCatalogView}>
+          <Image
+            style={{width: '100%', height: 70, resizeMode: "cover"}}
+            source={{uri: item.catalog.image}}
+          />
+          <View style={styles.itemCatalogTextView} >
+            <Text style={{fontSize: 20,fontWeight: 'bold',marginBottom: 5,}}>{item.catalog.title}</Text>
+            <Text>{item.catalog.body}</Text>
+          </View>
         </View>
+        <FlatList
+          showsHorizontalScrollIndicator={false}
+          data={item.data}
+          renderItem={this.renderItem}
+          keyExtractor={(item, index) => index.toString()}
+        />
       </View>
     )
   }
@@ -178,8 +192,8 @@ export default class Main extends Component {
   //render catalog touchbutton of top horizontalscroll
   renderCatalog = ({item, index}) => {
     return (
-      <TouchableOpacity style={styles.catelogButton} onPress={() => this.scrollToSection(index)} >
-        <Text>{item.catalog.title}</Text>
+      <TouchableOpacity style={this.state.currentCatalog == index? styles.catelogButtonSelected: styles.catelogButton} onPress={() => this.scrollToSection(index)} >
+        <Text style={{color: this.state.currentCatalog == index? '#fff' : '#585858', fontWeight: this.state.currentCatalog == index? 'bold': 'normal'}} >{item.catalog.title}</Text>
       </TouchableOpacity>
     )
   }
@@ -242,14 +256,6 @@ export default class Main extends Component {
       </View>
     )
   }
-  //end
-
-  //set static value of section list item height as virtual to calculate scroll to section
-  getItemLayout = (data, index) => ({
-    length: ITEM_HEIGHT,
-    offset: ITEM_HEIGHT * index,
-    index,
-  });
   //end
 
   bounce = () => this.flatview.bounce(1000).then(endState => console.log(endState.finished ? 'bounce finished' : 'bounce cancelled'));
@@ -464,8 +470,27 @@ export default class Main extends Component {
   //end
 
   //function when search
-  searchData(text){
+  searchData(text = ""){
     var searchedData = [];
+    this.setState({
+      searchText: text,
+    });
+
+    if(text != "") {
+      this.setState({
+        isSearch: true,
+        imageBlur: 10,
+      })
+    } else {
+      this.setState({
+        isSearch: false,
+        imageBlur: 0,
+      })
+    }
+
+    setTimeout(() => {
+      this.imageBlurRef.setNativeProps({blurRadius: this.state.imageBlur});
+    }, 500);
 
     for (const section of this.state.origineDatas) {
       var foods = [];
@@ -483,8 +508,20 @@ export default class Main extends Component {
     }
 
     this.setState({
-      resourceDatas: searchedData
+      resourceDatas: searchedData,
     })
+  }
+  //end
+
+  //clear search
+  clearSearch() {
+    this.setState({
+      searchText: "",
+      isSearch: false,
+      imageBlur: 0,
+    });
+
+    this.searchData();
   }
   //end
 
@@ -499,12 +536,7 @@ export default class Main extends Component {
 
   //function when click header catalog button
   scrollToSection = (index) => {
-    this.sectionListRef.scrollToLocation({
-      animated: true,
-      sectionIndex: index,
-      itemIndex: 0,
-      viewPosition: 0
-    });
+    this.sectionListRef.scrollToIndex({animated: true, index: index});
   };
   //end
 
@@ -772,6 +804,24 @@ export default class Main extends Component {
     });
   }
   //end
+  onItemsChanges = ({ viewableItems }) => {
+    var nowCatalogindex = viewableItems[0].index;
+    var resourceDatas = Utils.copy(this.state.resourceDatas);
+    this.setState({
+      currentCatalog: nowCatalogindex,
+      resourceDatas: resourceDatas,
+    });
+  }
+  backImgBlur(event) {
+    var currentBlur = event.nativeEvent.contentOffset.y/20;
+    if(currentBlur < this.state.imageBlur || this.state.imageBlur < 10) {
+      this.setState({
+        imageBlur: currentBlur
+      });
+      this.imageBlurRef.setNativeProps({blurRadius: this.state.imageBlur});
+      // console.log(this.state.imageBlur);
+    }
+  }
 //end
 
   render() {
@@ -780,12 +830,6 @@ export default class Main extends Component {
       outputRange: [HEADER_EXPANDED_HEIGHT, HEADER_COLLAPSED_HEIGHT],
       extrapolate: 'clamp'
     });
-
-    const imageBlur = this.state.scrollY.interpolate({
-      inputRange: [0, 0],
-      outputRange: [0, 5],
-      extrapolate: 'clamp'
-    })
 
     var basketImg = this.state.iscupon? require('../resources/images/basketcuponed.png') : require('../resources/images/basket.png');
 
@@ -805,11 +849,14 @@ export default class Main extends Component {
       }} ><Loaing color={'#000'}/></View>
       :
       <View style={styles.container}>
-        <Animated.View style={[styles.header, { height: headerHeight }]}>
+        <Animated.View style={[styles.header, { height: this.state.isSearch? HEADER_COLLAPSED_HEIGHT: headerHeight }]}>
           <View style={styles.headerImageView} >
-            <Animated.Image style={styles.headerImage} source={{uri: BASE_API_URL+'/storage/main_images/header.png'}} blurRadius={imageBlur} />
+            <Image ref={(ref) => this.imageBlurRef = ref} style={styles.headerImage} source={{uri: BASE_API_URL+'/storage/main_images/header.png'}} blurRadius={0} />
             <Image style={styles.headerOverlayImage} source={require('../resources/images/overlay.png')} />
-            <TextInput placeholder='Searchable' underlineColorAndroid={'transparent'} placeholderTextColor='#fff' style={styles.headerSearch} onChangeText={(text)=>this.searchData(text)}/>
+            <TextInput  placeholder='Search' underlineColorAndroid={'transparent'} placeholderTextColor='#fff' style={styles.headerSearch} onChangeText={(text)=>this.searchData(text)} value={this.state.searchText} />
+            {this.state.isSearch &&
+              <TouchableOpacity style={styles.searchClearBtn} onPress={() => this.clearSearch()} ><Icon style={{fontSize: 20, color: '#fff'}} name="md-close" /></TouchableOpacity>
+            }
           </View>
           <View style={styles.categoryContainer} >
             <FlatList
@@ -821,24 +868,23 @@ export default class Main extends Component {
             />
           </View>
         </Animated.View>
-        <SectionList
+        <FlatList
           ref={ref => (this.sectionListRef = ref)}
           contentContainerStyle={styles.scrollContainer}
-          onScroll={Animated.event(
-            [{ nativeEvent: {
-                contentOffset: {
-                  y: this.state.scrollY
-                }
-              }
-            }])
+          onScroll={
+            Animated.event( 
+              [{ nativeEvent: { 
+                  contentOffset: { 
+                    y: this.state.scrollY 
+                  }
+                } 
+              }],{listener: (event) => this.backImgBlur(event)},)
           }
           scrollEventThrottle={16}
-          stickySectionHeadersEnabled={false}
-          sections={this.state.resourceDatas}
-          renderItem={this.renderItem}
-          renderSectionHeader={this.renderSectionHeader}
-          keyExtractor={(item, index) => index}
-          getItemLayout={this.getItemLayout}
+          data={this.state.resourceDatas}
+          renderItem={this.renderSectionHeader}
+          keyExtractor={(item, index) => index.toString()}
+          onViewableItemsChanged={this.onItemsChanges}
         />
         <Animatable.View transition={['top','left','rotate']} style={this.state.cartClicked? styles.cartFlastButtonClicked: styles.cartFlastButton} >
           {this.state.iscupon &&
@@ -1017,7 +1063,11 @@ const styles = StyleSheet.create({
   },
   checkOutModalContainerView: {
     flex:1,
-    paddingTop: SCREEN_HEIGHT/6,
+    ...ifIphoneX({
+      paddingTop: 130,
+    }, {
+      paddingTop: 120,
+    }),
     alignItems: 'center',
     position: 'relative',
   },
@@ -1186,6 +1236,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     borderRadius: 3,
     backgroundColor: '#fff',
+    height: 160,
   },
   itemCatalogTextView: {
     paddingVertical: 5,
@@ -1204,6 +1255,7 @@ const styles = StyleSheet.create({
     borderRadius: 1,
     backgroundColor: '#fff',
     marginVertical: 3,
+    height: 150,
   },
   itemPriceButtn: {
     width: 80,
@@ -1219,7 +1271,8 @@ const styles = StyleSheet.create({
   },
   headerImageView: {
     flex: 1,
-    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
     overflow: 'hidden',
   },
   headerImage: {
@@ -1236,7 +1289,6 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   headerSearch: {
-    fontSize: 12,
     borderBottomColor: '#ededed',
     borderBottomWidth: 2,
     height: 30,
@@ -1245,11 +1297,24 @@ const styles = StyleSheet.create({
     color: 'white',
     textAlign: 'center',
     paddingHorizontal:5,
+    fontWeight: "100",
     ...ifIphoneX({
       marginTop: 40,
     }, {
       marginTop: 30,
     }),
+    marginRight: -20,
+  },
+  searchClearBtn: {
+    width: 20,
+    height: 30,
+    ...ifIphoneX({
+      marginTop: 40,
+    }, {
+      marginTop: 30,
+    }),
+    alignItems: 'center',
+    justifyContent:'center',
   },
   categoryContainer: {
     height: 40,
@@ -1271,14 +1336,23 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     justifyContent: 'center',
   },
+  catelogButtonSelected: {
+    backgroundColor: '#4AA0FA',
+    paddingHorizontal: 20,
+    paddingVertical: 3,
+    borderColor: '#ddd',
+    borderWidth: 1,
+    marginHorizontal: 3,
+    borderRadius: 3,
+    justifyContent: 'center',
+  },
   scrollContainer: {
-    padding: 5,
-    paddingTop: HEADER_EXPANDED_HEIGHT,
+    paddingLeft: 5,
+    paddingRight: 5,
     paddingBottom: 15,
   },
   header: {
     backgroundColor: '#fff',
-    position: 'absolute',
     width: SCREEN_WIDTH,
     top: 0,
     left: 0,

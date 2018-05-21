@@ -18,6 +18,7 @@ import {
 import Icon from 'react-native-vector-icons/Ionicons';
 import {BASE_API_URL, ITEM_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT}  from './StaticValues';
 import Loaing from '../components/Loading';
+import LinearGradient from 'react-native-linear-gradient';
 
 export default class SideMenu extends Component {
   constructor() {
@@ -213,7 +214,7 @@ export default class SideMenu extends Component {
 
   render() {
     return (
-      <View style={styles.container}>
+      <LinearGradient colors={['#33a39f', '#146c69']} style={styles.container}>
         <View style={styles.sideMenuContentContainer} >
           <View style={{position: 'relative', justifyContent: 'center', alignItems: 'center'}}>
             <View style={styles.backgroundBlurBehind}/>
@@ -224,8 +225,8 @@ export default class SideMenu extends Component {
               {this.state.isLoading && this.renderLoading()}
             </View>
           </View>
-        </View>
-      </View>
+        </View >
+      </LinearGradient>
     );
   }
 }
@@ -241,6 +242,7 @@ const styles = StyleSheet.create({
     height: SCREEN_HEIGHT,
     justifyContent: 'center',
     padding: 10,
+    paddingTop: 50,
     flex: 1,
   },
   sideMenuLogo: {
