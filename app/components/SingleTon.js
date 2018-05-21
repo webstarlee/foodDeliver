@@ -7,7 +7,8 @@ class Singleton{
         }
 
         // to test whether we have singleton or not
-        this.sideMenu = null
+        this.sideMenu = null;
+        this.restaurantInfo = null;
 
         return instance;
     }

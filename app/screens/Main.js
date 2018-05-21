@@ -32,7 +32,6 @@ import Loaing from '../components/Loading';
 import * as Animatable from 'react-native-animatable';
 import Utils from "@utils";
 import SingleTon from "../components/SingleTon";
-import sectionListGetItemLayout from 'react-native-section-list-get-item-layout'
 
 export default class Main extends Component {
   constructor() {
@@ -95,6 +94,7 @@ export default class Main extends Component {
     fetch(restaurantInfourl)
     .then((response) => response.json())
     .then((responseJson) => {
+      SingleTon.restaurantInfo = responseJson.data;
       this.setState({
         isloading: false,
         deliveryCost: responseJson.data.deliveryCost,
