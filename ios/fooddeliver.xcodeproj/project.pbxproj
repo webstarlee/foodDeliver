@@ -45,6 +45,7 @@
 		6B302BDDA7A4481BB69FDEB4 /* Entypo.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EEEE74B9028943D5919D21F9 /* Entypo.ttf */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
 		9946D55E83924A89B7676E5E /* Ionicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 39498BEA9928424EA1DC942C /* Ionicons.ttf */; };
+		AB90C4625AF19133F7B35E69 /* libPods-fooddeliver.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 98B8BE8934C82A29836CE4BB /* libPods-fooddeliver.a */; };
 		ADBDB9381DFEBF1600ED6528 /* libRCTBlob.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ADBDB9271DFEBF0700ED6528 /* libRCTBlob.a */; };
 		B05D80181F93413CB8D74FB6 /* Feather.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9B011DA08D8948EDAE739DA9 /* Feather.ttf */; };
 		E1A8ADF8AC4E4155BE15C539 /* EvilIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 77FE207AF1D34150ACE080A3 /* EvilIcons.ttf */; };
@@ -385,8 +386,10 @@
 		2D02E4901E0B4A5D006451C7 /* fooddeliver-tvOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "fooddeliver-tvOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D16E6891FA4F8E400B85C8A /* libReact.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libReact.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		370CE522CF564F9E96CC7CD5 /* ReactNativeKeyboardManager.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = ReactNativeKeyboardManager.xcodeproj; path = "../node_modules/react-native-keyboard-manager/ios/ReactNativeKeyboardManager.xcodeproj"; sourceTree = "<group>"; };
+		372A06C0F24B55AA0AA2D9F1 /* Pods-fooddeliver.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-fooddeliver.release.xcconfig"; path = "Pods/Target Support Files/Pods-fooddeliver/Pods-fooddeliver.release.xcconfig"; sourceTree = "<group>"; };
 		39498BEA9928424EA1DC942C /* Ionicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Ionicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Ionicons.ttf"; sourceTree = "<group>"; };
 		424AE413BF554F63BAB00BB2 /* libRNVectorIcons.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNVectorIcons.a; sourceTree = "<group>"; };
+		5DA318F01E15F2E82392F308 /* Pods-fooddeliver.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-fooddeliver.debug.xcconfig"; path = "Pods/Target Support Files/Pods-fooddeliver/Pods-fooddeliver.debug.xcconfig"; sourceTree = "<group>"; };
 		5E91572D1DD0AC6500FF2AA8 /* RCTAnimation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTAnimation.xcodeproj; path = "../node_modules/react-native/Libraries/NativeAnimation/RCTAnimation.xcodeproj"; sourceTree = "<group>"; };
 		62DA539159C74242B08AA40D /* libReactNativeKeyboardManager.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libReactNativeKeyboardManager.a; sourceTree = "<group>"; };
 		665D0C70F725490599400056 /* FontAwesome.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome.ttf"; sourceTree = "<group>"; };
@@ -394,6 +397,7 @@
 		78C398B01ACF4ADC00677621 /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = "../node_modules/react-native/Libraries/LinkingIOS/RCTLinking.xcodeproj"; sourceTree = "<group>"; };
 		7BA25389C90C48DEAF355DC7 /* SimpleLineIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = SimpleLineIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/SimpleLineIcons.ttf"; sourceTree = "<group>"; };
 		832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = "../node_modules/react-native/Libraries/Text/RCTText.xcodeproj"; sourceTree = "<group>"; };
+		98B8BE8934C82A29836CE4BB /* libPods-fooddeliver.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-fooddeliver.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		9B011DA08D8948EDAE739DA9 /* Feather.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Feather.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Feather.ttf"; sourceTree = "<group>"; };
 		A66F58B51C3A4D009F7267E0 /* Octicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Octicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Octicons.ttf"; sourceTree = "<group>"; };
 		A6FB4BEB78BF4D74A5F8E2D0 /* BVLinearGradient.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = BVLinearGradient.xcodeproj; path = "../node_modules/react-native-linear-gradient/BVLinearGradient.xcodeproj"; sourceTree = "<group>"; };
@@ -433,6 +437,7 @@
 				E326FAC7DAA147C1ABB98232 /* libReactNativeKeyboardManager.a in Frameworks */,
 				111330DD5ADB4F23A3376A1C /* libBVLinearGradient.a in Frameworks */,
 				F573E751B5F5463D9ED994D7 /* libRNVectorIcons.a in Frameworks */,
+				AB90C4625AF19133F7B35E69 /* libPods-fooddeliver.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -582,6 +587,7 @@
 			isa = PBXGroup;
 			children = (
 				2D16E6891FA4F8E400B85C8A /* libReact.a */,
+				98B8BE8934C82A29836CE4BB /* libPods-fooddeliver.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -680,6 +686,7 @@
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				F1818165FA4443D982655EFA /* Resources */,
 				4337E14120AB3131001C8476 /* Recovered References */,
+				886FBFF13F5BCDBA7A6184BA /* Pods */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -695,6 +702,15 @@
 				2D02E4901E0B4A5D006451C7 /* fooddeliver-tvOSTests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		886FBFF13F5BCDBA7A6184BA /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				5DA318F01E15F2E82392F308 /* Pods-fooddeliver.debug.xcconfig */,
+				372A06C0F24B55AA0AA2D9F1 /* Pods-fooddeliver.release.xcconfig */,
+			);
+			name = Pods;
 			sourceTree = "<group>";
 		};
 		ADBDB9201DFEBF0600ED6528 /* Products */ = {
@@ -749,10 +765,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "fooddeliver" */;
 			buildPhases = (
+				8A480330D6A0B1F919AEF284 /* [CP] Check Pods Manifest.lock */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
+				4A7408E2D4AFF7E5F6B7B635 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -1273,6 +1291,42 @@
 			shellPath = /bin/sh;
 			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh";
 		};
+		4A7408E2D4AFF7E5F6B7B635 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-fooddeliver/Pods-fooddeliver-resources.sh",
+				"${PODS_ROOT}/GoogleMaps/Maps/Frameworks/GoogleMaps.framework/Resources/GoogleMaps.bundle",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleMaps.bundle",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-fooddeliver/Pods-fooddeliver-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		8A480330D6A0B1F919AEF284 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-fooddeliver-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -1401,6 +1455,7 @@
 		};
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 5DA318F01E15F2E82392F308 /* Pods-fooddeliver.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CURRENT_PROJECT_VERSION = 1;
@@ -1426,6 +1481,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 372A06C0F24B55AA0AA2D9F1 /* Pods-fooddeliver.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CURRENT_PROJECT_VERSION = 1;

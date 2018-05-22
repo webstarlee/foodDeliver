@@ -25,6 +25,7 @@ import {
 import Loaing from '../components/Loading';
 import SingleTon from "../components/SingleTon";
 import HTMLView from 'react-native-htmlview';
+import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 
 export default class Info extends Component {
   constructor() {
@@ -117,13 +118,55 @@ export default class Info extends Component {
               />
             </View>
             <View style={styles.defaultView}>
-              <Text style={{fontWeight: 'bold'}} >{this.state.resInfo.storeName}</Text>
-              <View style={{width: '100%', height: 300}}>
+              <Text style={{fontWeight: 'bold', marginBottom: 10,}} >{this.state.resInfo.storeName}</Text>
+              <View style={{width: '100%'}}>
+                <MapView
+                  provider={PROVIDER_GOOGLE}
+                  style={{width: '100%', height: 150}}
+                  initialRegion={{
+                    latitude: this.state.resInfo.latitude,
+                    longitude: this.state.resInfo.longitude,
+                    latitudeDelta: 0.0030,
+                    longitudeDelta: 0.0030,
+                  }} >
+                  <Marker coordinate={{latitude: this.state.resInfo.latitude, longitude: this.state.resInfo.longitude}} />
+                </MapView>
               </View>
-              <View>
+              <View style={{marginTop: 10,}}>
                 <Text style={{color: '#505050', fontWeight: 'bold', fontSize: 16, marginBottom: 5,}} >Address</Text>
                 <Text>{this.state.resInfo.street}</Text>
                 <Text>{this.state.resInfo.city}</Text>
+              </View>
+            </View>
+            <View style={styles.defaultView}>
+              <Text style={{color: '#505050', fontWeight: 'bold', fontSize: 16, marginBottom: 5,}}>Opening Times</Text>
+              <View style={styles.openingTime}>
+                <Text style={{fontWeight: 'bold'}}>Monday</Text>
+                <Text>{this.state.resInfo.monday}</Text>
+              </View>
+              <View style={styles.openingTime}>
+                <Text style={{fontWeight: 'bold'}}>Tuesday</Text>
+                <Text>{this.state.resInfo.tuesday}</Text>
+              </View>
+              <View style={styles.openingTime}>
+                <Text style={{fontWeight: 'bold'}}>Wednesday</Text>
+                <Text>{this.state.resInfo.wednesday}</Text>
+              </View>
+              <View style={styles.openingTime}>
+                <Text style={{fontWeight: 'bold'}}>Thursday</Text>
+                <Text>{this.state.resInfo.thursday}</Text>
+              </View>
+              <View style={styles.openingTime}>
+                <Text style={{fontWeight: 'bold'}}>Friday</Text>
+                <Text>{this.state.resInfo.friday}</Text>
+              </View>
+              <View style={styles.openingTime}>
+                <Text style={{fontWeight: 'bold'}}>Saturday</Text>
+                <Text>{this.state.resInfo.saturday}</Text>
+              </View>
+              <View style={styles.openingTime}>
+                <Text style={{fontWeight: 'bold'}}>Sunday</Text>
+                <Text>{this.state.resInfo.sunday}</Text>
               </View>
             </View>
         </ScrollView>
@@ -133,6 +176,12 @@ export default class Info extends Component {
 }
 
 const styles = StyleSheet.create({
+  openingTime: {
+    flexDirection: 'row',
+    width: 200,
+    justifyContent: 'space-between',
+    paddingVertical: 2
+  },
   defaultView: {
     padding: 10,
     shadowColor: '#000',
