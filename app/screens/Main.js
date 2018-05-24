@@ -20,7 +20,7 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { ifIphoneX } from 'react-native-iphone-x-helper';
-import CheckBox from 'react-native-check-box'
+import CheckBox from 'react-native-check-box';
 import {
   BASE_API_URL,
   HEADER_EXPANDED_HEIGHT,
@@ -32,6 +32,8 @@ import Loaing from '../components/Loading';
 import * as Animatable from 'react-native-animatable';
 import Utils from "@utils";
 import SingleTon from "../components/SingleTon";
+import {NavigationActions} from "react-navigation";
+import NavigationService from "../components/NavigationService";
 
 export default class Main extends Component {
   constructor() {
@@ -60,7 +62,10 @@ export default class Main extends Component {
       searchText: "",
       currentCatalog: 0,
       imageBlur: 0,
-      isFinalCheck: false,
+    }
+    SingleTon.mainPage = this;
+    if(SingleTon.isShowTab) {
+      SingleTon.isShowTab.setState({isShowTabbar: true});
     }
   }
   
@@ -823,13 +828,73 @@ export default class Main extends Component {
       // console.log(this.state.imageBlur);
     }
   }
-//end
+  finalCheckOut() {
+    if(this.state.totalCarList.length > 0) {
+      AsyncStorage.getItem('loginToken') 
+      .then((val) => {
+        if(val != null) {
+          if(this.state.isLogin) {
+            return "logedin";
+          } else {
+            this.setState({authToken: val});
+            const userCheckurl = BASE_API_URL+'/api/details';
+            return fetch(userCheckurl,{
+              method: 'GET',
+              headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                Authorization: 'Bearer '+this.state.authToken
+              }
+            });
+          }
+        }
+      })
+      .then((response) => {
+        if(response == "logedin") {
+          SingleTon.cartedList = this.state.totalCarList;
+          this.colseCheckOutDetail();
+          setTimeout(function() {
+            NavigationService.navigate("Checkout");
+          }, 500)
+        }else if(response != "logedin" && response != null)
+        {
+          this.setState({
+            isLogin: true,
+          });
+          SingleTon.cartedList = this.state.totalCarList;
+          this.colseCheckOutDetail();
+          setTimeout(function() {
+            NavigationService.navigate("Checkout");
+          }, 500)
+        } else {
+          this.setState({
+            isLogin: false,
+          });
+          this.colseCheckOutDetail();
 
-finalCheckOut() {
-  this.setState({
-    isFinalCheck: true
-  })
-}
+          setTimeout(function(){
+            Alert.alert(
+              'Alert',
+              'Need to Login !',
+              [
+                {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+                {text: 'Login', onPress: () => {
+                  SingleTon.sideMenu.open();
+                }},
+              ],
+              { cancelable: false }
+            )
+          }, 700)
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    } else {
+      alert('Your cart is empty');
+    }
+  }
+//end
 
   render() {
     const headerHeight = this.state.scrollY.interpolate({
@@ -956,55 +1021,49 @@ finalCheckOut() {
           transparent={true}
           visible={this.state.checkOutModalVisible}
           >
-          {this.state.isFinalCheck?
-            <View style={styles.finalCheckOutView} >
-              <TouchableOpacity onPress={() => this.setState({isFinalCheck: false})} ><Text>Back</Text></TouchableOpacity>
-            </View>
-          :
-            <View style={styles.checkOutModalContainerView}>
-              <TouchableWithoutFeedback onPress={() => this.colseCheckOutDetail()}>
-                <View style={styles.checkOutModalOlverlay} />
-              </TouchableWithoutFeedback>
-              <View style={styles.checkOutModalView}>
-                <TouchableOpacity style={styles.modalcloseButton} onPress={() => this.colseCheckOutDetail()} ><Icon name="md-close" style={[styles.modalcloseButtonIcon, {color: cutNumberColor},]} ></Icon></TouchableOpacity>
-                <View>
-                {this.state.checkOutModalVisible && this.state.totalCarList.length > 0?
-                    <FlatList
-                      data={this.state.totalCarList}
-                      renderItem={this.renderCheckOutList}
-                      keyExtractor={(item, index) => index.toString()}
-                    />
-                    :
-                    <View style={{alignItems:'center'}}><Text>Your cart is empty</Text></View>
-                  }
-                </View>
-                <View style={styles.checkOutDeliveryView}>
-                  <View style={{flex: 1, flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10,}}>
-                    <Text style={{fontSize: 16}}>Delivery costs</Text>
-                    <Text style={{fontSize: 16}}>{delivercost}</Text>
-                  </View>
-                  <View>
-                    <TextInput
-                      placeholder="Enter your discount code" 
-                      style={{
-                        padding: 10,
-                        fontSize: 16,
-                        backgroundColor: '#fff',
-                        borderColor: '#ddd',
-                        borderRadius: 5,
-                        borderWidth: 1,
-                      }}
-                      onChangeText={(text)=>this.checkCupon(text)}
-                      autoCapitalize="none"
-                      value={this.state.discountString}/>
-                  </View>
-                </View>
-                <TouchableOpacity onPress={() => this.finalCheckOut()} style={[styles.addtocartButton, {backgroundColor: cutNumberColor},]}>
-                  <Text style={{color: '#fff', fontSize: 17, fontWeight: 'bold'}} >Check Out</Text>
-                </TouchableOpacity>
+          <View style={styles.checkOutModalContainerView}>
+            <TouchableWithoutFeedback onPress={() => this.colseCheckOutDetail()}>
+              <View style={styles.checkOutModalOlverlay} />
+            </TouchableWithoutFeedback>
+            <View style={styles.checkOutModalView}>
+              <TouchableOpacity style={styles.modalcloseButton} onPress={() => this.colseCheckOutDetail()} ><Icon name="md-close" style={[styles.modalcloseButtonIcon, {color: cutNumberColor},]} ></Icon></TouchableOpacity>
+              <View>
+              {this.state.checkOutModalVisible && this.state.totalCarList.length > 0?
+                  <FlatList
+                    data={this.state.totalCarList}
+                    renderItem={this.renderCheckOutList}
+                    keyExtractor={(item, index) => index.toString()}
+                  />
+                  :
+                  <View style={{alignItems:'center'}}><Text>Your cart is empty</Text></View>
+                }
               </View>
+              <View style={styles.checkOutDeliveryView}>
+                <View style={{flex: 1, flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10,}}>
+                  <Text style={{fontSize: 16}}>Delivery costs</Text>
+                  <Text style={{fontSize: 16}}>{delivercost}</Text>
+                </View>
+                <View>
+                  <TextInput
+                    placeholder="Enter your discount code" 
+                    style={{
+                      padding: 10,
+                      fontSize: 16,
+                      backgroundColor: '#fff',
+                      borderColor: '#ddd',
+                      borderRadius: 5,
+                      borderWidth: 1,
+                    }}
+                    onChangeText={(text)=>this.checkCupon(text)}
+                    autoCapitalize="none"
+                    value={this.state.discountString}/>
+                </View>
+              </View>
+              <TouchableOpacity onPress={() => this.finalCheckOut()} style={[styles.addtocartButton, {backgroundColor: cutNumberColor},]}>
+                <Text style={{color: '#fff', fontSize: 17, fontWeight: 'bold'}} >Check Out</Text>
+              </TouchableOpacity>
             </View>
-          }
+          </View>
         </Modal>
       </View>
     );
@@ -1018,6 +1077,7 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     top: 0,
+    flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
@@ -1371,13 +1431,15 @@ const styles = StyleSheet.create({
     paddingLeft: 5,
     paddingRight: 5,
     paddingBottom: 15,
+    // paddingTop: HEADER_EXPANDED_HEIGHT,
   },
   header: {
     backgroundColor: '#fff',
     width: SCREEN_WIDTH,
     top: 0,
     left: 0,
-    zIndex: 9998
+    zIndex: 9998,
+    // position: 'absolute',
   },
   title: {
     marginVertical: 16,
