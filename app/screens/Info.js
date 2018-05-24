@@ -25,6 +25,7 @@ import {
 import Loaing from '../components/Loading';
 import SingleTon from "../components/SingleTon";
 import HTMLView from 'react-native-htmlview';
+import GoogleStaticMap from 'react-native-google-static-map';
 
 export default class Info extends Component {
   constructor() {
@@ -34,6 +35,9 @@ export default class Info extends Component {
       imageBlur: 0,
       resInfo: null,
       isloading: true,
+    }
+    if(SingleTon.isShowTab) {
+      SingleTon.isShowTab.setState({isShowTabbar: true});
     }
   }
 
@@ -79,6 +83,8 @@ export default class Info extends Component {
       extrapolate: 'clamp'
     });
 
+    const mapWidth = SCREEN_WIDTH - 30;
+
     return (
       this.state.isloading?
       <View style={{
@@ -93,7 +99,7 @@ export default class Info extends Component {
       <View style={styles.container}>
         <Animated.View style={[styles.header, { height: headerHeight }]}>
           <View style={styles.headerImageView} >
-            <Image ref={(ref) => this.imageBlurRef = ref} style={styles.headerImage} source={{uri: BASE_API_URL+'/storage/main_images/header.png'}} blurRadius={0} />
+            <Image ref={(ref) => this.imageBlurRef = ref} style={styles.headerImage} source={require('../resources/images/header.png')} blurRadius={0} />
             <Image style={styles.headerOverlayImage} source={require('../resources/images/overlay.png')} />
           </View>
         </Animated.View>
@@ -117,13 +123,53 @@ export default class Info extends Component {
               />
             </View>
             <View style={styles.defaultView}>
-              <Text style={{fontWeight: 'bold'}} >{this.state.resInfo.storeName}</Text>
-              <View style={{width: '100%', height: 300}}>
+              <Text style={{fontWeight: 'bold', marginBottom: 10,}} >{this.state.resInfo.storeName}</Text>
+              <View style={{width: '100%'}}>
+                <GoogleStaticMap
+                  style={{width: '100%', height: 200}}
+                  latitude={this.state.resInfo.latitude}
+                  longitude={this.state.resInfo.longitude}
+                  zoom={17}
+                  size={{ width: mapWidth, height: 200 }}
+                  apiKey={'AIzaSyApTWJ2H7KF81Ctr0tSQpHa1Hjzk7CdghY'}
+                />
               </View>
-              <View>
+              <View style={{marginTop: 10,}}>
                 <Text style={{color: '#505050', fontWeight: 'bold', fontSize: 16, marginBottom: 5,}} >Address</Text>
                 <Text>{this.state.resInfo.street}</Text>
+                <Text>{this.state.resInfo.postalZip}</Text>
                 <Text>{this.state.resInfo.city}</Text>
+              </View>
+            </View>
+            <View style={styles.defaultView}>
+              <Text style={{color: '#505050', fontWeight: 'bold', fontSize: 16, marginBottom: 5,}}>Opening Times</Text>
+              <View style={styles.openingTime}>
+                <Text style={{fontWeight: 'bold'}}>Monday</Text>
+                <Text>{this.state.resInfo.monday}</Text>
+              </View>
+              <View style={styles.openingTime}>
+                <Text style={{fontWeight: 'bold'}}>Tuesday</Text>
+                <Text>{this.state.resInfo.tuesday}</Text>
+              </View>
+              <View style={styles.openingTime}>
+                <Text style={{fontWeight: 'bold'}}>Wednesday</Text>
+                <Text>{this.state.resInfo.wednesday}</Text>
+              </View>
+              <View style={styles.openingTime}>
+                <Text style={{fontWeight: 'bold'}}>Thursday</Text>
+                <Text>{this.state.resInfo.thursday}</Text>
+              </View>
+              <View style={styles.openingTime}>
+                <Text style={{fontWeight: 'bold'}}>Friday</Text>
+                <Text>{this.state.resInfo.friday}</Text>
+              </View>
+              <View style={styles.openingTime}>
+                <Text style={{fontWeight: 'bold'}}>Saturday</Text>
+                <Text>{this.state.resInfo.saturday}</Text>
+              </View>
+              <View style={styles.openingTime}>
+                <Text style={{fontWeight: 'bold'}}>Sunday</Text>
+                <Text>{this.state.resInfo.sunday}</Text>
               </View>
             </View>
         </ScrollView>
@@ -133,6 +179,12 @@ export default class Info extends Component {
 }
 
 const styles = StyleSheet.create({
+  openingTime: {
+    flexDirection: 'row',
+    width: 200,
+    justifyContent: 'space-between',
+    paddingVertical: 2
+  },
   defaultView: {
     padding: 10,
     shadowColor: '#000',

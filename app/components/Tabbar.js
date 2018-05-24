@@ -12,8 +12,9 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { ifIphoneX } from 'react-native-iphone-x-helper';
 import * as Animatable from 'react-native-animatable';
 const {width} = Dimensions.get('window');
-import {NavigationActions} from "react-navigation"
-import NavigationService from "./NavigationService"
+import {NavigationActions} from "react-navigation";
+import SingleTon from "../components/SingleTon";
+import NavigationService from "./NavigationService";
 
 export default class Footerbar extends Component{
     constructor(props) {
@@ -21,7 +22,9 @@ export default class Footerbar extends Component{
         this.state={
             selected: 'home',
             sidemenu: false,
+            isShowTabbar: true,
         }
+        SingleTon.isShowTab = this;
     }
 
     onpressTabbar(footer_id){
@@ -40,6 +43,7 @@ export default class Footerbar extends Component{
     }
     render() {
         return(
+            this.state.isShowTabbar == true &&
             <View style={styles.footerview}>
                 <Animatable.View transition="left" style={this.state.selected == "home"? styles.menuSelectorHome: styles.menuSelectorInfo}></Animatable.View>
                 <View style={{flex: 1}}>

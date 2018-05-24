@@ -20,7 +20,7 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { ifIphoneX } from 'react-native-iphone-x-helper';
-import CheckBox from 'react-native-check-box'
+import CheckBox from 'react-native-check-box';
 import {
   BASE_API_URL,
   HEADER_EXPANDED_HEIGHT,
@@ -32,6 +32,8 @@ import Loaing from '../components/Loading';
 import * as Animatable from 'react-native-animatable';
 import Utils from "@utils";
 import SingleTon from "../components/SingleTon";
+import {NavigationActions} from "react-navigation";
+import NavigationService from "../components/NavigationService";
 
 export default class Main extends Component {
   constructor() {
@@ -60,6 +62,10 @@ export default class Main extends Component {
       searchText: "",
       currentCatalog: 0,
       imageBlur: 0,
+    }
+    SingleTon.mainPage = this;
+    if(SingleTon.isShowTab) {
+      SingleTon.isShowTab.setState({isShowTabbar: true});
     }
   }
   
@@ -822,6 +828,72 @@ export default class Main extends Component {
       // console.log(this.state.imageBlur);
     }
   }
+  finalCheckOut() {
+    if(this.state.totalCarList.length > 0) {
+      AsyncStorage.getItem('loginToken') 
+      .then((val) => {
+        if(val != null) {
+          if(this.state.isLogin) {
+            return "logedin";
+          } else {
+            this.setState({authToken: val});
+            const userCheckurl = BASE_API_URL+'/api/details';
+            return fetch(userCheckurl,{
+              method: 'GET',
+              headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                Authorization: 'Bearer '+this.state.authToken
+              }
+            });
+          }
+        }
+      })
+      .then((response) => {
+        if(response == "logedin") {
+          SingleTon.cartedList = this.state.totalCarList;
+          this.colseCheckOutDetail();
+          setTimeout(function() {
+            NavigationService.navigate("Checkout");
+          }, 500)
+        }else if(response != "logedin" && response != null)
+        {
+          this.setState({
+            isLogin: true,
+          });
+          SingleTon.cartedList = this.state.totalCarList;
+          this.colseCheckOutDetail();
+          setTimeout(function() {
+            NavigationService.navigate("Checkout");
+          }, 500)
+        } else {
+          this.setState({
+            isLogin: false,
+          });
+          this.colseCheckOutDetail();
+
+          setTimeout(function(){
+            Alert.alert(
+              'Alert',
+              'Need to Login !',
+              [
+                {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+                {text: 'Login', onPress: () => {
+                  SingleTon.sideMenu.open();
+                }},
+              ],
+              { cancelable: false }
+            )
+          }, 700)
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    } else {
+      alert('Your cart is empty');
+    }
+  }
 //end
 
   render() {
@@ -851,7 +923,7 @@ export default class Main extends Component {
       <View style={styles.container}>
         <Animated.View style={[styles.header, { height: this.state.isSearch? HEADER_COLLAPSED_HEIGHT: headerHeight }]}>
           <View style={styles.headerImageView} >
-            <Image ref={(ref) => this.imageBlurRef = ref} style={styles.headerImage} source={{uri: BASE_API_URL+'/storage/main_images/header.png'}} blurRadius={0} />
+            <Image ref={(ref) => this.imageBlurRef = ref} style={styles.headerImage} source={require('../resources/images/header.png')} blurRadius={0} />
             <Image style={styles.headerOverlayImage} source={require('../resources/images/overlay.png')} />
             <TextInput  placeholder='Search' underlineColorAndroid={'transparent'} placeholderTextColor='#fff' style={styles.headerSearch} onChangeText={(text)=>this.searchData(text)} value={this.state.searchText} />
             {this.state.isSearch &&
@@ -948,9 +1020,7 @@ export default class Main extends Component {
           animationType="fade"
           transparent={true}
           visible={this.state.checkOutModalVisible}
-          onRequestClose={() => {
-            alert('Modal has been closed.');
-          }}>
+          >
           <View style={styles.checkOutModalContainerView}>
             <TouchableWithoutFeedback onPress={() => this.colseCheckOutDetail()}>
               <View style={styles.checkOutModalOlverlay} />
@@ -989,7 +1059,7 @@ export default class Main extends Component {
                     value={this.state.discountString}/>
                 </View>
               </View>
-              <TouchableOpacity style={[styles.addtocartButton, {backgroundColor: cutNumberColor},]}>
+              <TouchableOpacity onPress={() => this.finalCheckOut()} style={[styles.addtocartButton, {backgroundColor: cutNumberColor},]}>
                 <Text style={{color: '#fff', fontSize: 17, fontWeight: 'bold'}} >Check Out</Text>
               </TouchableOpacity>
             </View>
@@ -1001,6 +1071,17 @@ export default class Main extends Component {
 }
 
 const styles = StyleSheet.create({
+  finalCheckOutView: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    top: 0,
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   checkOutDeliveryView: {
     position: 'absolute',
     width: '100%',
@@ -1350,13 +1431,15 @@ const styles = StyleSheet.create({
     paddingLeft: 5,
     paddingRight: 5,
     paddingBottom: 15,
+    // paddingTop: HEADER_EXPANDED_HEIGHT,
   },
   header: {
     backgroundColor: '#fff',
     width: SCREEN_WIDTH,
     top: 0,
     left: 0,
-    zIndex: 9998
+    zIndex: 9998,
+    // position: 'absolute',
   },
   title: {
     marginVertical: 16,

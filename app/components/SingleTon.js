@@ -9,6 +9,9 @@ class Singleton{
         // to test whether we have singleton or not
         this.sideMenu = null;
         this.restaurantInfo = null;
+        this.cartedList = [];
+        this.isShowTab = null;
+        this.mainPage = null;
 
         return instance;
     }
