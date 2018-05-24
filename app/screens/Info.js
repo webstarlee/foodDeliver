@@ -25,7 +25,6 @@ import {
 import Loaing from '../components/Loading';
 import SingleTon from "../components/SingleTon";
 import HTMLView from 'react-native-htmlview';
-import MapView from 'react-native-maps';
 
 export default class Info extends Component {
   constructor() {
@@ -120,14 +119,6 @@ export default class Info extends Component {
             <View style={styles.defaultView}>
               <Text style={{fontWeight: 'bold'}} >{this.state.resInfo.storeName}</Text>
               <View style={{width: '100%', height: 300}}>
-                <MapView
-                  initialRegion={{
-                    latitude: 37.78825,
-                    longitude: -122.4324,
-                    latitudeDelta: 0.0922,
-                    longitudeDelta: 0.0421,
-                  }}
-                />
               </View>
               <View>
                 <Text style={{color: '#505050', fontWeight: 'bold', fontSize: 16, marginBottom: 5,}} >Address</Text>
