@@ -819,7 +819,7 @@ export default class Main extends Component {
     });
   }
   backImgBlur(event) {
-    var currentBlur = event.nativeEvent.contentOffset.y/20;
+    var currentBlur = event.nativeEvent.contentOffset.y/12;
     if(currentBlur < this.state.imageBlur || this.state.imageBlur < 10) {
       this.setState({
         imageBlur: currentBlur
@@ -941,6 +941,7 @@ export default class Main extends Component {
           </View>
         </Animated.View>
         <FlatList
+          showsVerticalScrollIndicator={false}
           ref={ref => (this.sectionListRef = ref)}
           contentContainerStyle={styles.scrollContainer}
           onScroll={

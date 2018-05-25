@@ -66,7 +66,7 @@ export default class Info extends Component {
   }
 
   backImgBlur(event) {
-    var currentBlur = event.nativeEvent.contentOffset.y/20;
+    var currentBlur = event.nativeEvent.contentOffset.y/12;
     if(currentBlur < this.state.imageBlur || this.state.imageBlur < 10) {
       this.setState({
         imageBlur: currentBlur
@@ -79,7 +79,7 @@ export default class Info extends Component {
   render() {
     const headerHeight = this.state.scrollY.interpolate({
       inputRange: [0, HEADER_EXPANDED_HEIGHT-HEADER_COLLAPSED_HEIGHT],
-      outputRange: [HEADER_EXPANDED_HEIGHT, HEADER_COLLAPSED_HEIGHT],
+      outputRange: [HEADER_EXPANDED_HEIGHT-20, HEADER_COLLAPSED_HEIGHT],
       extrapolate: 'clamp'
     });
 
@@ -104,6 +104,7 @@ export default class Info extends Component {
           </View>
         </Animated.View>
         <ScrollView
+          showsVerticalScrollIndicator={false}
           ref={ref => (this.infoListRef = ref)}
           contentContainerStyle={styles.scrollContainer}
           onScroll={
@@ -204,7 +205,7 @@ const styles = StyleSheet.create({
     paddingLeft: 5,
     paddingRight: 5,
     paddingBottom: 15,
-    paddingTop: HEADER_EXPANDED_HEIGHT,
+    paddingTop: HEADER_EXPANDED_HEIGHT-10,
     width: SCREEN_WIDTH,
   },
   header: {
@@ -213,7 +214,11 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     left: 0,
-    zIndex: 9998
+    zIndex: 9998,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: -2,},
+    shadowOpacity: 0.5,
+    shadowRadius: 2,
   },
   headerImageView: {
     flex: 1,
