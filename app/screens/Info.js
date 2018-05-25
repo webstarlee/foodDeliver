@@ -21,7 +21,8 @@ import {
   HEADER_COLLAPSED_HEIGHT,
   ITEM_HEIGHT,
   SCREEN_WIDTH,
-  SCREEN_HEIGHT}  from '../components/StaticValues';
+  SCREEN_HEIGHT
+} from '../components/StaticValues';
 import Loaing from '../components/Loading';
 import SingleTon from "../components/SingleTon";
 import HTMLView from 'react-native-htmlview';
