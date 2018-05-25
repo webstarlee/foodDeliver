@@ -923,7 +923,7 @@ export default class Main extends Component {
       <View style={styles.container}>
         <Animated.View style={[styles.header, { height: this.state.isSearch? HEADER_COLLAPSED_HEIGHT: headerHeight }]}>
           <View style={styles.headerImageView} >
-            <Image ref={(ref) => this.imageBlurRef = ref} style={styles.headerImage} source={{uri: BASE_API_URL+'/storage/main_images/header.png'}} blurRadius={0} />
+            <Image ref={(ref) => this.imageBlurRef = ref} style={styles.headerImage} source={require('../resources/images/header.png')} blurRadius={0} />
             <Image style={styles.headerOverlayImage} source={require('../resources/images/overlay.png')} />
             <TextInput  placeholder='Search' underlineColorAndroid={'transparent'} placeholderTextColor='#fff' style={styles.headerSearch} onChangeText={(text)=>this.searchData(text)} value={this.state.searchText} />
             {this.state.isSearch &&

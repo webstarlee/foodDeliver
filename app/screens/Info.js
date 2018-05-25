@@ -25,7 +25,7 @@ import {
 import Loaing from '../components/Loading';
 import SingleTon from "../components/SingleTon";
 import HTMLView from 'react-native-htmlview';
-// import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import GoogleStaticMap from 'react-native-google-static-map';
 
 export default class Info extends Component {
   constructor() {
@@ -83,6 +83,8 @@ export default class Info extends Component {
       extrapolate: 'clamp'
     });
 
+    const mapWidth = SCREEN_WIDTH - 30;
+
     return (
       this.state.isloading?
       <View style={{
@@ -97,7 +99,7 @@ export default class Info extends Component {
       <View style={styles.container}>
         <Animated.View style={[styles.header, { height: headerHeight }]}>
           <View style={styles.headerImageView} >
-            <Image ref={(ref) => this.imageBlurRef = ref} style={styles.headerImage} source={{uri: BASE_API_URL+'/storage/main_images/header.png'}} blurRadius={0} />
+            <Image ref={(ref) => this.imageBlurRef = ref} style={styles.headerImage} source={require('../resources/images/header.png')} blurRadius={0} />
             <Image style={styles.headerOverlayImage} source={require('../resources/images/overlay.png')} />
           </View>
         </Animated.View>
@@ -123,17 +125,14 @@ export default class Info extends Component {
             <View style={styles.defaultView}>
               <Text style={{fontWeight: 'bold', marginBottom: 10,}} >{this.state.resInfo.storeName}</Text>
               <View style={{width: '100%'}}>
-                {/* <MapView
-                  provider={PROVIDER_GOOGLE}
-                  style={{width: '100%', height: 150}}
-                  initialRegion={{
-                    latitude: parseFloat(this.state.resInfo.latitude),
-                    longitude: parseFloat(this.state.resInfo.longitude),
-                    latitudeDelta: 0.0030,
-                    longitudeDelta: 0.0030,
-                  }} >
-                  <Marker coordinate={{latitude: parseFloat(this.state.resInfo.latitude), longitude: parseFloat(this.state.resInfo.longitude)}} />
-                </MapView> */}
+                <GoogleStaticMap
+                  style={{width: '100%', height: 200}}
+                  latitude={this.state.resInfo.latitude}
+                  longitude={this.state.resInfo.longitude}
+                  zoom={17}
+                  size={{ width: mapWidth, height: 200 }}
+                  apiKey={'AIzaSyApTWJ2H7KF81Ctr0tSQpHa1Hjzk7CdghY'}
+                />
               </View>
               <View style={{marginTop: 10,}}>
                 <Text style={{color: '#505050', fontWeight: 'bold', fontSize: 16, marginBottom: 5,}} >Address</Text>

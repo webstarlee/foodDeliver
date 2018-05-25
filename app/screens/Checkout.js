@@ -28,7 +28,6 @@ import SingleTon from "../components/SingleTon";
 import DatePicker from 'react-native-datepicker';
 import { ifIphoneX } from 'react-native-iphone-x-helper';
 import CheckBox from 'react-native-check-box';
-import ModalPicker from 'react-native-modal-picker';
 import ModalSelector from 'react-native-modal-selector'
 
 export default class SideMenu extends Component {
