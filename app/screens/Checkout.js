@@ -96,7 +96,7 @@ export default class SideMenu extends Component {
         <ScrollView showsVerticalScrollIndicator={false} style={styles.finalCheckoutScrollView}>
           <Text style={styles.finalCheckTitle} >Almost Done !</Text>
           <View style={styles.finalCheckDefaultView}>
-            <Text>To what address should we deliver your offer?</Text>
+            <Text style={{color: '#999', fontWeight: 'bold', fontSize: 15}}>To what address should we deliver your offer?</Text>
             <Text style={styles.defaultSmaillText} >Street name and number:</Text>
             <TextInput style={styles.defaultTextInput} />
             <Text style={styles.defaultSmaillText} >Zip Code:</Text>
@@ -104,8 +104,8 @@ export default class SideMenu extends Component {
             <Text style={styles.defaultSmaillText} >City Name:</Text>
             <TextInput style={styles.defaultTextInput} />
           </View>
-          <View style={[styles.finalCheckDefaultView, {marginTop: 1}]}>
-            <Text>How can we contact you?</Text>
+          <View style={[styles.finalCheckDefaultView, {marginTop: 15}]}>
+            <Text style={{color: '#999', fontWeight: 'bold', fontSize: 15}} >How can we contact you?</Text>
             <Text style={styles.defaultSmaillText} >Name:</Text>
             <TextInput style={styles.defaultTextInput} />
             <Text style={styles.defaultSmaillText} >E-mail Address:</Text>
@@ -128,7 +128,7 @@ export default class SideMenu extends Component {
               rightText={"Keep me informed about the status of my delivery through push messages."} />
           </View>
           <View style={[styles.finalCheckDefaultView, {marginTop: 15}]}>
-            <Text>What time would you like to receive your order?</Text>
+            <Text style={{color: '#999', fontWeight: 'bold', fontSize: 15}}>What time would you like to receive your order?</Text>
             <View style={{position: 'relative', width: '100%', height: 40, marginTop: 7, marginBottom: 5}}>
               <DatePicker
                 style={styles.datePickerStyle}
@@ -173,7 +173,7 @@ export default class SideMenu extends Component {
               numberOfLines={10}/>
           </View>
           <View style={[styles.finalCheckDefaultView, {marginTop: 15}]}>
-            <Text>What payment method would you like to use?</Text>
+            <Text style={{color: '#999', fontWeight: 'bold', fontSize: 15}}>What payment method would you like to use?</Text>
             <View style={{position: 'relative', flexDirection: 'row', width: '100%', height: 30, alignItems: 'center', marginTop: 10}}>
               <CheckBox
                 isChecked={this.state.paymentCheck == 'cash'? true :false}
@@ -295,6 +295,11 @@ const styles = StyleSheet.create({
     borderRadius: 2,
     marginBottom: 5,
     height: 100,
+    shadowColor: '#000',
+    shadowOffset: {width: 1, height: 1,},
+    shadowOpacity: 0.6,
+    shadowRadius: 2,
+    overflow: 'hidden'
   },
   defaultTextInput: {
     marginTop: 5,
@@ -304,6 +309,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     borderRadius: 2,
     marginBottom: 5,
+    shadowColor: '#000',
+    shadowOffset: {width: 1, height: 1,},
+    shadowOpacity: 0.6,
+    shadowRadius: 2,
+    overflow: 'hidden'
   },
   defaultSmaillText: {
     marginTop: 5,
@@ -315,7 +325,7 @@ const styles = StyleSheet.create({
     shadowColor: '#000',
     shadowOffset: {width: 0, height: 1,},
     shadowOpacity: 0.3,
-    shadowRadius: 1,
+    shadowRadius: 2,
     backgroundColor: '#fff',
   },
   finalCheckTitle: {
@@ -347,7 +357,7 @@ const styles = StyleSheet.create({
   },
   finalCheckoutScrollView: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#fdfdfd',
     paddingHorizontal: 7,
     width: SCREEN_WIDTH,
     paddingTop: 10

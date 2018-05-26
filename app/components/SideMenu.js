@@ -25,11 +25,16 @@ export default class SideMenu extends Component {
     super();
     this.state={
       isLogin: false,
+      isLoginView: true,
       email: "",
       password: "",
       authToken: null,
       currentUser: [],
       isLoading: false,
+      reg_name: "",
+      reg_email: "",
+      reg_pass: "",
+      reg_c_pass: "",
     }
   }
 
@@ -39,6 +44,22 @@ export default class SideMenu extends Component {
 
   handlePassword = (text) => {
     this.setState({ password: text })
+  }
+
+  handleRegEmail = (text) => {
+    this.setState({ reg_email: text })
+  }
+
+  handleRegName = (text) => {
+    this.setState({ reg_name: text })
+  }
+
+  handleRegPass = (text) => {
+    this.setState({ reg_pass: text })
+  }
+
+  handleRegCPass = (text) => {
+    this.setState({ reg_c_pass: text })
   }
 
   componentDidMount() {
@@ -126,58 +147,183 @@ export default class SideMenu extends Component {
     }
   }
 
+  handleRegister() {
+    if(this.state.reg_name != "" && this.state.reg_email != "" && this.state.reg_pass != "" && this.state.reg_c_pass != "") {
+      if(this.state.reg_pass == this.state.reg_c_pass) {
+        this.setState({isLoading: true});
+        const registerUrl = BASE_API_URL+"/api/register";
+
+        fetch(registerUrl, {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            name: this.state.reg_name,
+            email: this.state.reg_email,
+            password: this.state.reg_pass,
+            c_password: this.state.reg_c_pass,
+          }),
+        })
+        .then((response) => response.json())
+        .then((responseJson) => {
+            console.log(responseJson);
+            this.setState({
+              isLoading: false,
+            });
+            if(responseJson.result == "success") {
+              AsyncStorage.setItem("loginToken", responseJson.token);
+              this.setState({
+                authToken: responseJson.token,
+                currentUser: responseJson.user,
+                isLogin: true,
+                isLoading: false,
+                reg_name: "",
+                reg_email: "",
+                reg_pass: "",
+                reg_c_pass: "",
+              });
+            } else if(responseJson.result == "error") {
+              if(responseJson.message.email[0]){
+                alert(responseJson.message.email[0]);
+              } else {
+                alert('something went Wrong');
+              }
+            } else {
+              alert('something went Wrong');
+            }
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+      } else {
+        alert('Password Confirm not match');
+      }
+    } else {
+      alert('Input Email');
+    }
+  }
+
   handleLogout() {
     AsyncStorage.removeItem('loginToken');
     this.setState({
       authToken: null,
       currentUser: [],
-      isLogin: false
+      isLogin: false,
+      isLoginView: true,
     });
   }
 
+  changeToLoinView() {
+    this.setState({isLoginView: true})
+  }
+
+  changeToRegisterView() {
+    this.setState({isLoginView: false})
+  }
+
   renderLogin = () => {
-    return (
-      <View>
-        <View
-          style={{
-            paddingVertical: 10,
-            paddingLeft: 20,
-            borderBottomColor: '#01917c',
-            borderBottomWidth: 1,
-            shadowColor: '#000',
-            shadowOffset: {width: 0, height: 1,},
-            shadowOpacity: 0.3,
-            shadowRadius: 1,}}>
-          <Text style={{color: '#fff', fontSize: 22, fontWeight: 'bold'}}>User account</Text>
+      return (
+        this.state.isLoginView?
+        <View>
+          <View
+            style={{
+              paddingVertical: 10,
+              paddingLeft: 20,
+              borderBottomColor: '#01917c',
+              borderBottomWidth: 1,
+              shadowColor: '#000',
+              shadowOffset: {width: 0, height: 1,},
+              shadowOpacity: 0.3,
+              shadowRadius: 1,}}>
+            <Text style={{color: '#fff', fontSize: 22, fontWeight: 'bold'}}>User account</Text>
+          </View>
+          <View style={{paddingTop: 20, paddingHorizontal: 20, paddingBottom: 10}}>
+            <TextInput
+              placeholder='Email'
+              underlineColorAndroid={'transparent'}
+              placeholderTextColor='#6f6f6f'
+              style={styles.sideMenuTextInput}
+              onChangeText={this.handleEmail}
+              autoCapitalize="none"
+              autoCorrect={false}
+              keyboardType="email-address" />
+            <TextInput
+              placeholder='Password'
+              secureTextEntry={true}
+              underlineColorAndroid={'transparent'}
+              placeholderTextColor='#6f6f6f'
+              style={styles.sideMenuTextInput}
+              onChangeText={this.handlePassword}
+              autoCapitalize="none" />
+            <TouchableOpacity
+              style={styles.sidemenuLoginButton}
+              onPress={() => this.handleLogin()}>
+              <Text style={{color: '#fff', fontSize: 22, fontWeight: 'bold'}}>LOGIN</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => this.changeToRegisterView()} style={{marginTop: 20, paddingVertical: 5,}}><Text style={{color: '#fff'}}>>Register your account here.</Text></TouchableOpacity>
+            <TouchableOpacity style={{paddingVertical: 5,}}><Text style={{color: '#fff'}}>>Foget your password?</Text></TouchableOpacity>
+          </View>
         </View>
-        <View style={{paddingTop: 20, paddingHorizontal: 20, paddingBottom: 10}}>
-          <TextInput
-            placeholder='Email'
-            underlineColorAndroid={'transparent'}
-            placeholderTextColor='#6f6f6f'
-            style={styles.sideMenuTextInput}
-            onChangeText={this.handleEmail}
-            autoCapitalize="none"
-            autoCorrect={false}
-            keyboardType="email-address" />
-          <TextInput
-            placeholder='Password'
-            secureTextEntry={true}
-            underlineColorAndroid={'transparent'}
-            placeholderTextColor='#6f6f6f'
-            style={styles.sideMenuTextInput}
-            onChangeText={this.handlePassword}
-            autoCapitalize="none" />
-          <TouchableOpacity
-            style={styles.sidemenuLoginButton}
-            onPress={() => this.handleLogin()}>
-            <Text style={{color: '#fff', fontSize: 22, fontWeight: 'bold'}}>LOGIN</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={{marginTop: 20, paddingVertical: 5,}}><Text style={{color: '#fff'}}>>Register your account here.</Text></TouchableOpacity>
-          <TouchableOpacity style={{paddingVertical: 5,}}><Text style={{color: '#fff'}}>>Foget your password?</Text></TouchableOpacity>
+        :
+        <View>
+          <View
+            style={{
+              paddingVertical: 10,
+              paddingLeft: 20,
+              borderBottomColor: '#01917c',
+              borderBottomWidth: 1,
+              shadowColor: '#000',
+              shadowOffset: {width: 0, height: 1,},
+              shadowOpacity: 0.3,
+              shadowRadius: 1,}}>
+            <Text style={{color: '#fff', fontSize: 22, fontWeight: 'bold'}}>Register account</Text>
+          </View>
+          <View style={{paddingTop: 20, paddingHorizontal: 20, paddingBottom: 10}}>
+            <TextInput
+              placeholder='Name'
+              underlineColorAndroid={'transparent'}
+              placeholderTextColor='#6f6f6f'
+              style={styles.sideMenuTextInput}
+              onChangeText={this.handleRegName}
+              autoCapitalize="none"
+              autoCorrect={false} />
+            <TextInput
+              placeholder='Email'
+              secureTextEntry={false}
+              underlineColorAndroid={'transparent'}
+              placeholderTextColor='#6f6f6f'
+              style={styles.sideMenuTextInput}
+              onChangeText={this.handleRegEmail}
+              autoCapitalize="none"
+              autoCorrect={false}
+              keyboardType="email-address" />
+            <TextInput
+              placeholder='Password'
+              secureTextEntry={true}
+              underlineColorAndroid={'transparent'}
+              placeholderTextColor='#6f6f6f'
+              style={styles.sideMenuTextInput}
+              onChangeText={this.handleRegPass}
+              autoCapitalize="none" />
+            <TextInput
+              placeholder='Confirm Password'
+              secureTextEntry={true}
+              underlineColorAndroid={'transparent'}
+              placeholderTextColor='#6f6f6f'
+              style={styles.sideMenuTextInput}
+              onChangeText={this.handleRegCPass}
+              autoCapitalize="none" />
+            <TouchableOpacity
+              style={styles.sidemenuLoginButton}
+              onPress={() => this.handleRegister()}>
+              <Text style={{color: '#fff', fontSize: 22, fontWeight: 'bold'}}>REGISTER</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => this.changeToLoinView()} style={{marginTop: 20, paddingVertical: 5,}}><Text style={{color: '#fff'}}>>Login your account here.</Text></TouchableOpacity>
+          </View>
         </View>
-      </View>
-    )
+      )
   }
 
   renderUser = () => {

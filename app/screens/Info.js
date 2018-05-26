@@ -126,7 +126,7 @@ export default class Info extends Component {
             shadowOpacity: 0.4,
             shadowRadius: 2,
             }} >
-            <View style={styles.defaultView}>
+            <View style={[styles.defaultView, {backgroundColor: '#f5f5f5'}]}>
               <HTMLView
                 value={this.state.resInfo.message}
                 StyleSheet={htmlStyles}
@@ -215,7 +215,7 @@ const styles = StyleSheet.create({
     paddingBottom: 15,
     paddingTop: HEADER_EXPANDED_HEIGHT-30,
     width: SCREEN_WIDTH,
-    overflow: 'visible',
+    // overflow: 'visible',
     // backgroundColor: '#fff',
   },
   header: {

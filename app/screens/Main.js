@@ -35,6 +35,8 @@ import SingleTon from "../components/SingleTon";
 import {NavigationActions} from "react-navigation";
 import NavigationService from "../components/NavigationService";
 import FastImage from 'react-native-fast-image';
+import ParallaxHeader from '../components/Paralloxheader';
+const maxCartViewHeight = SCREEN_HEIGHT*7/8 - 210;
 
 export default class Main extends Component {
   constructor() {
@@ -63,6 +65,8 @@ export default class Main extends Component {
       searchText: "",
       currentCatalog: 0,
       imageBlur: 0,
+      isCartViewScrollDown: true,
+      isCartViewScrollUp: false,
     }
     SingleTon.mainPage = this;
     if(SingleTon.isShowTab) {
@@ -157,8 +161,8 @@ export default class Main extends Component {
     return (
       <TouchableOpacity style={styles.itemButtonView} onPress={()=>this.selectItemForCart(item)}>
         <View style={{flex: 1, paddingRight: 10}}>
-          <Text style={{fontSize: 15,fontWeight: 'bold',marginBottom: 6}}>{item.title}</Text>
-          <Text style={{fontSize: 14}}>{item.description}</Text>
+          <Text style={{color: '#666',fontSize: 15,fontWeight: 'bold',marginBottom: 6}}>{item.title}</Text>
+          <Text style={{color: '#666',fontSize: 14, flexWrap: 'wrap'}}>{item.description}</Text>
         </View>
         <View>
           <TouchableOpacity style={styles.itemPriceButtn} onPress={()=>this.selectItemForCart(item)} ><Text style={{color: '#fff'}} >€ {item.price}</Text></TouchableOpacity>
@@ -192,8 +196,8 @@ export default class Main extends Component {
             resizeMode={FastImage.resizeMode.cover}
           />
           <View style={styles.itemCatalogTextView} >
-            <Text style={{fontSize: 20,fontWeight: 'bold',marginBottom: 5,}}>{item.catalog.title}</Text>
-            <Text>{item.catalog.body}</Text>
+            <Text style={{color: '#666',fontSize: 20,fontWeight: 'bold',marginBottom: 5,}}>{item.catalog.title}</Text>
+            <Text style={{color: '#666',}} >{item.catalog.body}</Text>
           </View>
         </View>
         <FlatList
@@ -283,6 +287,7 @@ export default class Main extends Component {
 //function part
   //when select one food from the section list
   selectItemForCart(item) {
+  
     if(item.extras.length > 0) {
       this.setState({
         modalVisible: true,
@@ -345,8 +350,6 @@ export default class Main extends Component {
         totalCartArray.push(singleProductForCart);//add new food to existing cart list
         totalCartedNumber += 1;
       }
-
-      console.log(totalCartArray);
 
       // var cartNumber = totalCartArray.length;//get total cart food amount of kind
 
@@ -450,8 +453,6 @@ export default class Main extends Component {
       totalCartArray.push(this.state.selectedProductForCart);//add new food to existing cart list
       totalCartedNumber += 1;
     }
-
-    console.log(totalCartArray);
 
     // var cartNumber = totalCartArray.length;//get total cart food amount of kind
 
@@ -583,6 +584,7 @@ export default class Main extends Component {
   //function to reset the food numer and price
   resetFoodNumPrice() {
     var totalCartArray = Utils.copy(this.state.totalCarList);
+
     var totalPrice = 0;
     var totalNumber = 0;
     for (const product of totalCartArray) {
@@ -831,6 +833,25 @@ export default class Main extends Component {
       resourceDatas: resourceDatas,
     });
   }
+
+  onCartItemChange = ({viewableItems}) => {
+    var lastIndex = this.state.totalCarList.length - 1;
+    var currentFirstIndex = viewableItems[0].index;
+    var totalviewblelength = viewableItems.length-1;
+    var currentlastIndex = viewableItems[totalviewblelength].index;
+    if(currentFirstIndex == 0) {
+      this.setState({isCartViewScrollUp: false});
+    } else {
+      this.setState({isCartViewScrollUp: true});
+    }
+
+    if(currentlastIndex == lastIndex) {
+      this.setState({isCartViewScrollDown: false});
+    } else {
+      this.setState({isCartViewScrollDown: true});
+    }
+  }
+
   backImgBlur(event) {
     var currentBlur = event.nativeEvent.contentOffset.y/12;
     if(currentBlur < this.state.imageBlur || this.state.imageBlur < 10) {
@@ -922,6 +943,19 @@ export default class Main extends Component {
 
     var delivercost = isNaN(this.state.deliveryCost)? this.state.deliveryCost: "€"+this.state.deliveryCost;
 
+    const viewImages = {
+      background: require('../resources/images/header.png'),
+    };
+
+    const slideInUp = {
+      from: {
+        translateY: 20,
+      },
+      to: {
+        translateY: 0,
+      },
+    };
+
     return (
       this.state.isloading?
       <View style={{
@@ -943,39 +977,44 @@ export default class Main extends Component {
               <TouchableOpacity style={styles.searchClearBtn} onPress={() => this.clearSearch()} ><Icon style={{fontSize: 20, color: '#fff'}} name="md-close" /></TouchableOpacity>
             }
           </View>
+          <View style={styles.categoryContainer} >
+            <FlatList
+              ref={ref => (this.catalogheader = ref)}
+              showsHorizontalScrollIndicator={false}
+              horizontal={true}
+              data={this.state.resourceDatas}
+              renderItem={this.renderCatalog}
+              keyExtractor={(item, index) => index.toString()}
+            />
+          </View>
         </Animated.View>
-        <FlatList
-          showsVerticalScrollIndicator={false}
-          ref={ref => (this.sectionListRef = ref)}
-          contentContainerStyle={styles.scrollContainer}
-          onScroll={
-            Animated.event( 
-              [{ nativeEvent: { 
-                  contentOffset: { 
-                    y: this.state.scrollY 
-                  }
-                } 
-              }],{listener: (event) => this.backImgBlur(event)},)
-          }
-          scrollEventThrottle={25}
-          stickyHeaderIndices={[0]}
-          data={this.state.resourceDatas}
-          renderItem={this.renderSectionHeader}
-          ListHeaderComponent={
-            <View style={styles.categoryContainer} >
-              <FlatList
-                ref={ref => (this.catalogheader = ref)}
-                showsHorizontalScrollIndicator={false}
-                horizontal={true}
-                data={this.state.resourceDatas}
-                renderItem={this.renderCatalog}
-                keyExtractor={(item, index) => index.toString()}
-              />
-            </View>
-          }
-          keyExtractor={(item, index) => index.toString()}
-          onViewableItemsChanged={this.onItemsChanges}
-        />
+        {this.state.resourceDatas.length > 0?
+          <FlatList
+            showsVerticalScrollIndicator={false}
+            ref={ref => (this.sectionListRef = ref)}
+            contentContainerStyle={styles.scrollContainer}
+            onScroll={
+              Animated.event( 
+                [{ nativeEvent: { 
+                    contentOffset: { 
+                      y: this.state.scrollY 
+                    }
+                  } 
+                }],{listener: (event) => this.backImgBlur(event)},)
+            }
+            scrollEventThrottle={16}
+            data={this.state.resourceDatas}
+            renderItem={this.renderSectionHeader}
+            keyExtractor={(item, index) => index.toString()}
+            onViewableItemsChanged={this.onItemsChanges}
+          />
+          :
+          <View style={{
+            height: 50,
+            alignItems: 'center',
+            justifyContent: 'flex-end'
+          }} ><Text style={{fontSize: 25}} >No Result</Text></View>
+        }
         <Animatable.View transition={['top','left','rotate']} style={this.state.cartClicked? styles.cartFlastButtonClicked: styles.cartFlastButton} >
           {this.state.iscupon &&
             <Animatable.View transition="right" style={[
@@ -1047,34 +1086,70 @@ export default class Main extends Component {
               <TouchableOpacity style={styles.modalcloseButton} onPress={() => this.colseCheckOutDetail()} ><Icon name="md-close" style={[styles.modalcloseButtonIcon, {color: cutNumberColor},]} ></Icon></TouchableOpacity>
               <View>
               {this.state.checkOutModalVisible && this.state.totalCarList.length > 0?
+                <View style={{position: 'relative'}}>
                   <FlatList
+                    showsVerticalScrollIndicator={false}
+                    style={{padding: 5}}
                     data={this.state.totalCarList}
                     renderItem={this.renderCheckOutList}
                     keyExtractor={(item, index) => index.toString()}
+                    onViewableItemsChanged={this.onCartItemChange}
                   />
-                  :
-                  <View style={{alignItems:'center'}}><Text>Your cart is empty</Text></View>
-                }
+                </View>
+                :
+                <View style={{alignItems:'center'}}><Text>Your cart is empty</Text></View>
+              }
               </View>
+              {this.state.totalCarList.length > 0&&
+              <View
+                style={{
+                width: 20,
+                alignItems: 'center',
+                position: 'absolute',
+                bottom: 150,
+                right: 2,
+                }} >
+                <Icon style={{fontSize: 20, color: this.state.isCartViewScrollDown? '#4AA0FA': '#ddd', transform: [{rotate: '90deg'}]}} name="ios-play" />
+              </View>
+              }
+              {this.state.totalCarList.length > 0&&
+              <View
+                style={{
+                width: 20,
+                alignItems: 'center',
+                position: 'absolute',
+                top: 50,
+                right: 2,
+                }} >
+                <Icon style={{fontSize: 20, color: this.state.isCartViewScrollUp? '#4AA0FA': '#ddd', transform: [{rotate: '-90deg'}]}} name="ios-play" />
+              </View>
+              }
               <View style={styles.checkOutDeliveryView}>
                 <View style={{flex: 1, flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10,}}>
                   <Text style={{fontSize: 16}}>Delivery costs</Text>
                   <Text style={{fontSize: 16}}>{delivercost}</Text>
                 </View>
-                <View>
+                <View style={{position: 'relative'}}>
                   <TextInput
                     placeholder="Enter your discount code" 
                     style={{
                       padding: 10,
                       fontSize: 16,
                       backgroundColor: '#fff',
-                      borderColor: '#ddd',
+                      borderColor: this.state.iscupon? '#36e952':'#ddd',
                       borderRadius: 5,
                       borderWidth: 1,
+                      shadowColor: this.state.iscupon? '#36e952':'#000',
+                      shadowOffset: {width: 0, height: 0,},
+                      shadowOpacity: this.state.iscupon?0.7:0.1,
+                      shadowRadius: 3,
                     }}
                     onChangeText={(text)=>this.checkCupon(text)}
                     autoCapitalize="none"
                     value={this.state.discountString}/>
+                    {this.state.iscupon&&
+                    <Icon style={{position: 'absolute', fontSize: 30, right: 5, top: 5, color: '#36e952'}} name="ios-checkmark-circle-outline" />
+                    }
                 </View>
               </View>
               <TouchableOpacity onPress={() => this.finalCheckOut()} style={[styles.addtocartButton, {backgroundColor: cutNumberColor},]}>
@@ -1089,6 +1164,16 @@ export default class Main extends Component {
 }
 
 const styles = StyleSheet.create({
+  cartviewDetailstyle: {
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 1,},
+    shadowOpacity: 0.4,
+    shadowRadius: 2,
+    borderColor: '#fff',
+    borderWidth: 1,
+    padding: 5,
+    overflow: 'hidden'
+  },
   finalCheckOutView: {
     position: 'absolute',
     left: 0,
