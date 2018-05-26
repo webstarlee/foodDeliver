@@ -117,6 +117,15 @@ export default class Info extends Component {
               }],{listener: (event) => this.backImgBlur(event)},)
           }
           scrollEventThrottle={16}>
+          <View style={{
+            backgroundColor: '#fff',
+            paddingLeft: 5,
+            paddingRight: 5,
+            shadowColor: '#000',
+            shadowOffset: {width: 0, height: -2,},
+            shadowOpacity: 0.4,
+            shadowRadius: 2,
+            }} >
             <View style={styles.defaultView}>
               <HTMLView
                 value={this.state.resInfo.message}
@@ -173,6 +182,7 @@ export default class Info extends Component {
                 <Text>{this.state.resInfo.sunday}</Text>
               </View>
             </View>
+          </View>
         </ScrollView>
       </View>
     );
@@ -202,11 +212,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   scrollContainer: {
-    paddingLeft: 5,
-    paddingRight: 5,
     paddingBottom: 15,
-    paddingTop: HEADER_EXPANDED_HEIGHT-10,
+    paddingTop: HEADER_EXPANDED_HEIGHT-30,
     width: SCREEN_WIDTH,
+    overflow: 'visible',
+    // backgroundColor: '#fff',
   },
   header: {
     backgroundColor: '#fff',
@@ -214,7 +224,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     left: 0,
-    zIndex: 9998,
+    // zIndex: 9998,
     shadowColor: '#000',
     shadowOffset: {width: 0, height: -2,},
     shadowOpacity: 0.5,

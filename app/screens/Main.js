@@ -34,6 +34,7 @@ import Utils from "@utils";
 import SingleTon from "../components/SingleTon";
 import {NavigationActions} from "react-navigation";
 import NavigationService from "../components/NavigationService";
+import FastImage from 'react-native-fast-image';
 
 export default class Main extends Component {
   constructor() {
@@ -161,9 +162,12 @@ export default class Main extends Component {
         </View>
         <View>
           <TouchableOpacity style={styles.itemPriceButtn} onPress={()=>this.selectItemForCart(item)} ><Text style={{color: '#fff'}} >€ {item.price}</Text></TouchableOpacity>
-          <Image
-            style={{width: 80, height: 80, resizeMode: "cover"}}
-            source={{uri: item.image}} />
+          <FastImage
+            style={{width: 80, height: 80}}
+            source={{uri: item.image,
+            headers:{ Authorization: 'someAuthToken' },
+            priority: FastImage.priority.normal,}}
+            resizeMode={FastImage.resizeMode.cover}/>
         </View>
       </TouchableOpacity>
     )
@@ -175,9 +179,17 @@ export default class Main extends Component {
     return (
       <View>
         <View style={styles.itemCatalogView}>
-          <Image
-            style={{width: '100%', height: 70, resizeMode: "cover"}}
-            source={{uri: item.catalog.image}}
+          <View style={{backgroundColor: '#fff', width: '100%', height: 70, position: 'absolute'}}>
+            <Loaing color={'#000'}/>
+          </View>
+          <FastImage
+            style={{width: '100%', height: 70,}}
+            source={{
+              uri: item.catalog.image,
+              headers:{ Authorization: 'someAuthToken' },
+              priority: FastImage.priority.normal,
+            }}
+            resizeMode={FastImage.resizeMode.cover}
           />
           <View style={styles.itemCatalogTextView} >
             <Text style={{fontSize: 20,fontWeight: 'bold',marginBottom: 5,}}>{item.catalog.title}</Text>
@@ -813,6 +825,7 @@ export default class Main extends Component {
   onItemsChanges = ({ viewableItems }) => {
     var nowCatalogindex = viewableItems[0].index;
     var resourceDatas = Utils.copy(this.state.resourceDatas);
+    this.catalogheader.scrollToIndex({animated: true, index: nowCatalogindex});
     this.setState({
       currentCatalog: nowCatalogindex,
       resourceDatas: resourceDatas,
@@ -930,15 +943,6 @@ export default class Main extends Component {
               <TouchableOpacity style={styles.searchClearBtn} onPress={() => this.clearSearch()} ><Icon style={{fontSize: 20, color: '#fff'}} name="md-close" /></TouchableOpacity>
             }
           </View>
-          <View style={styles.categoryContainer} >
-            <FlatList
-              showsHorizontalScrollIndicator={false}
-              horizontal={true}
-              data={this.state.resourceDatas}
-              renderItem={this.renderCatalog}
-              keyExtractor={(item, index) => index.toString()}
-            />
-          </View>
         </Animated.View>
         <FlatList
           showsVerticalScrollIndicator={false}
@@ -953,9 +957,22 @@ export default class Main extends Component {
                 } 
               }],{listener: (event) => this.backImgBlur(event)},)
           }
-          scrollEventThrottle={16}
+          scrollEventThrottle={25}
+          stickyHeaderIndices={[0]}
           data={this.state.resourceDatas}
           renderItem={this.renderSectionHeader}
+          ListHeaderComponent={
+            <View style={styles.categoryContainer} >
+              <FlatList
+                ref={ref => (this.catalogheader = ref)}
+                showsHorizontalScrollIndicator={false}
+                horizontal={true}
+                data={this.state.resourceDatas}
+                renderItem={this.renderCatalog}
+                keyExtractor={(item, index) => index.toString()}
+              />
+            </View>
+          }
           keyExtractor={(item, index) => index.toString()}
           onViewableItemsChanged={this.onItemsChanges}
         />
@@ -1338,6 +1355,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     marginVertical: 3,
     height: 150,
+    marginHorizontal: 5,
   },
   itemPriceButtn: {
     width: 80,
@@ -1402,7 +1420,7 @@ const styles = StyleSheet.create({
     height: 40,
     backgroundColor: 'white',
     paddingVertical: 5,
-    paddingHorizontal: 1,
+    paddingHorizontal: 5,
     shadowColor: '#000',
     shadowOffset: {width: 0, height: -1,},
     shadowOpacity: 0.4,
@@ -1429,10 +1447,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   scrollContainer: {
-    paddingLeft: 5,
-    paddingRight: 5,
+    // paddingLeft: 5,
+    // paddingRight: 5,
     paddingBottom: 15,
     // paddingTop: HEADER_EXPANDED_HEIGHT,
+
   },
   header: {
     backgroundColor: '#fff',
