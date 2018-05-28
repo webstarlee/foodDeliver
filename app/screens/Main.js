@@ -187,11 +187,11 @@ export default class Main extends Component {
     return (
       <View>
         <View style={styles.itemCatalogView}>
-          <View style={{backgroundColor: '#fff', width: '100%', height: 70, position: 'absolute'}}>
+          <View style={{backgroundColor: '#fff', width: '100%', height: 70, position: 'absolute', zIndex: 1}}>
             <Loaing color={'#000'}/>
           </View>
           <FastImage
-            style={{width: '100%', height: 70,}}
+            style={{width: '100%', height: 70,zIndex: 2}}
             source={{
               uri: item.catalog.image,
               headers:{ Authorization: 'someAuthToken' },
