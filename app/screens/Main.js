@@ -38,6 +38,9 @@ import FastImage from 'react-native-fast-image';
 import ParallaxHeader from '../components/Paralloxheader';
 const maxCartViewHeight = SCREEN_HEIGHT*7/8 - 210;
 
+var typingTimer;
+var doneTypingInterval = 1000;
+
 export default class Main extends Component {
   constructor() {
     super();
@@ -67,13 +70,14 @@ export default class Main extends Component {
       imageBlur: 0,
       isCartViewScrollDown: true,
       isCartViewScrollUp: false,
+      ischeckingcuppon: false,
     }
     SingleTon.mainPage = this;
     if(SingleTon.isShowTab) {
       SingleTon.isShowTab.setState({isShowTabbar: true});
     }
   }
-  
+
   handleViewRef = ref => this.flatview = ref;
 
 //component mount part
@@ -83,10 +87,10 @@ export default class Main extends Component {
 
   componentDidMount() {
     this.mounted = true;
-    
+
     const foodFetchUrl = BASE_API_URL+'/api/catalog/1';
     const restaurantInfourl = BASE_API_URL+'/api/storeinfo/1/storeinfo';
-    
+
     fetch(foodFetchUrl)
     .then((response) => response.json())
     .then((responseJson) => {
@@ -115,7 +119,7 @@ export default class Main extends Component {
       console.log(error);
     });
 
-    AsyncStorage.getItem('loginToken') 
+    AsyncStorage.getItem('loginToken')
     .then((val) => {
       if(val != null) {
         this.setState({authToken: val});
@@ -287,7 +291,7 @@ export default class Main extends Component {
 //function part
   //when select one food from the section list
   selectItemForCart(item) {
-  
+
     if(item.extras.length > 0) {
       this.setState({
         modalVisible: true,
@@ -631,7 +635,7 @@ export default class Main extends Component {
         for (const extra of product.extras) {
           price = price + parseFloat(extra.price);
         }
-  
+
         totalPrice += price*product.count;
         totalNumber += product.count;
       }
@@ -690,19 +694,45 @@ export default class Main extends Component {
 
   //checkCupon
   checkCupon(text) {
+      clearTimeout(typingTimer);
     this.setState({
       discountString: text,
     });
-    const cuponCheckUrl = BASE_API_URL+'/api/couponCheck/'+text;
-    AsyncStorage.getItem('loginToken') 
-    .then((val) => {
-      if(val != null) {
-        if(this.state.isLogin) {
-          return "logedin";
-        } else {
-          this.setState({authToken: val});
-          const userCheckurl = BASE_API_URL+'/api/details';
-          return fetch(userCheckurl,{
+    typingTimer = setTimeout(function() {
+        this.doneTyping();
+    }.bind(this), doneTypingInterval);
+  }
+  //end
+
+  doneTyping() {
+      this.setState({
+          ischeckingcuppon: true,
+      })
+      var cuponText = this.state.discountString;
+      const cuponCheckUrl = BASE_API_URL+'/api/couponCheck/'+cuponText;
+      AsyncStorage.getItem('loginToken')
+      .then((val) => {
+        if(val != null) {
+          if(this.state.isLogin) {
+            return "logedin";
+          } else {
+            this.setState({authToken: val});
+            const userCheckurl = BASE_API_URL+'/api/details';
+            return fetch(userCheckurl,{
+              method: 'GET',
+              headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                Authorization: 'Bearer '+this.state.authToken
+              }
+            });
+          }
+        }
+      })
+      .then((response) => {
+        if(response == "logedin") {
+
+          return fetch(cuponCheckUrl,{
             method: 'GET',
             headers: {
               Accept: 'application/json',
@@ -710,120 +740,110 @@ export default class Main extends Component {
               Authorization: 'Bearer '+this.state.authToken
             }
           });
+        }else if(response != "logedin" && response != null)
+        {
+          this.setState({
+            isLogin: true,
+          });
+
+          return fetch(cuponCheckUrl,{
+            method: 'GET',
+            headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json',
+              Authorization: 'Bearer '+this.state.authToken
+            }
+          });
+        } else {
+          this.setState({
+            isLogin: false,
+            ischeckingcuppon: false,
+          });
+          this.colseCheckOutDetail();
+
+          setTimeout(function(){
+            Alert.alert(
+              'Alert',
+              'Need to Login !',
+              [
+                {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+                {text: 'Login', onPress: () => {
+                  SingleTon.sideMenu.open();
+                }},
+              ],
+              { cancelable: false }
+            )
+          }, 700)
         }
-      }
-    })
-    .then((response) => {
-      if(response == "logedin") {
-        console.log(this.state.authToken);
-        
-        return fetch(cuponCheckUrl,{
-          method: 'GET',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-            Authorization: 'Bearer '+this.state.authToken
+      })
+      .then((response) => {
+          this.setState({
+              ischeckingcuppon: false,
+          })
+        if(response != null) {
+          return response.json()
+        } else {
+          return {"result": "error"}
+        }
+      })
+      .then((responseJson) => {
+        if(responseJson.result == "success") {
+          this.setState({
+            cupon: parseInt(responseJson.cupon.percentage),
+            iscupon: true,
+          });
+          var totalCartArray = Utils.copy(this.state.totalCarList);
+          var totalPrice = 0;
+          for (const product of totalCartArray) {
+            var price = 0;
+            price = price + parseFloat(product.price);
+            for (const extra of product.extras) {
+              price = price + parseFloat(extra.price);
+            }
+            totalPrice += price*product.count;
           }
-        });
-      }else if(response != "logedin" && response != null)
-      {
-        this.setState({
-          isLogin: true,
-        });
-        return fetch(cuponCheckUrl,{
-          method: 'GET',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-            Authorization: 'Bearer '+this.state.authToken
+
+          totalPrice = totalPrice - totalPrice*this.state.cupon/100;
+
+          if(!isNaN(this.state.deliveryCost) && totalPrice > 0) {
+            totalPrice = totalPrice + parseFloat(this.state.deliveryCost);
           }
-        });
-      } else {
-        this.setState({
-          isLogin: false,
-        });
-        this.colseCheckOutDetail();
 
-        setTimeout(function(){
-          Alert.alert(
-            'Alert',
-            'Need to Login !',
-            [
-              {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
-              {text: 'Login', onPress: () => {
-                SingleTon.sideMenu.open();
-              }},
-            ],
-            { cancelable: false }
-          )
-        }, 700)
-      }
-    })
-    .then((response) => {
-      if(response != null) {
-        return response.json()
-      } else {
-        return {"result": "error"}
-      }
-    })
-    .then((responseJson) => {
-      if(responseJson.result == "success") {
-        this.setState({
-          cupon: parseInt(responseJson.cupon.percentage),
-          iscupon: true,
-        });
-        var totalCartArray = Utils.copy(this.state.totalCarList);
-        var totalPrice = 0;
-        for (const product of totalCartArray) {
-          var price = 0;
-          price = price + parseFloat(product.price);
-          for (const extra of product.extras) {
-            price = price + parseFloat(extra.price);
+          this.setState({
+            currentCartItemPrice: totalPrice,
+          });
+        } else {
+          this.setState({
+            iscupon: false,
+            cupon: 0,
+          });
+          var totalCartArray = Utils.copy(this.state.totalCarList);
+          var totalPrice = 0;
+          for (const product of totalCartArray) {
+            var price = 0;
+            price = price + parseFloat(product.price);
+            for (const extra of product.extras) {
+              price = price + parseFloat(extra.price);
+            }
+            totalPrice += price*product.count;
           }
-          totalPrice += price*product.count;
-        }
 
-        totalPrice = totalPrice - totalPrice*this.state.cupon/100;
+          totalPrice = totalPrice - totalPrice*this.state.cupon/100;
 
-        if(!isNaN(this.state.deliveryCost) && totalPrice > 0) {
-          totalPrice = totalPrice + parseFloat(this.state.deliveryCost);
-        }
-
-        this.setState({
-          currentCartItemPrice: totalPrice,
-        });
-      } else {
-        this.setState({
-          iscupon: false,
-          cupon: 0,
-        });
-        var totalCartArray = Utils.copy(this.state.totalCarList);
-        var totalPrice = 0;
-        for (const product of totalCartArray) {
-          var price = 0;
-          price = price + parseFloat(product.price);
-          for (const extra of product.extras) {
-            price = price + parseFloat(extra.price);
+          if(!isNaN(this.state.deliveryCost) && totalPrice > 0) {
+            totalPrice = totalPrice + parseFloat(this.state.deliveryCost);
           }
-          totalPrice += price*product.count;
+
+          this.setState({
+            currentCartItemPrice: totalPrice,
+          });
         }
-
-        totalPrice = totalPrice - totalPrice*this.state.cupon/100;
-
-        if(!isNaN(this.state.deliveryCost) && totalPrice > 0) {
-          totalPrice = totalPrice + parseFloat(this.state.deliveryCost);
-        }
-
-        this.setState({
-          currentCartItemPrice: totalPrice,
-        });
-      }
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }
-  //end
+
   onItemsChanges = ({ viewableItems }) => {
     var nowCatalogindex = viewableItems[0].index;
     var resourceDatas = Utils.copy(this.state.resourceDatas);
@@ -864,7 +884,7 @@ export default class Main extends Component {
   }
   finalCheckOut() {
     if(this.state.totalCarList.length > 0) {
-      AsyncStorage.getItem('loginToken') 
+      AsyncStorage.getItem('loginToken')
       .then((val) => {
         if(val != null) {
           if(this.state.isLogin) {
@@ -968,7 +988,7 @@ export default class Main extends Component {
       }} ><Loaing color={'#000'}/></View>
       :
       <View style={styles.container}>
-        <Animated.View style={[styles.header, { height: this.state.isSearch? HEADER_COLLAPSED_HEIGHT: headerHeight }]}>
+        <Animated.View style={[styles.header, { height: HEADER_COLLAPSED_HEIGHT }]}>
           <View style={styles.headerImageView} >
             <Image ref={(ref) => this.imageBlurRef = ref} style={styles.headerImage} source={require('../resources/images/header.png')} blurRadius={0} />
             <Image style={styles.headerOverlayImage} source={require('../resources/images/overlay.png')} />
@@ -993,16 +1013,6 @@ export default class Main extends Component {
             showsVerticalScrollIndicator={false}
             ref={ref => (this.sectionListRef = ref)}
             contentContainerStyle={styles.scrollContainer}
-            onScroll={
-              Animated.event( 
-                [{ nativeEvent: { 
-                    contentOffset: { 
-                      y: this.state.scrollY 
-                    }
-                  } 
-                }],{listener: (event) => this.backImgBlur(event)},)
-            }
-            scrollEventThrottle={16}
             data={this.state.resourceDatas}
             renderItem={this.renderSectionHeader}
             keyExtractor={(item, index) => index.toString()}
@@ -1015,13 +1025,13 @@ export default class Main extends Component {
             justifyContent: 'flex-end'
           }} ><Text style={{fontSize: 25}} >No Result</Text></View>
         }
+        {this.state.iscupon &&
+          <Animatable.View transition={['top', 'left', 'rotate']} style={[
+            {backgroundColor: cutNumberColor},
+            this.state.cartClicked? styles.cartCupponTextOpened : styles.cartCupponTextCLosed]}><Text style={{color: '#fff'}} >-{this.state.cupon}%</Text></Animatable.View>
+        }
         <Animatable.View transition={['top','left','rotate']} style={this.state.cartClicked? styles.cartFlastButtonClicked: styles.cartFlastButton} >
-          {this.state.iscupon &&
-            <Animatable.View transition="right" style={[
-              {backgroundColor: cutNumberColor},
-              this.state.cartClicked? styles.cartCupponTextOpened : styles.cartCupponTextCLosed]}><Text style={{color: '#fff'}} >-{this.state.cupon}%</Text></Animatable.View>
-          }
-          <TouchableOpacity  style={{flex: 1, borderRadius: 40,}} onPress={() => this.setState({cartClicked: this.state.cartClicked? false: true, checkOutModalVisible: this.state.checkOutModalVisible? false: true })}>
+          <TouchableOpacity style={{width: 80, height: 110, alignItems: 'center', justifyContent: 'flex-end'}} onPress={() => this.setState({cartClicked: this.state.cartClicked? false: true, checkOutModalVisible: this.state.checkOutModalVisible? false: true })}>
             <Animatable.View
               style={[
                 styles.cartFlatButtonView,
@@ -1036,15 +1046,14 @@ export default class Main extends Component {
                 ],
                 alignItems: 'center',
                 justifyContent: 'flex-end',
-                paddingBottom: 10,
-              }}>
+                paddingBottom: 10,}}>
                 <Text style={{color: cutNumberColor, marginBottom: 5,}}>{this.state.currentCartItemBumber}</Text>
                 <Text style={{color: '#fff', fontWeight: 'bold'}}>€{this.state.currentCartItemPrice.toFixed(2)}</Text>
               </Animatable.View>
             </Animatable.View>
           </TouchableOpacity>
         </Animatable.View>
-        <Animatable.View transition={['opacity','scale', 'borderRadius']} style={this.state.checkOutModalVisible? styles.checkOutFlatbehindOverlayOpen : styles.checkOutFlatbehindOverlayClosed}></Animatable.View>
+        <Animatable.View transition={['opacity','scale', 'borderRadius', 'width']} style={this.state.checkOutModalVisible? styles.checkOutFlatbehindOverlayOpen : styles.checkOutFlatbehindOverlayClosed}></Animatable.View>
         <Modal
           animationType="fade"
           transparent={true}
@@ -1077,7 +1086,9 @@ export default class Main extends Component {
           animationType="fade"
           transparent={true}
           visible={this.state.checkOutModalVisible}
-          >
+          onRequestClose={() => {
+            alert('Modal has been closed.');
+          }}>
           <View style={styles.checkOutModalContainerView}>
             <TouchableWithoutFeedback onPress={() => this.colseCheckOutDetail()}>
               <View style={styles.checkOutModalOlverlay} />
@@ -1131,7 +1142,7 @@ export default class Main extends Component {
                 </View>
                 <View style={{position: 'relative'}}>
                   <TextInput
-                    placeholder="Enter your discount code" 
+                    placeholder="Enter your discount code"
                     style={{
                       padding: 10,
                       fontSize: 16,
@@ -1142,13 +1153,17 @@ export default class Main extends Component {
                       shadowColor: this.state.iscupon? '#36e952':'#000',
                       shadowOffset: {width: 0, height: 0,},
                       shadowOpacity: this.state.iscupon?0.7:0.1,
+                      elevation: 3,
                       shadowRadius: 3,
                     }}
                     onChangeText={(text)=>this.checkCupon(text)}
                     autoCapitalize="none"
                     value={this.state.discountString}/>
+                    {this.state.ischeckingcuppon&&
+                    <ActivityIndicator size="small" color="#034f9e" style={{position: 'absolute', right: 10, top: 15,elevation: 3,}} />
+                    }
                     {this.state.iscupon&&
-                    <Icon style={{position: 'absolute', fontSize: 30, right: 5, top: 5, color: '#36e952'}} name="ios-checkmark-circle-outline" />
+                    <Icon style={{position: 'absolute', fontSize: 30, right: 10, top: 10,elevation: 3, color: '#36e952'}} name="ios-checkmark-circle-outline" />
                     }
                 </View>
               </View>
@@ -1169,6 +1184,7 @@ const styles = StyleSheet.create({
     shadowOffset: {width: 0, height: 1,},
     shadowOpacity: 0.4,
     shadowRadius: 2,
+    elevation: 3,
     borderColor: '#fff',
     borderWidth: 1,
     padding: 5,
@@ -1207,6 +1223,7 @@ const styles = StyleSheet.create({
     shadowColor: '#000',
     shadowOffset: {width: 0, height: 1,},
     shadowOpacity: 0.4,
+    elevation: 3,
     shadowRadius: 2,
     backgroundColor: '#fff',
     borderRadius: 3,
@@ -1218,8 +1235,9 @@ const styles = StyleSheet.create({
     left: 0,
     bottom: 0,
     right: 0,
+    width: 0,
     backgroundColor: '#fff',
-    opacity: 0,
+    opacity: 0.7,
     borderRadius: 500,
     transform: [
       {scale: 0}
@@ -1232,6 +1250,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
+    width: SCREEN_WIDTH,
     backgroundColor: '#fff',
     opacity: 0.7,
     borderRadius: 0,
@@ -1264,6 +1283,7 @@ const styles = StyleSheet.create({
     shadowOffset: {width: 0, height: 1,},
     shadowOpacity: 0.8,
     shadowRadius: 3,
+    elevation: 3,
     borderRadius: 8,
     paddingHorizontal: 15,
     paddingTop: 50,
@@ -1280,22 +1300,29 @@ const styles = StyleSheet.create({
   },
   cartFlastButton: {
     position: 'absolute',
-    top: HEADER_COLLAPSED_HEIGHT-1,
+    top: HEADER_COLLAPSED_HEIGHT-31,
     left: SCREEN_WIDTH-110,
     zIndex: 10001,
     overflow: 'visible',
+    width: 80,
+    height: 110,
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    overflow: 'visible',
+    elevation: 3,
   },
   cartFlatButtonView: {
-    flex: 1,
+    // flex: 1,
     width: 80,
     height: 80,
-  },
-  notCupon: {
-    backgroundColor: '#4AA0FA',
     shadowColor: '#034f9e',
     shadowOffset: {width: 0, height: 1,},
     shadowOpacity: 1,
+    elevation: 3,
     shadowRadius: 3,
+  },
+  notCupon: {
+    backgroundColor: '#4AA0FA',
     borderRadius: 40,
   },
   isCupon: {
@@ -1304,54 +1331,65 @@ const styles = StyleSheet.create({
     shadowOffset: {width: 0, height: 1,},
     shadowOpacity: 1,
     shadowRadius: 3,
+    elevation: 3,
     borderRadius: 40,
   },
   cartCupponTextCLosed: {
     width:50,
     height: 25,
     position: 'absolute',
-    top: 5,
-    right: 70,
+    top: HEADER_COLLAPSED_HEIGHT,
+    left: SCREEN_WIDTH-140,
     borderRadius: 5,
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#000',
     shadowOffset: {width: 0, height: 1,},
     shadowOpacity: 0.4,
+    elevation: 3,
     shadowRadius: 2,
     transform: [
       {rotate: '-12deg'}
     ],
+    zIndex: 10000,
   },
   cartCupponTextOpened: {
     width:50,
     height: 25,
     position: 'absolute',
-    transform: [
-      {rotate: '-12deg'}
-    ],
-    top: -7,
-    right:-35,
+    ...ifIphoneX({
+      top: 30,
+    }, {
+      top: 20,
+    }),
+    left: 85,
     borderRadius: 5,
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#000',
     shadowOffset: {width: 0, height: 1,},
     shadowOpacity: 0.4,
+    elevation: 3,
     shadowRadius: 2,
   },
   cartFlastButtonClicked: {
     position: 'absolute',
     ...ifIphoneX({
-      top: 40,
+      top: 10,
     }, {
-      top: 30,
+      top: 0,
     }),
     left: 30,
     zIndex: 10001,
     transform: [
       {rotate: '13deg'}
-    ]
+      ],
+  width: 80,
+  height: 110,
+  alignItems: 'center',
+  justifyContent: 'flex-end',
+  overflow: 'visible',
+  elevation: 3,
   },
   modalcloseButton: {
     position: 'absolute',
@@ -1364,6 +1402,7 @@ const styles = StyleSheet.create({
     shadowColor: '#4AA0FA',
     shadowOffset: {width: 0, height: 1,},
     shadowOpacity: 0.8,
+    elevation: 3,
     shadowRadius: 2,
   },
   addtocartButton: {
@@ -1374,6 +1413,7 @@ const styles = StyleSheet.create({
     shadowColor: '#000',
     shadowOffset: {width: 0, height: 1,},
     shadowOpacity: 0.8,
+    elevation: 3,
     shadowRadius: 1,
     position: 'absolute',
     width: '100%',
@@ -1401,6 +1441,7 @@ const styles = StyleSheet.create({
     shadowColor: '#000',
     shadowOffset: {width: 0, height: 1,},
     shadowOpacity: 0.8,
+    elevation: 3,
     shadowRadius: 3,
     borderRadius: 8,
     paddingHorizontal: 15,
@@ -1416,6 +1457,7 @@ const styles = StyleSheet.create({
     shadowColor: '#000',
     shadowOffset: {width: 0, height: 1,},
     shadowOpacity: 0.6,
+    elevation: 3,
     shadowRadius: 1,
     marginVertical: 10,
     borderRadius: 3,
@@ -1436,6 +1478,7 @@ const styles = StyleSheet.create({
     shadowOffset: {width: 0, height: 0,},
     shadowOpacity: 0.6,
     shadowRadius: 1,
+    elevation: 3,
     borderRadius: 1,
     backgroundColor: '#fff',
     marginVertical: 3,
@@ -1452,6 +1495,7 @@ const styles = StyleSheet.create({
     shadowColor: '#000',
     shadowOffset: {width: 0, height: 0,},
     shadowOpacity: 0.6,
+    elevation: 3,
     shadowRadius: 1,
   },
   headerImageView: {
@@ -1476,7 +1520,7 @@ const styles = StyleSheet.create({
   headerSearch: {
     borderBottomColor: '#ededed',
     borderBottomWidth: 2,
-    height: 30,
+    height: 40,
     width: 180,
     fontSize: 16,
     color: 'white',
@@ -1484,11 +1528,12 @@ const styles = StyleSheet.create({
     paddingHorizontal:5,
     fontWeight: "100",
     ...ifIphoneX({
-      marginTop: 40,
+      marginTop: 38,
     }, {
-      marginTop: 30,
+      marginTop: 28,
     }),
     marginRight: -20,
+    overflow: 'visible',
   },
   searchClearBtn: {
     width: 20,
@@ -1509,6 +1554,7 @@ const styles = StyleSheet.create({
     shadowColor: '#000',
     shadowOffset: {width: 0, height: -1,},
     shadowOpacity: 0.4,
+    elevation: 3,
     shadowRadius: 3,
   },
   catelogButton: {
@@ -1532,10 +1578,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   scrollContainer: {
-    // paddingLeft: 5,
-    // paddingRight: 5,
     paddingBottom: 15,
-    // paddingTop: HEADER_EXPANDED_HEIGHT,
 
   },
   header: {
@@ -1544,7 +1587,7 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     zIndex: 9998,
-    // position: 'absolute',
+    paddingBottom: 5,
   },
   title: {
     marginVertical: 16,

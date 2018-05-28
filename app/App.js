@@ -6,22 +6,24 @@ import {
   View,
   TouchableOpacity,
 } from 'react-native';
-
 import KeyboardManager from 'react-native-keyboard-manager'
+//
+if(Platform.OS === 'ios'){
 
-KeyboardManager.setEnable(true);
-KeyboardManager.setEnableDebugging(true);
-KeyboardManager.setKeyboardDistanceFromTextField(10);
-KeyboardManager.setPreventShowingBottomBlankSpace(true);
-KeyboardManager.setEnableAutoToolbar(true);
-KeyboardManager.setToolbarDoneBarButtonItemText("Done");
-KeyboardManager.setToolbarManageBehaviour(0);
-KeyboardManager.setShouldToolbarUsesTextFieldTintColor(false);
-KeyboardManager.setToolbarPreviousNextButtonEnable(false);
-KeyboardManager.setShouldShowTextFieldPlaceholder(true);
-KeyboardManager.setOverrideKeyboardAppearance(false);
-KeyboardManager.setShouldResignOnTouchOutside(true);
-KeyboardManager.resignFirstResponder();
+    KeyboardManager.setEnable(true);
+    KeyboardManager.setEnableDebugging(true);
+    KeyboardManager.setKeyboardDistanceFromTextField(10);
+    KeyboardManager.setPreventShowingBottomBlankSpace(true);
+    KeyboardManager.setEnableAutoToolbar(true);
+    KeyboardManager.setToolbarDoneBarButtonItemText("Done");
+    KeyboardManager.setToolbarManageBehaviour(0);
+    KeyboardManager.setShouldToolbarUsesTextFieldTintColor(false);
+    KeyboardManager.setToolbarPreviousNextButtonEnable(false);
+    KeyboardManager.setShouldShowTextFieldPlaceholder(true);
+    KeyboardManager.setOverrideKeyboardAppearance(false);
+    KeyboardManager.setShouldResignOnTouchOutside(true);
+    KeyboardManager.resignFirstResponder();
+}
 
 import ScalingDrawer from './components/ScalingDrawer';
 import TabBar from './components/Tabbar';
@@ -50,6 +52,7 @@ export default class App extends Component {
           this._drawer = ref
           SingleTon.sideMenu = ref
         }}
+        style={{flex: 1}}
         content={<SideMenu />}
         swipeOffset={20}
         scalingFactor={0.78}
@@ -75,7 +78,7 @@ const styles = StyleSheet.create({
   containerOpen: {
     flex: 1,
     backgroundColor: '#F5FCFF',
-    overflow: 'hidden',
+    overflow: 'visible',
     borderRadius: 10,
   },
 });

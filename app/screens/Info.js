@@ -97,7 +97,7 @@ export default class Info extends Component {
       }} ><Loaing color={'#000'}/></View>
       :
       <View style={styles.container}>
-        <Animated.View style={[styles.header, { height: headerHeight }]}>
+        <Animated.View style={[styles.header, { height: HEADER_COLLAPSED_HEIGHT }]}>
           <View style={styles.headerImageView} >
             <Image ref={(ref) => this.imageBlurRef = ref} style={styles.headerImage} source={require('../resources/images/header.png')} blurRadius={0} />
             <Image style={styles.headerOverlayImage} source={require('../resources/images/overlay.png')} />
@@ -105,26 +105,18 @@ export default class Info extends Component {
         </Animated.View>
         <ScrollView
           showsVerticalScrollIndicator={false}
-          ref={ref => (this.infoListRef = ref)}
-          contentContainerStyle={styles.scrollContainer}
-          onScroll={
-            Animated.event( 
-              [{ nativeEvent: { 
-                  contentOffset: { 
-                    y: this.state.scrollY 
-                  }
-                } 
-              }],{listener: (event) => this.backImgBlur(event)},)
-          }
-          scrollEventThrottle={16}>
+          contentContainerStyle={styles.scrollContainer}>
           <View style={{
             backgroundColor: '#fff',
+            marginTop: 5,
             paddingLeft: 5,
             paddingRight: 5,
+            paddingBottom: 15,
             shadowColor: '#000',
-            shadowOffset: {width: 0, height: -2,},
+            shadowOffset: {width: 0, height: -10,},
             shadowOpacity: 0.4,
             shadowRadius: 2,
+            elevation: 3,
             }} >
             <View style={[styles.defaultView, {backgroundColor: '#f5f5f5'}]}>
               <HTMLView
@@ -202,6 +194,7 @@ const styles = StyleSheet.create({
     shadowOffset: {width: 0, height: 1,},
     shadowOpacity: 0.4,
     shadowRadius: 2,
+    elevation: 3,
     backgroundColor: '#fff',
     marginVertical: 6,
   },
@@ -212,11 +205,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   scrollContainer: {
-    paddingBottom: 15,
-    paddingTop: HEADER_EXPANDED_HEIGHT-30,
+    paddingTop: HEADER_COLLAPSED_HEIGHT-30,
     width: SCREEN_WIDTH,
-    // overflow: 'visible',
-    // backgroundColor: '#fff',
+    elevation: 3,
   },
   header: {
     backgroundColor: '#fff',

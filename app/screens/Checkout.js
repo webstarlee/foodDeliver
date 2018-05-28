@@ -54,10 +54,10 @@ export default class SideMenu extends Component {
     setTimeout(function() {
       SingleTon.mainPage.setState({
         cartClicked: SingleTon.mainPage.state.cartClicked? false: true,
-        checkOutModalVisible: SingleTon.mainPage.state.checkOutModalVisible? false: true 
+        checkOutModalVisible: SingleTon.mainPage.state.checkOutModalVisible? false: true
       })
     }, 500)
-  
+
     NavigationService.back();
   }
   finalcheckedOut(){
@@ -163,7 +163,7 @@ export default class SideMenu extends Component {
                   // ... You can check the source to find the other keys.
                 }}
                 onDateChange={(time) => {this.setState({time: time})}}/>
-                <Icon style={{fontSize: 22, position: 'absolute', top: 10, right: 10,}} name="ios-arrow-down" />
+                <Icon style={{fontSize: 22,color: '#666', position: 'absolute', top: 10, right: 10,zIndex: 10, elevation: 3,}} name="ios-arrow-down" />
             </View>
             <Text style={styles.defaultSmaillText} >Additional Comment:</Text>
             <TextInput
@@ -207,7 +207,7 @@ export default class SideMenu extends Component {
                   onChange={(option)=>{ this.setState({ideal:option.label})}} >
                   <TextInput editable={false} style={{color: this.state.paymentCheck == 'ideal'? '#777' : '#ddd'}} placeholder="Select something yummy!" value={this.state.ideal} />
                 </ModalSelector>
-                <Icon style={{fontSize: 22, position: 'absolute', top: 10, right: 10, color: this.state.paymentCheck == 'ideal'? '#777' : '#ddd'}} name="ios-arrow-down" />
+                <Icon style={{fontSize: 22, position: 'absolute', top: 10, right: 10,elevation: 3, color: this.state.paymentCheck == 'ideal'? '#777' : '#ddd'}} name="ios-arrow-down" />
               </View>
             </View>
             <View style={{position: 'relative', flexDirection: 'row', width: '100%', height: 30, alignItems: 'center', marginTop: 10}}>
@@ -252,16 +252,18 @@ const styles = StyleSheet.create({
   finalCheckoutButton: {
     marginTop: 20,
     marginBottom: 30,
+    alignSelf: 'center',
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#4AA0FA',
     padding: 12,
-    width: '100%',
+    width: SCREEN_WIDTH-20,
     borderRadius: 3,
     shadowColor: '#000',
     shadowOffset: {width: 0, height: 1,},
     shadowOpacity: 0.7,
     shadowRadius: 2,
+    elevation: 3,
   },
   datePickerStyle: {
     width: '100%',
@@ -274,6 +276,7 @@ const styles = StyleSheet.create({
     shadowOffset: {width: 0, height: 1,},
     shadowOpacity: 0.3,
     shadowRadius: 1,
+    elevation: 3,
   },
   container: {
     flex: 1,
@@ -299,6 +302,7 @@ const styles = StyleSheet.create({
     shadowOffset: {width: 1, height: 1,},
     shadowOpacity: 0.6,
     shadowRadius: 2,
+    elevation: 3,
     overflow: 'hidden'
   },
   defaultTextInput: {
@@ -313,6 +317,7 @@ const styles = StyleSheet.create({
     shadowOffset: {width: 1, height: 1,},
     shadowOpacity: 0.6,
     shadowRadius: 2,
+    elevation: 3,
     overflow: 'hidden'
   },
   defaultSmaillText: {
@@ -326,6 +331,8 @@ const styles = StyleSheet.create({
     shadowOffset: {width: 0, height: 1,},
     shadowOpacity: 0.3,
     shadowRadius: 2,
+    elevation: 3,
+    marginHorizontal: 10,
     backgroundColor: '#fff',
   },
   finalCheckTitle: {
@@ -337,6 +344,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.6,
     shadowRadius: 0,
     marginLeft: 10,
+    elevation: 3,
     marginBottom: 10,
   },
   finalCheckOutFooter: {
@@ -352,13 +360,13 @@ const styles = StyleSheet.create({
     shadowOffset: {width: 0, height: 1,},
     shadowOpacity: 0.4,
     shadowRadius: 2,
+    elevation: 3,
     borderTopWidth: 1,
     borderTopColor: '#4AA0FA',
   },
   finalCheckoutScrollView: {
     flex: 1,
     backgroundColor: '#fdfdfd',
-    paddingHorizontal: 7,
     width: SCREEN_WIDTH,
     paddingTop: 10
   },

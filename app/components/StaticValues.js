@@ -4,10 +4,10 @@ import { Dimensions } from 'react-native';
 const BASE_API_URL = "http://fooddeliver.leezhur.com"; //test online api
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("screen");
 let HEADER_EXPANDED_HEIGHT = 240;
-let HEADER_COLLAPSED_HEIGHT = 105;
+let HEADER_COLLAPSED_HEIGHT = 115;
 if (isIphoneX()) {
     HEADER_EXPANDED_HEIGHT = 250;
-    HEADER_COLLAPSED_HEIGHT = 115;
+    HEADER_COLLAPSED_HEIGHT = 125;
 }
 const ITEM_HEIGHT = 150;
 

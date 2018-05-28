@@ -191,7 +191,7 @@ class SwipeAbleDrawer extends Component {
           ref={ref => this.frontRef = ref}
           style={[styles.front, {
             transform: [{translateX}, {scale}],
-          },
+        },{flex: 1},
           styles.shadow,
           this.props.frontStyle]
           }
@@ -216,6 +216,7 @@ class SwipeAbleDrawer extends Component {
 
 const styles = StyleSheet.create({
   container: {
+      flex: 1,
     backgroundColor: '#dedede',
   },
   drawer: {
