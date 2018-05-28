@@ -1162,10 +1162,10 @@ export default class Main extends Component {
                     autoCapitalize="none"
                     value={this.state.discountString}/>
                     {this.state.ischeckingcuppon&&
-                    <ActivityIndicator size="small" color="#034f9e" style={{position: 'absolute', right: 10, top: 15,elevation: 3,}} />
+                    <ActivityIndicator size="small" color="#034f9e" style={{position: 'absolute', right: 10, top: 12,elevation: 3,}} />
                     }
                     {this.state.iscupon&&
-                    <Icon style={{position: 'absolute', fontSize: 30, right: 10, top: 10,elevation: 3, color: '#36e952'}} name="ios-checkmark-circle-outline" />
+                    <Icon style={{position: 'absolute', fontSize: 30, right: 10, top: 7,elevation: 3, color: '#36e952'}} name="ios-checkmark-circle-outline" />
                     }
                 </View>
               </View>
@@ -1340,8 +1340,8 @@ const styles = StyleSheet.create({
     width:50,
     height: 25,
     position: 'absolute',
-    top: HEADER_COLLAPSED_HEIGHT,
-    left: SCREEN_WIDTH-140,
+    top: HEADER_COLLAPSED_HEIGHT+30,
+    left: SCREEN_WIDTH-143,
     borderRadius: 5,
     alignItems: 'center',
     justifyContent: 'center',
@@ -1360,11 +1360,11 @@ const styles = StyleSheet.create({
     height: 25,
     position: 'absolute',
     ...ifIphoneX({
-      top: 30,
+      top: 35,
     }, {
-      top: 20,
+      top: 25,
     }),
-    left: 85,
+    left: 90,
     borderRadius: 5,
     alignItems: 'center',
     justifyContent: 'center',
@@ -1373,6 +1373,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.4,
     elevation: 3,
     shadowRadius: 2,
+    zIndex: 10000,
   },
   cartFlastButtonClicked: {
     position: 'absolute',
