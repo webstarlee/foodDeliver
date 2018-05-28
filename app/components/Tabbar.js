@@ -46,7 +46,19 @@ export default class Footerbar extends Component{
         return(
             this.state.isShowTabbar == true &&
             <View style={styles.toptabbarContainer}>
-                <TouchableOpacity onPress = {() => this.onpressTabbar("home")} style={{position: 'absolute',elevation: 10, zIndex: 10, bottom: 4, left: tabarabsoluteLeft}}>
+                <TouchableOpacity
+                    onPress = {() => this.onpressTabbar("home")}
+                    style={{
+                        position: 'absolute',
+                        elevation: 10,
+                        zIndex: 10,
+                        ...ifIphoneX({
+                            bottom: 16,
+                        }, {
+                            bottom: 4,
+                        }),
+                        left: tabarabsoluteLeft
+                    }}>
                     <View style={styles.itemcontainerHomeButton}><Icon name="ios-home-outline" style={styles.footericon1} /></View>
                 </TouchableOpacity>
                 <Animatable.View transition="left" style={this.state.selected == "home"? styles.menuSelectorHome: styles.menuSelectorInfo}></Animatable.View>
