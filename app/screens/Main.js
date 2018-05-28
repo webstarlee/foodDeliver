@@ -999,6 +999,8 @@ export default class Main extends Component {
           </View>
           <View style={styles.categoryContainer} >
             <FlatList
+                style={{paddingLeft: SCREEN_WIDTH/2-103}}
+              contentContainerStyle={{paddingRight: SCREEN_WIDTH/2-103,}}
               ref={ref => (this.catalogheader = ref)}
               showsHorizontalScrollIndicator={false}
               horizontal={true}
@@ -1300,7 +1302,7 @@ const styles = StyleSheet.create({
   },
   cartFlastButton: {
     position: 'absolute',
-    top: HEADER_COLLAPSED_HEIGHT-31,
+    top: HEADER_COLLAPSED_HEIGHT,
     left: SCREEN_WIDTH-110,
     zIndex: 10001,
     overflow: 'visible',
@@ -1556,6 +1558,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.4,
     elevation: 3,
     shadowRadius: 3,
+    overflow: 'visible',
   },
   catelogButton: {
     backgroundColor: '#fff',
@@ -1566,6 +1569,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 3,
     borderRadius: 3,
     justifyContent: 'center',
+    width: 200,
+    alignItems: 'center',
   },
   catelogButtonSelected: {
     backgroundColor: '#4AA0FA',
@@ -1576,6 +1581,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 3,
     borderRadius: 3,
     justifyContent: 'center',
+    width: 200,
+    alignItems: 'center',
   },
   scrollContainer: {
     paddingBottom: 15,
