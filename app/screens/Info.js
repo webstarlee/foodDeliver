@@ -26,6 +26,7 @@ import Loaing from '../components/Loading';
 import SingleTon from "../components/SingleTon";
 import HTMLView from 'react-native-htmlview';
 import GoogleStaticMap from 'react-native-google-static-map';
+import { ifIphoneX } from 'react-native-iphone-x-helper';
 
 export default class Info extends Component {
   constructor() {
@@ -83,6 +84,12 @@ export default class Info extends Component {
       extrapolate: 'clamp'
     });
 
+    const headerColor = this.state.scrollY.interpolate({
+      inputRange: [0, HEADER_EXPANDED_HEIGHT-HEADER_COLLAPSED_HEIGHT],
+      outputRange: [0, 1],
+      extrapolate: 'clamp'
+    });
+
     const mapWidth = SCREEN_WIDTH - 30;
 
     return (
@@ -97,7 +104,23 @@ export default class Info extends Component {
       }} ><Loaing color={'#000'}/></View>
       :
       <View style={styles.container}>
-        <Animated.View style={[styles.header, { height: HEADER_COLLAPSED_HEIGHT }]}>
+        <View style={{
+          ...ifIphoneX({
+            height: 35,
+          }, {
+            height: 25,
+          }),
+          width: SCREEN_WIDTH
+        }} />
+        <Animated.View style={[styles.header, { height: HEADER_EXPANDED_HEIGHT }]}>
+          <Animated.View style={{
+            height: '100%',
+            width: '100%',
+            position: 'absolute',
+            backgroundColor: '#fff',
+            zIndex: 5,
+            opacity: headerColor,
+          }} />
           <View style={styles.headerImageView} >
             <Image ref={(ref) => this.imageBlurRef = ref} style={styles.headerImage} source={require('../resources/images/header.png')} blurRadius={0} />
             <Image style={styles.headerOverlayImage} source={require('../resources/images/overlay.png')} />
@@ -105,6 +128,8 @@ export default class Info extends Component {
         </Animated.View>
         <ScrollView
           showsVerticalScrollIndicator={false}
+          onScroll={Animated.event([{ nativeEvent: {contentOffset: {y: this.state.scrollY}}}])}
+          scrollEventThrottle={16}
           contentContainerStyle={styles.scrollContainer}>
           <View style={{
             backgroundColor: '#fff',
@@ -205,7 +230,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   scrollContainer: {
-    paddingTop: HEADER_COLLAPSED_HEIGHT-30,
+    paddingTop: HEADER_EXPANDED_HEIGHT-45,
     width: SCREEN_WIDTH,
     elevation: 3,
   },
@@ -215,7 +240,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     left: 0,
-    // zIndex: 9998,
     shadowColor: '#000',
     shadowOffset: {width: 0, height: -2,},
     shadowOpacity: 0.5,
@@ -226,6 +250,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flexDirection: 'row',
     overflow: 'hidden',
+    zIndex: 3,
   },
   headerImage: {
     width: '100%',

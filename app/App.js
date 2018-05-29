@@ -60,7 +60,7 @@ export default class App extends Component {
         minimizeFactor={0.6}
         onClose={() => this.setState({isopenSidebar: false})} >
         <View style={this.state.isopenSidebar? styles.containerOpen : styles.container}>
-          <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
+          <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
           <HomeStack ref={navigatorRef => {
             NavigationService.setTopLevelNavigator(navigatorRef)
           }}/>

@@ -36,6 +36,7 @@ import {NavigationActions} from "react-navigation";
 import NavigationService from "../components/NavigationService";
 import FastImage from 'react-native-fast-image';
 import ParallaxHeader from '../components/Paralloxheader';
+import { Switch } from '../components/SwitchComponent';
 const maxCartViewHeight = SCREEN_HEIGHT*7/8 - 210;
 
 var typingTimer;
@@ -71,6 +72,8 @@ export default class Main extends Component {
       isCartViewScrollDown: true,
       isCartViewScrollUp: false,
       ischeckingcuppon: false,
+      isFirstCatalog: true,
+      isSwitch: false,
     }
     SingleTon.mainPage = this;
     if(SingleTon.isShowTab) {
@@ -185,7 +188,7 @@ export default class Main extends Component {
   //render section list header
   renderSectionHeader = ({item}) => {
     return (
-      <View>
+      <View style={{backgroundColor: '#fff', width: SCREEN_WIDTH}}>
         <View style={styles.itemCatalogView}>
           <View style={{backgroundColor: '#fff', width: '100%', height: 70, position: 'absolute', zIndex: 1}}>
             <Loaing color={'#000'}/>
@@ -239,6 +242,63 @@ export default class Main extends Component {
     )
   }
   //end
+
+  renderHeaderOfSectionHeader() {
+    return (
+      <View style={styles.headerContainerStyle} >
+        <View style={{padding: 5, position: 'relative', flexDirection: 'row', justifyContent: 'space-between'}}>
+          <View style={{
+            position: 'relative',
+            height: 40,
+            width: SCREEN_WIDTH*3/5-10,}}>
+            <View style={styles.headerSearchOverlay} ></View>
+            <TextInput  placeholder='Search' underlineColorAndroid={'transparent'} placeholderTextColor='#666' style={styles.headerSearch} onChangeText={(text)=>this.searchData(text)} value={this.state.searchText} />
+            {this.state.isSearch &&
+              <TouchableOpacity style={styles.searchClearBtn} onPress={() => this.clearSearch()} >
+                <Icon style={{fontSize: 23, color: '#666'}} name="md-close" />
+              </TouchableOpacity>
+            }
+          </View>
+          <View style={{position: 'relative', width:SCREEN_WIDTH*2/5-10, height: 40}}>
+            <View style={styles.headerSearchOverlay} ></View>
+            <Switch
+              value={this.state.isSwitch}
+              onValueChange={(val) => this.setState({isSwitch: !this.state.isSwitch})}
+              disabled={false}
+              activeText={'Take Away'}
+              inActiveText={' Deliver '}
+              circleSize={34}
+              barHeight={40}
+              circleBorderWidth={0}
+              backgroundActive={'#4AA0FA'}
+              backgroundInactive={'transparent'}
+              circleActiveColor={'#1075df'}
+              circleInActiveColor={'#fff'}
+              changeValueImmediately={true}
+              renderInsideCircle={() => <Icon name="ios-menu" style={{fontSize: 20, color: this.state.isSwitch? '#fff':'#666'}} />}
+              changeValueImmediately={true}
+              innerCircleStyle={{ alignItems: "center", justifyContent: "center" }}
+              outerCircleStyle={{}}
+              renderActiveText={true}
+              renderInActiveText={true}
+            />
+          </View>
+        </View>
+        <View style={styles.categoryContainer} >
+          <FlatList
+            style={{paddingLeft: this.state.isFirstCatalog? 0:SCREEN_WIDTH/2-103}}
+            contentContainerStyle={{paddingRight: SCREEN_WIDTH/2-103,}}
+            ref={ref => (this.catalogheader = ref)}
+            showsHorizontalScrollIndicator={false}
+            horizontal={true}
+            data={this.state.resourceDatas}
+            renderItem={this.renderCatalog}
+            keyExtractor={(item, index) => index.toString()}
+          />
+        </View>
+      </View>
+    )
+  }
 
   //render checkout list when click flat checkout button
   renderCheckOutList = ({item, index}) => {
@@ -502,18 +562,12 @@ export default class Main extends Component {
     if(text != "") {
       this.setState({
         isSearch: true,
-        imageBlur: 10,
       })
     } else {
       this.setState({
         isSearch: false,
-        imageBlur: 0,
       })
     }
-
-    setTimeout(() => {
-      this.imageBlurRef.setNativeProps({blurRadius: this.state.imageBlur});
-    }, 500);
 
     for (const section of this.state.origineDatas) {
       var foods = [];
@@ -847,7 +901,22 @@ export default class Main extends Component {
   onItemsChanges = ({ viewableItems }) => {
     var nowCatalogindex = viewableItems[0].index;
     var resourceDatas = Utils.copy(this.state.resourceDatas);
-    this.catalogheader.scrollToIndex({animated: true, index: nowCatalogindex});
+    var lastCatalogIndex = resourceDatas.length-1;
+    if(nowCatalogindex == 0 || nowCatalogindex == lastCatalogIndex) {
+      this.setState({
+        isFirstCatalog: true,
+      })
+    } else {
+      this.setState({
+        isFirstCatalog: false,
+      })
+    }
+
+    if(nowCatalogindex == lastCatalogIndex) {
+      this.catalogheader.scrollToEnd({animated: true,});
+    } else {
+      this.catalogheader.scrollToIndex({animated: true, index: nowCatalogindex});
+    }
     this.setState({
       currentCatalog: nowCatalogindex,
       resourceDatas: resourceDatas,
@@ -957,6 +1026,12 @@ export default class Main extends Component {
       extrapolate: 'clamp'
     });
 
+    const headerColor = this.state.scrollY.interpolate({
+      inputRange: [0, HEADER_EXPANDED_HEIGHT-HEADER_COLLAPSED_HEIGHT],
+      outputRange: [0, 1],
+      extrapolate: 'clamp'
+    });
+
     var basketImg = this.state.iscupon? require('../resources/images/basketcuponed.png') : require('../resources/images/basket.png');
 
     var cutNumberColor = this.state.iscupon? '#36e952' : '#4AA0FA';
@@ -988,36 +1063,42 @@ export default class Main extends Component {
       }} ><Loaing color={'#000'}/></View>
       :
       <View style={styles.container}>
-        <Animated.View style={[styles.header, { height: HEADER_COLLAPSED_HEIGHT }]}>
+        
+        <Animated.View style={[styles.header, { height:HEADER_EXPANDED_HEIGHT }]}>
+          <Animated.View style={{
+            height: '100%',
+            width: '100%',
+            position: 'absolute',
+            backgroundColor: '#fff',
+            zIndex: 5,
+            opacity: headerColor,
+          }} />
           <View style={styles.headerImageView} >
             <Image ref={(ref) => this.imageBlurRef = ref} style={styles.headerImage} source={require('../resources/images/header.png')} blurRadius={0} />
             <Image style={styles.headerOverlayImage} source={require('../resources/images/overlay.png')} />
-            <TextInput  placeholder='Search' underlineColorAndroid={'transparent'} placeholderTextColor='#fff' style={styles.headerSearch} onChangeText={(text)=>this.searchData(text)} value={this.state.searchText} />
-            {this.state.isSearch &&
-              <TouchableOpacity style={styles.searchClearBtn} onPress={() => this.clearSearch()} ><Icon style={{fontSize: 20, color: '#fff'}} name="md-close" /></TouchableOpacity>
-            }
-          </View>
-          <View style={styles.categoryContainer} >
-            <FlatList
-                style={{paddingLeft: SCREEN_WIDTH/2-103}}
-              contentContainerStyle={{paddingRight: SCREEN_WIDTH/2-103,}}
-              ref={ref => (this.catalogheader = ref)}
-              showsHorizontalScrollIndicator={false}
-              horizontal={true}
-              data={this.state.resourceDatas}
-              renderItem={this.renderCatalog}
-              keyExtractor={(item, index) => index.toString()}
-            />
           </View>
         </Animated.View>
         {this.state.resourceDatas.length > 0?
           <FlatList
             showsVerticalScrollIndicator={false}
             ref={ref => (this.sectionListRef = ref)}
-            contentContainerStyle={styles.scrollContainer}
+            style={{paddingTop: 95}}
+            contentContainerStyle={[styles.scrollContainer, {paddingTop: this.state.isSearch?1: HEADER_EXPANDED_HEIGHT-60,}]}
+            onScroll={ 
+              Animated.event(  
+                [{ nativeEvent: {  
+                    contentOffset: {  
+                      y: this.state.scrollY  
+                    } 
+                  }  
+                }])
+            } 
+            scrollEventThrottle={16}
             data={this.state.resourceDatas}
             renderItem={this.renderSectionHeader}
             keyExtractor={(item, index) => index.toString()}
+            stickyHeaderIndices={[0]}
+            ListHeaderComponent={this.renderHeaderOfSectionHeader()}
             onViewableItemsChanged={this.onItemsChanges}
           />
           :
@@ -1033,7 +1114,7 @@ export default class Main extends Component {
             this.state.cartClicked? styles.cartCupponTextOpened : styles.cartCupponTextCLosed]}><Text style={{color: '#fff'}} >-{this.state.cupon}%</Text></Animatable.View>
         }
         <Animatable.View transition={['top','left','rotate']} style={this.state.cartClicked? styles.cartFlastButtonClicked: styles.cartFlastButton} >
-          <TouchableOpacity style={{width: 80, height: 110, alignItems: 'center', justifyContent: 'flex-end'}} onPress={() => this.setState({cartClicked: this.state.cartClicked? false: true, checkOutModalVisible: this.state.checkOutModalVisible? false: true })}>
+          <TouchableOpacity style={{width: 80, height: 80, alignItems: 'center', justifyContent: 'flex-end'}} onPress={() => this.setState({cartClicked: this.state.cartClicked? false: true, checkOutModalVisible: this.state.checkOutModalVisible? false: true })}>
             <Animatable.View
               style={[
                 styles.cartFlatButtonView,
@@ -1302,12 +1383,12 @@ const styles = StyleSheet.create({
   },
   cartFlastButton: {
     position: 'absolute',
-    top: HEADER_COLLAPSED_HEIGHT,
+    top: HEADER_COLLAPSED_HEIGHT+15,
     left: SCREEN_WIDTH-110,
     zIndex: 10001,
     overflow: 'visible',
     width: 80,
-    height: 110,
+    height: 80,
     alignItems: 'center',
     justifyContent: 'flex-end',
     overflow: 'visible',
@@ -1340,8 +1421,8 @@ const styles = StyleSheet.create({
     width:50,
     height: 25,
     position: 'absolute',
-    top: HEADER_COLLAPSED_HEIGHT+30,
-    left: SCREEN_WIDTH-143,
+    top: HEADER_COLLAPSED_HEIGHT+15,
+    left: SCREEN_WIDTH-145,
     borderRadius: 5,
     alignItems: 'center',
     justifyContent: 'center',
@@ -1378,21 +1459,21 @@ const styles = StyleSheet.create({
   cartFlastButtonClicked: {
     position: 'absolute',
     ...ifIphoneX({
-      top: 10,
+      top: 40,
     }, {
-      top: 0,
+      top: 30,
     }),
     left: 30,
     zIndex: 10001,
     transform: [
       {rotate: '13deg'}
-      ],
-  width: 80,
-  height: 110,
-  alignItems: 'center',
-  justifyContent: 'flex-end',
-  overflow: 'visible',
-  elevation: 3,
+    ],
+    width: 80,
+    height: 80,
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    overflow: 'visible',
+    elevation: 3,
   },
   modalcloseButton: {
     position: 'absolute',
@@ -1455,6 +1536,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+    position: 'relative',
+    paddingTop: 35,
   },
   itemCatalogView: {
     shadowColor: '#000',
@@ -1506,6 +1589,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flexDirection: 'row',
     overflow: 'hidden',
+    zIndex: 3,
   },
   headerImage: {
     width: '100%',
@@ -1520,45 +1604,51 @@ const styles = StyleSheet.create({
     flex: 1,
     resizeMode: 'contain',
   },
-  headerSearch: {
-    borderBottomColor: '#ededed',
-    borderBottomWidth: 2,
+  headerContainerStyle: {
+    width: SCREEN_WIDTH,
+    height: 95,
+    backgroundColor: '#fff',
+    marginTop: -95,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 0,},
+    shadowOpacity: 0.6,
+    elevation: 1,
+    shadowRadius: 2,
+  },
+  headerSearchOverlay: {
     height: 40,
-    width: 180,
-    fontSize: 16,
-    color: 'white',
+    backgroundColor: 'transparent',
+    borderColor: '#fff',
+    borderWidth: 1,
+    width: '100%',
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 0,},
+    shadowOpacity: 0.6,
+    elevation: 3,
+    shadowRadius: 2,
+    borderRadius: 3,
+    overflow: 'hidden',
+    position: 'absolute',
+  },
+  headerSearch: {
+    height: 40,
     textAlign: 'center',
-    paddingHorizontal:5,
-    fontWeight: "100",
-    ...ifIphoneX({
-      marginTop: 38,
-    }, {
-      marginTop: 28,
-    }),
-    marginRight: -20,
-    overflow: 'visible',
+    width: SCREEN_WIDTH*3/5-10,
   },
   searchClearBtn: {
-    width: 20,
+    position: 'absolute',
+    top: 5,
+    right: 5,
+    width: 29,
     height: 30,
-    ...ifIphoneX({
-      marginTop: 40,
-    }, {
-      marginTop: 30,
-    }),
     alignItems: 'center',
-    justifyContent:'center',
+    justifyContent: 'center',
   },
   categoryContainer: {
-    height: 40,
+    height: 45,
     backgroundColor: 'white',
     paddingVertical: 5,
     paddingHorizontal: 5,
-    shadowColor: '#000',
-    shadowOffset: {width: 0, height: -1,},
-    shadowOpacity: 0.4,
-    elevation: 3,
-    shadowRadius: 3,
     overflow: 'visible',
   },
   catelogButton: {
@@ -1570,7 +1660,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 3,
     borderRadius: 3,
     justifyContent: 'center',
-    width: 200,
+    minWidth: 200,
     alignItems: 'center',
   },
   catelogButtonSelected: {
@@ -1582,19 +1672,21 @@ const styles = StyleSheet.create({
     marginHorizontal: 3,
     borderRadius: 3,
     justifyContent: 'center',
-    width: 200,
+    minWidth: 200,
     alignItems: 'center',
   },
   scrollContainer: {
-    paddingBottom: 15,
-
+    paddingBottom: 110,
+    zIndex: 9998,
+    overflow: 'visible',
   },
   header: {
     backgroundColor: '#fff',
     width: SCREEN_WIDTH,
+    position: 'absolute',
     top: 0,
     left: 0,
-    zIndex: 9998,
+    // zIndex: 9998,
     paddingBottom: 5,
   },
   title: {
