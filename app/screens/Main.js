@@ -74,6 +74,7 @@ export default class Main extends Component {
       ischeckingcuppon: false,
       isFirstCatalog: true,
       isSwitch: false,
+      isAndroid: true,
     }
     SingleTon.mainPage = this;
     if(SingleTon.isShowTab) {
@@ -90,6 +91,10 @@ export default class Main extends Component {
 
   componentDidMount() {
     this.mounted = true;
+
+    if( Platform.OS === 'ios') {
+        this.setState({isAndroid: false})
+    }
 
     const foodFetchUrl = BASE_API_URL+'/api/catalog/1';
     const restaurantInfourl = BASE_API_URL+'/api/storeinfo/1/storeinfo';
@@ -367,7 +372,7 @@ export default class Main extends Component {
         },
       });
     } else {
-      this.bounce();
+      this.jello();
 
       var singleProductForCart = {
         count: 1,
@@ -477,7 +482,7 @@ export default class Main extends Component {
 
   //function when click add to cart button
   addToCart() {
-    this.bounce();
+    this.jello();
 
     var singleProductForCart = this.state.selectedProductForCart;//get all data of selected food food and extra source etc
 
@@ -1063,7 +1068,7 @@ export default class Main extends Component {
       }} ><Loaing color={'#000'}/></View>
       :
       <View style={styles.container}>
-        
+
         <Animated.View style={[styles.header, { height:HEADER_EXPANDED_HEIGHT }]}>
           <Animated.View style={{
             height: '100%',
@@ -1071,7 +1076,7 @@ export default class Main extends Component {
             position: 'absolute',
             backgroundColor: '#fff',
             zIndex: 5,
-            opacity: headerColor,
+            opacity: this.state.isSearch? 1: headerColor,
           }} />
           <View style={styles.headerImageView} >
             <Image ref={(ref) => this.imageBlurRef = ref} style={styles.headerImage} source={require('../resources/images/header.png')} blurRadius={0} />
@@ -1081,18 +1086,18 @@ export default class Main extends Component {
         {this.state.resourceDatas.length > 0?
           <FlatList
             showsVerticalScrollIndicator={false}
+            style={{paddingTop: this.state.isAndroid? 0: 95, }} 
             ref={ref => (this.sectionListRef = ref)}
-            style={{paddingTop: 95}}
             contentContainerStyle={[styles.scrollContainer, {paddingTop: this.state.isSearch?1: HEADER_EXPANDED_HEIGHT-60,}]}
-            onScroll={ 
-              Animated.event(  
-                [{ nativeEvent: {  
-                    contentOffset: {  
-                      y: this.state.scrollY  
-                    } 
-                  }  
+            onScroll={
+              Animated.event(
+                [{ nativeEvent: {
+                    contentOffset: {
+                      y: this.state.scrollY
+                    }
+                  }
                 }])
-            } 
+            }
             scrollEventThrottle={16}
             data={this.state.resourceDatas}
             renderItem={this.renderSectionHeader}
@@ -1103,10 +1108,51 @@ export default class Main extends Component {
           />
           :
           <View style={{
-            height: 50,
+            height: '100%',
             alignItems: 'center',
-            justifyContent: 'flex-end'
-          }} ><Text style={{fontSize: 25}} >No Result</Text></View>
+            backgroundColor: '#fff',
+            paddingTop: 30,
+          }} >
+              <View style={{padding: 5, position: 'relative', flexDirection: 'row', justifyContent: 'space-between'}}>
+                <View style={{
+                  position: 'relative',
+                  height: 40,
+                  width: SCREEN_WIDTH*3/5-10,}}>
+                  <View style={styles.headerSearchOverlay} ></View>
+                  <TextInput  placeholder='Search' underlineColorAndroid={'transparent'} placeholderTextColor='#666' style={styles.headerSearch} onChangeText={(text)=>this.searchData(text)} value={this.state.searchText} />
+                  {this.state.isSearch &&
+                    <TouchableOpacity style={styles.searchClearBtn} onPress={() => this.clearSearch()} >
+                      <Icon style={{fontSize: 23, color: '#666'}} name="md-close" />
+                    </TouchableOpacity>
+                  }
+                </View>
+                <View style={{position: 'relative', width:SCREEN_WIDTH*2/5-10, height: 40}}>
+                  <View style={styles.headerSearchOverlay} ></View>
+                  <Switch
+                    value={this.state.isSwitch}
+                    onValueChange={(val) => this.setState({isSwitch: !this.state.isSwitch})}
+                    disabled={false}
+                    activeText={'Take Away'}
+                    inActiveText={' Deliver '}
+                    circleSize={34}
+                    barHeight={40}
+                    circleBorderWidth={0}
+                    backgroundActive={'#4AA0FA'}
+                    backgroundInactive={'transparent'}
+                    circleActiveColor={'#1075df'}
+                    circleInActiveColor={'#fff'}
+                    changeValueImmediately={true}
+                    renderInsideCircle={() => <Icon name="ios-menu" style={{fontSize: 20, color: this.state.isSwitch? '#fff':'#666'}} />}
+                    changeValueImmediately={true}
+                    innerCircleStyle={{ alignItems: "center", justifyContent: "center" }}
+                    outerCircleStyle={{}}
+                    renderActiveText={true}
+                    renderInActiveText={true}
+                  />
+                </View>
+              </View>
+            <Text style={{fontSize: 25}} >No Result</Text>
+            </View>
         }
         {this.state.iscupon &&
           <Animatable.View transition={['top', 'left', 'rotate']} style={[
@@ -1606,20 +1652,15 @@ const styles = StyleSheet.create({
   },
   headerContainerStyle: {
     width: SCREEN_WIDTH,
-    height: 95,
+    height: 100,
     backgroundColor: '#fff',
-    marginTop: -95,
-    shadowColor: '#000',
-    shadowOffset: {width: 0, height: 0,},
-    shadowOpacity: 0.6,
-    elevation: 1,
-    shadowRadius: 2,
+    // marginTop: -95,
   },
   headerSearchOverlay: {
     height: 40,
     backgroundColor: 'transparent',
-    borderColor: '#fff',
-    borderWidth: 1,
+    // borderColor: '#fff',
+    // borderWidth: 1,
     width: '100%',
     shadowColor: '#000',
     shadowOffset: {width: 0, height: 0,},
@@ -1650,6 +1691,12 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     paddingHorizontal: 5,
     overflow: 'visible',
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 2,},
+    shadowOpacity: 0.6,
+    elevation: 3,
+    shadowRadius: 2,
+    marginBottom: 5,
   },
   catelogButton: {
     backgroundColor: '#fff',
