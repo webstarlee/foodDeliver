@@ -98,22 +98,141 @@ export default class SideMenu extends Component {
           <View style={styles.finalCheckDefaultView}>
             <Text style={{color: '#999', fontWeight: 'bold', fontSize: 15}}>To what address should we deliver your offer?</Text>
             <Text style={styles.defaultSmaillText} >Street name and number:</Text>
-            <TextInput style={styles.defaultTextInput} />
+            <View style={{position: 'relative', marginVertical: 5,}}>
+              <View
+                style={{
+                  position: 'absolute',
+                  shadowColor: '#000',
+                  shadowOffset: {width: 1, height: 1,},
+                  shadowOpacity: 0.6,
+                  shadowRadius: 2,
+                  elevation: 2,
+                  backgroundColor: 'transparent',
+                  borderColor: '#fff',
+                  width: '100%',
+                  height: '100%',
+                  borderWidth: 1,
+                  overflow: 'hidden'
+                }}></View>
+              <TextInput style={styles.defaultTextInput} />
+            </View>
             <Text style={styles.defaultSmaillText} >Zip Code:</Text>
-            <TextInput style={styles.defaultTextInput} />
+            <View style={{position: 'relative', marginVertical: 5,}}>
+              <View
+                style={{
+                  position: 'absolute',
+                  shadowColor: '#000',
+                  shadowOffset: {width: 1, height: 1,},
+                  shadowOpacity: 0.6,
+                  shadowRadius: 2,
+                  elevation: 2,
+                  backgroundColor: 'transparent',
+                  borderColor: '#fff',
+                  width: '100%',
+                  height: '100%',
+                  borderWidth: 1,
+                  overflow: 'hidden'
+                }}></View>
+              <TextInput style={styles.defaultTextInput} />
+            </View>
             <Text style={styles.defaultSmaillText} >City Name:</Text>
-            <TextInput style={styles.defaultTextInput} />
+            <View style={{position: 'relative', marginVertical: 5,}}>
+              <View
+                style={{
+                  position: 'absolute',
+                  shadowColor: '#000',
+                  shadowOffset: {width: 1, height: 1,},
+                  shadowOpacity: 0.6,
+                  shadowRadius: 2,
+                  elevation: 2,
+                  backgroundColor: 'transparent',
+                  borderColor: '#fff',
+                  width: '100%',
+                  height: '100%',
+                  borderWidth: 1,
+                  overflow: 'hidden'
+                }}></View>
+              <TextInput style={styles.defaultTextInput} />
+            </View>
           </View>
           <View style={[styles.finalCheckDefaultView, {marginTop: 15}]}>
             <Text style={{color: '#999', fontWeight: 'bold', fontSize: 15}} >How can we contact you?</Text>
             <Text style={styles.defaultSmaillText} >Name:</Text>
-            <TextInput style={styles.defaultTextInput} />
+            <View style={{position: 'relative', marginVertical: 5,}}>
+              <View
+                style={{
+                  position: 'absolute',
+                  shadowColor: '#000',
+                  shadowOffset: {width: 1, height: 1,},
+                  shadowOpacity: 0.6,
+                  shadowRadius: 2,
+                  elevation: 2,
+                  backgroundColor: 'transparent',
+                  borderColor: '#fff',
+                  width: '100%',
+                  height: '100%',
+                  borderWidth: 1,
+                  overflow: 'hidden'
+                }}></View>
+              <TextInput style={styles.defaultTextInput} />
+            </View>
             <Text style={styles.defaultSmaillText} >E-mail Address:</Text>
-            <TextInput style={styles.defaultTextInput} />
+            <View style={{position: 'relative', marginVertical: 5,}}>
+              <View
+                style={{
+                  position: 'absolute',
+                  shadowColor: '#000',
+                  shadowOffset: {width: 1, height: 1,},
+                  shadowOpacity: 0.6,
+                  shadowRadius: 2,
+                  elevation: 2,
+                  backgroundColor: 'transparent',
+                  borderColor: '#fff',
+                  width: '100%',
+                  height: '100%',
+                  borderWidth: 1,
+                  overflow: 'hidden'
+                }}></View>
+              <TextInput style={styles.defaultTextInput} />
+            </View>
             <Text style={styles.defaultSmaillText} >Phone Number:</Text>
-            <TextInput style={styles.defaultTextInput} />
+            <View style={{position: 'relative', marginVertical: 5,}}>
+              <View
+                style={{
+                  position: 'absolute',
+                  shadowColor: '#000',
+                  shadowOffset: {width: 1, height: 1,},
+                  shadowOpacity: 0.6,
+                  shadowRadius: 2,
+                  elevation: 2,
+                  backgroundColor: 'transparent',
+                  borderColor: '#fff',
+                  width: '100%',
+                  height: '100%',
+                  borderWidth: 1,
+                  overflow: 'hidden'
+                }}></View>
+              <TextInput style={styles.defaultTextInput} />
+            </View>
             <Text style={styles.defaultSmaillText} >* Business Name:</Text>
-            <TextInput style={styles.defaultTextInput} />
+            <View style={{position: 'relative', marginVertical: 5,}}>
+              <View
+                style={{
+                  position: 'absolute',
+                  shadowColor: '#000',
+                  shadowOffset: {width: 1, height: 1,},
+                  shadowOpacity: 0.6,
+                  shadowRadius: 2,
+                  elevation: 2,
+                  backgroundColor: 'transparent',
+                  borderColor: '#fff',
+                  width: '100%',
+                  height: '100%',
+                  borderWidth: 1,
+                  overflow: 'hidden'
+                }}></View>
+              <TextInput style={styles.defaultTextInput} />
+            </View>
             <CheckBox
               style={{flex: 1, paddingTop: 10}}
               onClick={() => console.log("asdfasdfsadfasdf")}
@@ -166,11 +285,28 @@ export default class SideMenu extends Component {
                 <Icon style={{fontSize: 22,color: '#666', position: 'absolute', top: 10, right: 10,zIndex: 10, elevation: 3,}} name="ios-arrow-down" />
             </View>
             <Text style={styles.defaultSmaillText} >Additional Comment:</Text>
-            <TextInput
-              style={styles.defaultTextInputArea}
-              multiline={true}
-              editable = {true}
-              numberOfLines={10}/>
+              <View style={{position: 'relative', marginVertical: 5,}}>
+                <View
+                  style={{
+                    position: 'absolute',
+                    shadowColor: '#000',
+                    shadowOffset: {width: 1, height: 1,},
+                    shadowOpacity: 0.6,
+                    shadowRadius: 2,
+                    elevation: 2,
+                    backgroundColor: 'transparent',
+                    borderColor: '#fff',
+                    width: '100%',
+                    height: '100%',
+                    borderWidth: 1,
+                    overflow: 'hidden'
+                  }}></View>
+                <TextInput
+                style={styles.defaultTextInputArea}
+                multiline={true}
+                editable = {true}
+                numberOfLines={10}/>
+              </View>
           </View>
           <View style={[styles.finalCheckDefaultView, {marginTop: 15}]}>
             <Text style={{color: '#999', fontWeight: 'bold', fontSize: 15}}>What payment method would you like to use?</Text>
@@ -290,33 +426,25 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   defaultTextInputArea: {
-    marginTop: 5,
+    // marginTop: 5,
     borderColor: '#999',
     borderWidth: 1,
     paddingVertical: 8,
     paddingHorizontal: 10,
     borderRadius: 2,
-    marginBottom: 5,
+    // marginBottom: 5,
     height: 100,
-    shadowColor: '#000',
-    shadowOffset: {width: 1, height: 1,},
-    shadowOpacity: 0.6,
-    shadowRadius: 2,
     elevation: 3,
     overflow: 'hidden'
   },
   defaultTextInput: {
-    marginTop: 5,
+    // marginTop: 5,
     borderColor: '#999',
     borderWidth: 1,
     paddingVertical: 8,
     paddingHorizontal: 10,
     borderRadius: 2,
-    marginBottom: 5,
-    shadowColor: '#000',
-    shadowOffset: {width: 1, height: 1,},
-    shadowOpacity: 0.6,
-    shadowRadius: 2,
+    // marginBottom: 5,
     elevation: 3,
     overflow: 'hidden'
   },
