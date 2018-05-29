@@ -256,8 +256,10 @@ export default class Main extends Component {
             position: 'relative',
             height: 40,
             width: SCREEN_WIDTH*3/5-10,}}>
-            <View style={styles.headerSearchOverlay} ></View>
-            <TextInput  placeholder='Search' underlineColorAndroid={'transparent'} placeholderTextColor='#666' style={styles.headerSearch} onChangeText={(text)=>this.searchData(text)} value={this.state.searchText} />
+            {!this.state.isAndroid&&
+                <View style={styles.headerSearchOverlay} ></View>
+            }
+            <TextInput  placeholder='Search' underlineColorAndroid={'transparent'} placeholderTextColor='#666' style={[styles.headerSearch, {borderRadius: 3,borderColor: '#3b6087', borderWidth: this.state.isAndroid? 1:0,}]} onChangeText={(text)=>this.searchData(text)} value={this.state.searchText} />
             {this.state.isSearch &&
               <TouchableOpacity style={styles.searchClearBtn} onPress={() => this.clearSearch()} >
                 <Icon style={{fontSize: 23, color: '#666'}} name="md-close" />
@@ -265,7 +267,9 @@ export default class Main extends Component {
             }
           </View>
           <View style={{position: 'relative', width:SCREEN_WIDTH*2/5-10, height: 40}}>
-            <View style={styles.headerSearchOverlay} ></View>
+              {!this.state.isAndroid&&
+                  <View style={styles.headerSearchOverlay} ></View>
+              }
             <Switch
               value={this.state.isSwitch}
               onValueChange={(val) => this.setState({isSwitch: !this.state.isSwitch})}
@@ -1086,7 +1090,7 @@ export default class Main extends Component {
         {this.state.resourceDatas.length > 0?
           <FlatList
             showsVerticalScrollIndicator={false}
-            style={{paddingTop: this.state.isAndroid? 0: 95, }} 
+            style={{paddingTop: this.state.isAndroid? 0: 95, }}
             ref={ref => (this.sectionListRef = ref)}
             contentContainerStyle={[styles.scrollContainer, {paddingTop: this.state.isSearch?1: HEADER_EXPANDED_HEIGHT-60,}]}
             onScroll={
@@ -1118,8 +1122,10 @@ export default class Main extends Component {
                   position: 'relative',
                   height: 40,
                   width: SCREEN_WIDTH*3/5-10,}}>
-                  <View style={styles.headerSearchOverlay} ></View>
-                  <TextInput  placeholder='Search' underlineColorAndroid={'transparent'} placeholderTextColor='#666' style={styles.headerSearch} onChangeText={(text)=>this.searchData(text)} value={this.state.searchText} />
+                  {!this.state.isAndroid&&
+                      <View style={styles.headerSearchOverlay} ></View>
+                  }
+                  <TextInput  placeholder='Search' underlineColorAndroid={'transparent'} placeholderTextColor='#666' style={[styles.headerSearch, {borderRadius: 3,borderColor: '#3b6087', borderWidth: this.state.isAndroid? 1:0,}]} onChangeText={(text)=>this.searchData(text)} value={this.state.searchText} />
                   {this.state.isSearch &&
                     <TouchableOpacity style={styles.searchClearBtn} onPress={() => this.clearSearch()} >
                       <Icon style={{fontSize: 23, color: '#666'}} name="md-close" />
@@ -1127,7 +1133,9 @@ export default class Main extends Component {
                   }
                 </View>
                 <View style={{position: 'relative', width:SCREEN_WIDTH*2/5-10, height: 40}}>
-                  <View style={styles.headerSearchOverlay} ></View>
+                    {!this.state.isAndroid&&
+                        <View style={styles.headerSearchOverlay} ></View>
+                    }
                   <Switch
                     value={this.state.isSwitch}
                     onValueChange={(val) => this.setState({isSwitch: !this.state.isSwitch})}

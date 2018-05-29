@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import {
   View,
+  Platform,
   Text,
   StyleSheet,
   Animated,
@@ -89,10 +90,17 @@ export class Switch extends Component {
       backgroundColor: new Animated.Value(props.value ? 75 : -75),
       circleColor: new Animated.Value(props.value ? 75 : -75),
       circleBorderColor: new Animated.Value(props.value ? 75 : -75),
+      isAndroid: true,
     };
 
     this.handleSwitch = this.handleSwitch.bind(this);
     this.animateSwitch = this.animateSwitch.bind(this);
+  }
+
+  componentDidMount() {
+     if( Platform.OS === 'ios') {
+         this.setState({isAndroid: false})
+     }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -188,14 +196,14 @@ export class Switch extends Component {
       inputRange: [-75, 75],
       outputRange: [circleInActiveColor, circleActiveColor]
     });
-    
+
     const interpolatedCircleBorderColor = circleBorderColor.interpolate({
       inputRange: [-75, 75],
       outputRange: [circleInactiveBorderColor, circleActiveBorderColor]
     });
 
     return (
-      <TouchableWithoutFeedback onPress={this.handleSwitch}>
+      <TouchableWithoutFeedback style={{justifyContent: 'center',}} onPress={this.handleSwitch}>
         <Animated.View
           style={[
             styles.container,
@@ -203,9 +211,12 @@ export class Switch extends Component {
             {
               backgroundColor: interpolatedColorAnimation,
               width: SCREEN_WIDTH*2/5-10,
-              height: barHeight || circleSize,
+              height: barHeight,
               borderRadius: 3,
               overflow: 'hidden',
+              borderColor: '#3b6087',
+              borderWidth: this.state.isAndroid? 1:0,
+              justifyContent: 'center',
             }
           ]}
         >
@@ -214,7 +225,7 @@ export class Switch extends Component {
               styles.animatedContainer,
               {
                 left: transformSwitch,
-                width: SCREEN_WIDTH*2/5-10,
+                width: SCREEN_WIDTH*2/5-8,
               },
               outerCircleStyle
             ]}
