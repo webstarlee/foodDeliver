@@ -40,10 +40,17 @@ export default class SideMenu extends Component {
       time: '',
       ideal: "ABN AMRO",
       paymentCheck: 0,
+      isAndroid: true,
     }
     if(SingleTon.isShowTab) {
       SingleTon.isShowTab.setState({isShowTabbar: false});
     }
+  }
+
+  componentDidMount() {
+     if( Platform.OS === 'ios') {
+         this.setState({isAndroid: false})
+     }
   }
 
   backToDetail(){
@@ -54,10 +61,10 @@ export default class SideMenu extends Component {
     setTimeout(function() {
       SingleTon.mainPage.setState({
         cartClicked: SingleTon.mainPage.state.cartClicked? false: true,
-        checkOutModalVisible: SingleTon.mainPage.state.checkOutModalVisible? false: true 
+        checkOutModalVisible: SingleTon.mainPage.state.checkOutModalVisible? false: true
       })
     }, 500)
-  
+
     NavigationService.back();
   }
   finalcheckedOut(){
@@ -98,22 +105,148 @@ export default class SideMenu extends Component {
           <View style={styles.finalCheckDefaultView}>
             <Text style={{color: '#999', fontWeight: 'bold', fontSize: 15}}>To what address should we deliver your offer?</Text>
             <Text style={styles.defaultSmaillText} >Street name and number:</Text>
-            <TextInput style={styles.defaultTextInput} />
+            <View style={{position: 'relative', marginVertical: 5,}}>
+              <View
+                style={{
+                  position: 'absolute',
+                  shadowColor: '#000',
+                  shadowOffset: {width: 1, height: 1,},
+                  shadowOpacity: 0.6,
+                  shadowRadius: 2,
+                  elevation: 2,
+                  backgroundColor: 'transparent',
+                  borderColor: '#fff',
+                  width: '100%',
+                  height: '100%',
+                  borderWidth: 1,
+                  overflow: 'hidden',
+                  borderRadius: 5,
+                }}></View>
+              <TextInput style={[styles.defaultTextInput, {borderColor: '#999',borderWidth: this.state.isAndroid? 1: 0,backgroundColor: this.state.isAndroid? '#fff': 'transparent',}]} />
+            </View>
             <Text style={styles.defaultSmaillText} >Zip Code:</Text>
-            <TextInput style={styles.defaultTextInput} />
+            <View style={{position: 'relative', marginVertical: 5,}}>
+              <View
+                style={{
+                  position: 'absolute',
+                  shadowColor: '#000',
+                  shadowOffset: {width: 1, height: 1,},
+                  shadowOpacity: 0.6,
+                  shadowRadius: 2,
+                  elevation: 2,
+                  backgroundColor: 'transparent',
+                  borderColor: '#fff',
+                  width: '100%',
+                  height: '100%',
+                  borderWidth: 1,
+                  overflow: 'hidden',
+                  borderRadius: 5,
+                }}></View>
+              <TextInput style={[styles.defaultTextInput, {borderColor: '#999',borderWidth: this.state.isAndroid? 1: 0,backgroundColor: this.state.isAndroid? '#fff': 'transparent',}]} />
+            </View>
             <Text style={styles.defaultSmaillText} >City Name:</Text>
-            <TextInput style={styles.defaultTextInput} />
+            <View style={{position: 'relative', marginVertical: 5,}}>
+              <View
+                style={{
+                  position: 'absolute',
+                  shadowColor: '#000',
+                  shadowOffset: {width: 1, height: 1,},
+                  shadowOpacity: 0.6,
+                  shadowRadius: 2,
+                  elevation: 2,
+                  backgroundColor: 'transparent',
+                  borderColor: '#fff',
+                  width: '100%',
+                  height: '100%',
+                  borderWidth: 1,
+                  overflow: 'hidden',
+                  borderRadius: 5,
+                }}></View>
+              <TextInput style={[styles.defaultTextInput, {borderColor: '#999',borderWidth: this.state.isAndroid? 1: 0,backgroundColor: this.state.isAndroid? '#fff': 'transparent',}]} />
+            </View>
           </View>
           <View style={[styles.finalCheckDefaultView, {marginTop: 15}]}>
             <Text style={{color: '#999', fontWeight: 'bold', fontSize: 15}} >How can we contact you?</Text>
             <Text style={styles.defaultSmaillText} >Name:</Text>
-            <TextInput style={styles.defaultTextInput} />
+            <View style={{position: 'relative', marginVertical: 5,}}>
+              <View
+                style={{
+                  position: 'absolute',
+                  shadowColor: '#000',
+                  shadowOffset: {width: 1, height: 1,},
+                  shadowOpacity: 0.6,
+                  shadowRadius: 2,
+                  elevation: 2,
+                  backgroundColor: 'transparent',
+                  borderColor: '#fff',
+                  width: '100%',
+                  height: '100%',
+                  borderWidth: 1,
+                  overflow: 'hidden',
+                  borderRadius: 5,
+                }}></View>
+              <TextInput style={[styles.defaultTextInput, {borderColor: '#999',borderWidth: this.state.isAndroid? 1: 0,backgroundColor: this.state.isAndroid? '#fff': 'transparent',}]} />
+            </View>
             <Text style={styles.defaultSmaillText} >E-mail Address:</Text>
-            <TextInput style={styles.defaultTextInput} />
+            <View style={{position: 'relative', marginVertical: 5,}}>
+              <View
+                style={{
+                  position: 'absolute',
+                  shadowColor: '#000',
+                  shadowOffset: {width: 1, height: 1,},
+                  shadowOpacity: 0.6,
+                  shadowRadius: 2,
+                  elevation: 2,
+                  backgroundColor: 'transparent',
+                  borderColor: '#fff',
+                  width: '100%',
+                  height: '100%',
+                  borderWidth: 1,
+                  overflow: 'hidden',
+                  borderRadius: 5,
+                }}></View>
+              <TextInput style={[styles.defaultTextInput, {borderColor: '#999',borderWidth: this.state.isAndroid? 1: 0,backgroundColor: this.state.isAndroid? '#fff': 'transparent',}]} />
+            </View>
             <Text style={styles.defaultSmaillText} >Phone Number:</Text>
-            <TextInput style={styles.defaultTextInput} />
+            <View style={{position: 'relative', marginVertical: 5,}}>
+              <View
+                style={{
+                  position: 'absolute',
+                  shadowColor: '#000',
+                  shadowOffset: {width: 1, height: 1,},
+                  shadowOpacity: 0.6,
+                  shadowRadius: 2,
+                  elevation: 2,
+                  backgroundColor: 'transparent',
+                  borderColor: '#fff',
+                  width: '100%',
+                  height: '100%',
+                  borderWidth: 1,
+                  overflow: 'hidden',
+                  borderRadius: 5,
+                }}></View>
+              <TextInput style={[styles.defaultTextInput, {borderColor: '#999',borderWidth: this.state.isAndroid? 1: 0,backgroundColor: this.state.isAndroid? '#fff': 'transparent',}]} />
+            </View>
             <Text style={styles.defaultSmaillText} >* Business Name:</Text>
-            <TextInput style={styles.defaultTextInput} />
+            <View style={{position: 'relative', marginVertical: 5,}}>
+              <View
+                style={{
+                  position: 'absolute',
+                  shadowColor: '#000',
+                  shadowOffset: {width: 1, height: 1,},
+                  shadowOpacity: 0.6,
+                  shadowRadius: 2,
+                  elevation: 2,
+                  backgroundColor: 'transparent',
+                  borderColor: '#fff',
+                  width: '100%',
+                  height: '100%',
+                  borderWidth: 1,
+                  overflow: 'hidden',
+                  borderRadius: 5,
+                }}></View>
+                <TextInput style={[styles.defaultTextInput, {borderColor: '#999',borderWidth: this.state.isAndroid? 1: 0,backgroundColor: this.state.isAndroid? '#fff': 'transparent',}]} />
+            </View>
             <CheckBox
               style={{flex: 1, paddingTop: 10}}
               onClick={() => console.log("asdfasdfsadfasdf")}
@@ -163,14 +296,32 @@ export default class SideMenu extends Component {
                   // ... You can check the source to find the other keys.
                 }}
                 onDateChange={(time) => {this.setState({time: time})}}/>
-                <Icon style={{fontSize: 22, position: 'absolute', top: 10, right: 10,}} name="ios-arrow-down" />
+                <Icon style={{fontSize: 22,color: '#666', position: 'absolute', top: 10, right: 10,zIndex: 10, elevation: 3,}} name="ios-arrow-down" />
             </View>
             <Text style={styles.defaultSmaillText} >Additional Comment:</Text>
-            <TextInput
-              style={styles.defaultTextInputArea}
-              multiline={true}
-              editable = {true}
-              numberOfLines={10}/>
+              <View style={{position: 'relative', marginVertical: 5,}}>
+                <View
+                  style={{
+                    position: 'absolute',
+                    shadowColor: '#000',
+                    shadowOffset: {width: 1, height: 1,},
+                    shadowOpacity: 0.6,
+                    shadowRadius: 2,
+                    elevation: 2,
+                    backgroundColor: 'transparent',
+                    borderColor: '#fff',
+                    width: '100%',
+                    height: '100%',
+                    borderWidth: 1,
+                    overflow: 'hidden',
+                    borderRadius: 5,
+                  }}></View>
+                <TextInput
+                style={[styles.defaultTextInputArea, {borderColor: '#999',borderWidth: this.state.isAndroid? 1: 0,}]}
+                multiline={true}
+                editable = {true}
+                numberOfLines={10}/>
+              </View>
           </View>
           <View style={[styles.finalCheckDefaultView, {marginTop: 15}]}>
             <Text style={{color: '#999', fontWeight: 'bold', fontSize: 15}}>What payment method would you like to use?</Text>
@@ -207,7 +358,7 @@ export default class SideMenu extends Component {
                   onChange={(option)=>{ this.setState({ideal:option.label})}} >
                   <TextInput editable={false} style={{color: this.state.paymentCheck == 'ideal'? '#777' : '#ddd'}} placeholder="Select something yummy!" value={this.state.ideal} />
                 </ModalSelector>
-                <Icon style={{fontSize: 22, position: 'absolute', top: 10, right: 10, color: this.state.paymentCheck == 'ideal'? '#777' : '#ddd'}} name="ios-arrow-down" />
+                <Icon style={{fontSize: 22, position: 'absolute', top: 10, right: 10,elevation: 3, color: this.state.paymentCheck == 'ideal'? '#777' : '#ddd'}} name="ios-arrow-down" />
               </View>
             </View>
             <View style={{position: 'relative', flexDirection: 'row', width: '100%', height: 30, alignItems: 'center', marginTop: 10}}>
@@ -252,16 +403,18 @@ const styles = StyleSheet.create({
   finalCheckoutButton: {
     marginTop: 20,
     marginBottom: 30,
+    alignSelf: 'center',
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#4AA0FA',
     padding: 12,
-    width: '100%',
+    width: SCREEN_WIDTH-20,
     borderRadius: 3,
     shadowColor: '#000',
     shadowOffset: {width: 0, height: 1,},
     shadowOpacity: 0.7,
     shadowRadius: 2,
+    elevation: 3,
   },
   datePickerStyle: {
     width: '100%',
@@ -274,6 +427,7 @@ const styles = StyleSheet.create({
     shadowOffset: {width: 0, height: 1,},
     shadowOpacity: 0.3,
     shadowRadius: 1,
+    elevation: 3,
   },
   container: {
     flex: 1,
@@ -287,33 +441,24 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   defaultTextInputArea: {
-    marginTop: 5,
+    // marginTop: 5,
     borderColor: '#999',
     borderWidth: 1,
     paddingVertical: 8,
     paddingHorizontal: 10,
     borderRadius: 2,
-    marginBottom: 5,
+    // marginBottom: 5,
     height: 100,
-    shadowColor: '#000',
-    shadowOffset: {width: 1, height: 1,},
-    shadowOpacity: 0.6,
-    shadowRadius: 2,
+    elevation: 3,
     overflow: 'hidden'
   },
   defaultTextInput: {
-    marginTop: 5,
-    borderColor: '#999',
-    borderWidth: 1,
     paddingVertical: 8,
     paddingHorizontal: 10,
     borderRadius: 2,
-    marginBottom: 5,
-    shadowColor: '#000',
-    shadowOffset: {width: 1, height: 1,},
-    shadowOpacity: 0.6,
-    shadowRadius: 2,
-    overflow: 'hidden'
+    // marginBottom: 5,
+    elevation: 3,
+    overflow: 'hidden',
   },
   defaultSmaillText: {
     marginTop: 5,
@@ -326,6 +471,8 @@ const styles = StyleSheet.create({
     shadowOffset: {width: 0, height: 1,},
     shadowOpacity: 0.3,
     shadowRadius: 2,
+    elevation: 3,
+    marginHorizontal: 10,
     backgroundColor: '#fff',
   },
   finalCheckTitle: {
@@ -337,6 +484,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.6,
     shadowRadius: 0,
     marginLeft: 10,
+    elevation: 3,
     marginBottom: 10,
   },
   finalCheckOutFooter: {
@@ -352,13 +500,13 @@ const styles = StyleSheet.create({
     shadowOffset: {width: 0, height: 1,},
     shadowOpacity: 0.4,
     shadowRadius: 2,
+    elevation: 3,
     borderTopWidth: 1,
     borderTopColor: '#4AA0FA',
   },
   finalCheckoutScrollView: {
     flex: 1,
     backgroundColor: '#fdfdfd',
-    paddingHorizontal: 7,
     width: SCREEN_WIDTH,
     paddingTop: 10
   },
