@@ -119,9 +119,10 @@ export default class SideMenu extends Component {
                   width: '100%',
                   height: '100%',
                   borderWidth: 1,
-                  overflow: 'hidden'
+                  overflow: 'hidden',
+                  borderRadius: 5,
                 }}></View>
-              <TextInput style={[styles.defaultTextInput, {backgroundColor: this.state.isAndroid? '#fff': 'transparent',}]} />
+              <TextInput style={[styles.defaultTextInput, {borderColor: '#999',borderWidth: this.state.isAndroid? 1: 0,backgroundColor: this.state.isAndroid? '#fff': 'transparent',}]} />
             </View>
             <Text style={styles.defaultSmaillText} >Zip Code:</Text>
             <View style={{position: 'relative', marginVertical: 5,}}>
@@ -138,9 +139,10 @@ export default class SideMenu extends Component {
                   width: '100%',
                   height: '100%',
                   borderWidth: 1,
-                  overflow: 'hidden'
+                  overflow: 'hidden',
+                  borderRadius: 5,
                 }}></View>
-              <TextInput style={[styles.defaultTextInput, {backgroundColor: this.state.isAndroid? '#fff': 'transparent',}]} />
+              <TextInput style={[styles.defaultTextInput, {borderColor: '#999',borderWidth: this.state.isAndroid? 1: 0,backgroundColor: this.state.isAndroid? '#fff': 'transparent',}]} />
             </View>
             <Text style={styles.defaultSmaillText} >City Name:</Text>
             <View style={{position: 'relative', marginVertical: 5,}}>
@@ -157,9 +159,10 @@ export default class SideMenu extends Component {
                   width: '100%',
                   height: '100%',
                   borderWidth: 1,
-                  overflow: 'hidden'
+                  overflow: 'hidden',
+                  borderRadius: 5,
                 }}></View>
-              <TextInput style={[styles.defaultTextInput, {backgroundColor: this.state.isAndroid? '#fff': 'transparent',}]} />
+              <TextInput style={[styles.defaultTextInput, {borderColor: '#999',borderWidth: this.state.isAndroid? 1: 0,backgroundColor: this.state.isAndroid? '#fff': 'transparent',}]} />
             </View>
           </View>
           <View style={[styles.finalCheckDefaultView, {marginTop: 15}]}>
@@ -179,9 +182,10 @@ export default class SideMenu extends Component {
                   width: '100%',
                   height: '100%',
                   borderWidth: 1,
-                  overflow: 'hidden'
+                  overflow: 'hidden',
+                  borderRadius: 5,
                 }}></View>
-              <TextInput style={[styles.defaultTextInput, {backgroundColor: this.state.isAndroid? '#fff': 'transparent',}]} />
+              <TextInput style={[styles.defaultTextInput, {borderColor: '#999',borderWidth: this.state.isAndroid? 1: 0,backgroundColor: this.state.isAndroid? '#fff': 'transparent',}]} />
             </View>
             <Text style={styles.defaultSmaillText} >E-mail Address:</Text>
             <View style={{position: 'relative', marginVertical: 5,}}>
@@ -198,9 +202,10 @@ export default class SideMenu extends Component {
                   width: '100%',
                   height: '100%',
                   borderWidth: 1,
-                  overflow: 'hidden'
+                  overflow: 'hidden',
+                  borderRadius: 5,
                 }}></View>
-              <TextInput style={[styles.defaultTextInput, {backgroundColor: this.state.isAndroid? '#fff': 'transparent',}]} />
+              <TextInput style={[styles.defaultTextInput, {borderColor: '#999',borderWidth: this.state.isAndroid? 1: 0,backgroundColor: this.state.isAndroid? '#fff': 'transparent',}]} />
             </View>
             <Text style={styles.defaultSmaillText} >Phone Number:</Text>
             <View style={{position: 'relative', marginVertical: 5,}}>
@@ -217,9 +222,10 @@ export default class SideMenu extends Component {
                   width: '100%',
                   height: '100%',
                   borderWidth: 1,
-                  overflow: 'hidden'
+                  overflow: 'hidden',
+                  borderRadius: 5,
                 }}></View>
-              <TextInput style={[styles.defaultTextInput, {backgroundColor: this.state.isAndroid? '#fff': 'transparent',}]} />
+              <TextInput style={[styles.defaultTextInput, {borderColor: '#999',borderWidth: this.state.isAndroid? 1: 0,backgroundColor: this.state.isAndroid? '#fff': 'transparent',}]} />
             </View>
             <Text style={styles.defaultSmaillText} >* Business Name:</Text>
             <View style={{position: 'relative', marginVertical: 5,}}>
@@ -236,9 +242,10 @@ export default class SideMenu extends Component {
                   width: '100%',
                   height: '100%',
                   borderWidth: 1,
-                  overflow: 'hidden'
+                  overflow: 'hidden',
+                  borderRadius: 5,
                 }}></View>
-                <TextInput style={[styles.defaultTextInput, {backgroundColor: this.state.isAndroid? '#fff': 'transparent',}]} />
+                <TextInput style={[styles.defaultTextInput, {borderColor: '#999',borderWidth: this.state.isAndroid? 1: 0,backgroundColor: this.state.isAndroid? '#fff': 'transparent',}]} />
             </View>
             <CheckBox
               style={{flex: 1, paddingTop: 10}}
@@ -306,10 +313,11 @@ export default class SideMenu extends Component {
                     width: '100%',
                     height: '100%',
                     borderWidth: 1,
-                    overflow: 'hidden'
+                    overflow: 'hidden',
+                    borderRadius: 5,
                   }}></View>
                 <TextInput
-                style={styles.defaultTextInputArea}
+                style={[styles.defaultTextInputArea, {borderColor: '#999',borderWidth: this.state.isAndroid? 1: 0,}]}
                 multiline={true}
                 editable = {true}
                 numberOfLines={10}/>
@@ -445,9 +453,6 @@ const styles = StyleSheet.create({
     overflow: 'hidden'
   },
   defaultTextInput: {
-    // marginTop: 5,
-    borderColor: '#999',
-    borderWidth: 1,
     paddingVertical: 8,
     paddingHorizontal: 10,
     borderRadius: 2,

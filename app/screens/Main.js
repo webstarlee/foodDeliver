@@ -563,6 +563,7 @@ export default class Main extends Component {
 
   //function when search
   searchData(text = ""){
+    console.log("dddd");
     var searchedData = [];
     this.setState({
       searchText: text,
@@ -592,7 +593,6 @@ export default class Main extends Component {
       })
 
     }
-
     this.setState({
       resourceDatas: searchedData,
     })
@@ -1087,81 +1087,37 @@ export default class Main extends Component {
             <Image style={styles.headerOverlayImage} source={require('../resources/images/overlay.png')} />
           </View>
         </Animated.View>
-        {this.state.resourceDatas.length > 0?
-          <FlatList
-            showsVerticalScrollIndicator={false}
-            style={{paddingTop: this.state.isAndroid? 0: 95, }}
-            ref={ref => (this.sectionListRef = ref)}
-            contentContainerStyle={[styles.scrollContainer, {paddingTop: this.state.isSearch?1: HEADER_EXPANDED_HEIGHT-60,}]}
-            onScroll={
-              Animated.event(
-                [{ nativeEvent: {
-                    contentOffset: {
-                      y: this.state.scrollY
-                    }
+        <FlatList
+          showsVerticalScrollIndicator={false}
+          style={{paddingTop: this.state.isAndroid? 0: 95, }}
+          ref={ref => (this.sectionListRef = ref)}
+          contentContainerStyle={[styles.scrollContainer, {paddingTop: this.state.isSearch?1: HEADER_EXPANDED_HEIGHT-60,}]}
+          onScroll={
+            Animated.event(
+              [{ nativeEvent: {
+                  contentOffset: {
+                    y: this.state.scrollY
                   }
-                }])
-            }
-            scrollEventThrottle={16}
-            data={this.state.resourceDatas}
-            renderItem={this.renderSectionHeader}
-            keyExtractor={(item, index) => index.toString()}
-            stickyHeaderIndices={[0]}
-            ListHeaderComponent={this.renderHeaderOfSectionHeader()}
-            onViewableItemsChanged={this.onItemsChanges}
-          />
-          :
-          <View style={{
-            height: '100%',
-            alignItems: 'center',
-            backgroundColor: '#fff',
-            paddingTop: 30,
-          }} >
-              <View style={{padding: 5, position: 'relative', flexDirection: 'row', justifyContent: 'space-between'}}>
-                <View style={{
-                  position: 'relative',
-                  height: 40,
-                  width: SCREEN_WIDTH*3/5-10,}}>
-                  {!this.state.isAndroid&&
-                      <View style={styles.headerSearchOverlay} ></View>
-                  }
-                  <TextInput  placeholder='Search' underlineColorAndroid={'transparent'} placeholderTextColor='#666' style={[styles.headerSearch, {borderRadius: 3,borderColor: '#3b6087', borderWidth: this.state.isAndroid? 1:0,}]} onChangeText={(text)=>this.searchData(text)} value={this.state.searchText} />
-                  {this.state.isSearch &&
-                    <TouchableOpacity style={styles.searchClearBtn} onPress={() => this.clearSearch()} >
-                      <Icon style={{fontSize: 23, color: '#666'}} name="md-close" />
-                    </TouchableOpacity>
-                  }
-                </View>
-                <View style={{position: 'relative', width:SCREEN_WIDTH*2/5-10, height: 40}}>
-                    {!this.state.isAndroid&&
-                        <View style={styles.headerSearchOverlay} ></View>
-                    }
-                  <Switch
-                    value={this.state.isSwitch}
-                    onValueChange={(val) => this.setState({isSwitch: !this.state.isSwitch})}
-                    disabled={false}
-                    activeText={'Take Away'}
-                    inActiveText={' Deliver '}
-                    circleSize={34}
-                    barHeight={40}
-                    circleBorderWidth={0}
-                    backgroundActive={'#4AA0FA'}
-                    backgroundInactive={'transparent'}
-                    circleActiveColor={'#1075df'}
-                    circleInActiveColor={'#fff'}
-                    changeValueImmediately={true}
-                    renderInsideCircle={() => <Icon name="ios-menu" style={{fontSize: 20, color: this.state.isSwitch? '#fff':'#666'}} />}
-                    changeValueImmediately={true}
-                    innerCircleStyle={{ alignItems: "center", justifyContent: "center" }}
-                    outerCircleStyle={{}}
-                    renderActiveText={true}
-                    renderInActiveText={true}
-                  />
-                </View>
-              </View>
-            <Text style={{fontSize: 25}} >No Result</Text>
+                }
+              }])
+          }
+          scrollEventThrottle={16}
+          data={this.state.resourceDatas}
+          renderItem={this.renderSectionHeader}
+          keyExtractor={(item, index) => index.toString()}
+          stickyHeaderIndices={[0]}
+          ListHeaderComponent={this.renderHeaderOfSectionHeader()}
+          ListEmptyComponent={
+            <View style={{
+              alignItems: 'center',
+              backgroundColor: '#fff',
+              paddingTop: 30,
+            }} >
+                <Text style={{fontSize: 25}} >No Result</Text>
             </View>
-        }
+          }
+          onViewableItemsChanged={this.onItemsChanges}
+        />
         {this.state.iscupon &&
           <Animatable.View transition={['top', 'left', 'rotate']} style={[
             {backgroundColor: cutNumberColor},
