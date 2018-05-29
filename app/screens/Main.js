@@ -250,7 +250,7 @@ export default class Main extends Component {
 
   renderHeaderOfSectionHeader() {
     return (
-      <View style={styles.headerContainerStyle} >
+      <View style={[styles.headerContainerStyle, { marginTop: this.state.isAndroid? 0:-95,}]} >
         <View style={{padding: 5, position: 'relative', flexDirection: 'row', justifyContent: 'space-between'}}>
           <View style={{
             position: 'relative',
@@ -259,7 +259,7 @@ export default class Main extends Component {
             {!this.state.isAndroid&&
                 <View style={styles.headerSearchOverlay} ></View>
             }
-            <TextInput  placeholder='Search' underlineColorAndroid={'transparent'} placeholderTextColor='#666' style={[styles.headerSearch, {borderRadius: 3,borderColor: '#3b6087', borderWidth: this.state.isAndroid? 1:0,}]} onChangeText={(text)=>this.searchData(text)} value={this.state.searchText} />
+            <TextInput  placeholder='Search' underlineColorAndroid={'transparent'} placeholderTextColor='#666' style={[styles.headerSearch, {borderRadius: 3,borderColor: '#c2c2c2', borderWidth: this.state.isAndroid? 1:0,}]} onChangeText={(text)=>this.searchData(text)} value={this.state.searchText} />
             {this.state.isSearch &&
               <TouchableOpacity style={styles.searchClearBtn} onPress={() => this.clearSearch()} >
                 <Icon style={{fontSize: 23, color: '#666'}} name="md-close" />
@@ -563,7 +563,6 @@ export default class Main extends Component {
 
   //function when search
   searchData(text = ""){
-    console.log("dddd");
     var searchedData = [];
     this.setState({
       searchText: text,
@@ -1112,6 +1111,7 @@ export default class Main extends Component {
               alignItems: 'center',
               backgroundColor: '#fff',
               paddingTop: 30,
+              height: 500,
             }} >
                 <Text style={{fontSize: 25}} >No Result</Text>
             </View>
@@ -1618,7 +1618,6 @@ const styles = StyleSheet.create({
     width: SCREEN_WIDTH,
     height: 100,
     backgroundColor: '#fff',
-    marginTop: -95,
   },
   headerSearchOverlay: {
     height: 40,

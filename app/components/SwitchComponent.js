@@ -214,7 +214,7 @@ export class Switch extends Component {
               height: barHeight,
               borderRadius: 3,
               overflow: 'hidden',
-              borderColor: '#3b6087',
+              borderColor: '#c2c2c2',
               borderWidth: this.state.isAndroid? 1:0,
               justifyContent: 'center',
             }
