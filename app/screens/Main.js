@@ -1100,6 +1100,7 @@ export default class Main extends Component {
                 }
               }])
           }
+          bounces={false}
           scrollEventThrottle={16}
           data={this.state.resourceDatas}
           renderItem={this.renderSectionHeader}

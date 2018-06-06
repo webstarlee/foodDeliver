@@ -127,6 +127,7 @@ export default class Info extends Component {
           </View>
         </Animated.View>
         <ScrollView
+          bounces={false}
           showsVerticalScrollIndicator={false}
           onScroll={Animated.event([{ nativeEvent: {contentOffset: {y: this.state.scrollY}}}])}
           scrollEventThrottle={16}
