@@ -1,25 +1,17 @@
 import React, { Component } from 'react';
 import {
   Animated,
-  Dimensions,
-  Platform,
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   View,
   Image,
-  TouchableOpacity,
-  SectionList,
-  FlatList,
-  ActivityIndicator,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {
   BASE_API_URL,
   HEADER_EXPANDED_HEIGHT,
   HEADER_COLLAPSED_HEIGHT,
-  ITEM_HEIGHT,
   SCREEN_WIDTH,
   SCREEN_HEIGHT}  from '../components/StaticValues';
 import Loaing from '../components/Loading';
@@ -122,7 +114,7 @@ export default class Info extends Component {
             opacity: headerColor,
           }} />
           <View style={styles.headerImageView} >
-            <Image ref={(ref) => this.imageBlurRef = ref} style={styles.headerImage} source={require('../resources/images/header.png')} blurRadius={0} />
+            <Image ref={(ref) => this.imageBlurRef = ref} style={styles.headerImage} source={{uri: BASE_API_URL+'/uploads/storeinfo/'+SingleTon.restaurantInfo.header_img}} blurRadius={0} />
             <Image style={styles.headerOverlayImage} source={require('../resources/images/overlay.png')} />
           </View>
         </Animated.View>
