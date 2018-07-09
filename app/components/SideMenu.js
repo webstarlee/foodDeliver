@@ -1,24 +1,18 @@
 import React, { Component } from 'react';
 import {
-  Animated,
-  Dimensions,
-  Platform,
-  ScrollView,
   StyleSheet,
   Text,
   TextInput,
   View,
   Image,
   TouchableOpacity,
-  SectionList,
-  FlatList,
-  ActivityIndicator,
   AsyncStorage,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
 import {BASE_API_URL, ITEM_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT}  from './StaticValues';
-import Loaing from '../components/Loading';
+import Loaing from './Loading';
 import LinearGradient from 'react-native-linear-gradient';
+import SingleTon from "./SingleTon";
+import firebase from 'react-native-firebase';
 
 export default class SideMenu extends Component {
   constructor() {
@@ -148,6 +142,15 @@ export default class SideMenu extends Component {
   }
 
   handleRegister() {
+    if(SingleTon.devicefcm == null) {
+      firebase.messaging().getToken()
+      .then((token) => {
+        SingleTon.devicefcm = token;
+      }).catch((error) => {
+      });
+
+    }
+
     if(this.state.reg_name != "" && this.state.reg_email != "" && this.state.reg_pass != "" && this.state.reg_c_pass != "") {
       if(this.state.reg_pass == this.state.reg_c_pass) {
         this.setState({isLoading: true});
@@ -164,6 +167,7 @@ export default class SideMenu extends Component {
             email: this.state.reg_email,
             password: this.state.reg_pass,
             c_password: this.state.reg_c_pass,
+            device_fcm: SingleTon.devicefcm,
           }),
         })
         .then((response) => response.json())
@@ -366,7 +370,7 @@ export default class SideMenu extends Component {
             <View style={styles.backgroundBlurBehind}/>
             <View style={styles.backgroundBlur}/>
             <View style={{width: '100%',}}>
-              <Image style={styles.sideMenuLogo} source={{uri: BASE_API_URL+'/storage/main_images/logo.png'}} />
+              <Image style={styles.sideMenuLogo} source={{uri: BASE_API_URL+'/uploads/storeinfo/'+SingleTon.restaurantInfo.logo_img}} />
               {this.state.isLogin ? this.renderUser(): this.renderLogin()}
               {this.state.isLoading && this.renderLoading()}
             </View>

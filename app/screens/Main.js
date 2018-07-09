@@ -97,7 +97,6 @@ export default class Main extends Component {
     }
 
     const foodFetchUrl = BASE_API_URL+'/api/catalog/1';
-    const restaurantInfourl = BASE_API_URL+'/api/storeinfo/1/storeinfo';
 
     fetch(foodFetchUrl)
     .then((response) => response.json())
@@ -114,18 +113,7 @@ export default class Main extends Component {
       console.error(error);
     });
 
-    fetch(restaurantInfourl)
-    .then((response) => response.json())
-    .then((responseJson) => {
-      SingleTon.restaurantInfo = responseJson.data;
-      this.setState({
-        isloading: false,
-        deliveryCost: responseJson.data.deliveryCost,
-      });
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+    this.setState({deliveryCost: SingleTon.restaurantInfo.deliveryCost});
 
     AsyncStorage.getItem('loginToken')
     .then((val) => {
@@ -1082,7 +1070,7 @@ export default class Main extends Component {
             opacity: this.state.isSearch? 1: headerColor,
           }} />
           <View style={styles.headerImageView} >
-            <Image ref={(ref) => this.imageBlurRef = ref} style={styles.headerImage} source={require('../resources/images/header.png')} blurRadius={0} />
+            <Image ref={(ref) => this.imageBlurRef = ref} style={styles.headerImage} source={{uri: BASE_API_URL+'/uploads/storeinfo/'+SingleTon.restaurantInfo.header_img}} blurRadius={0} />
             <Image style={styles.headerOverlayImage} source={require('../resources/images/overlay.png')} />
           </View>
         </Animated.View>

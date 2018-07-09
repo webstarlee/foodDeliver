@@ -155,8 +155,8 @@ export default class Info extends Component {
               <View style={{width: '100%'}}>
                 <GoogleStaticMap
                   style={{width: '100%', height: 200}}
-                  latitude={this.state.resInfo.latitude}
-                  longitude={this.state.resInfo.longitude}
+                  latitude={this.state.resInfo.latitude.toString()}
+                  longitude={this.state.resInfo.longitude.toString()}
                   zoom={17}
                   size={{ width: mapWidth, height: 200 }}
                   apiKey={'AIzaSyApTWJ2H7KF81Ctr0tSQpHa1Hjzk7CdghY'}

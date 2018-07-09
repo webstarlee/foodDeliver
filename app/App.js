@@ -2,13 +2,19 @@ import React, { Component } from 'react';
 import {
   Platform,
   StyleSheet,
-  Text,
   View,
-  TouchableOpacity,
   StatusBar,
 } from 'react-native';
-import KeyboardManager from 'react-native-keyboard-manager'
-//
+import KeyboardManager from 'react-native-keyboard-manager';
+import firebase from 'react-native-firebase';
+import {
+  BASE_API_URL,
+  HEADER_EXPANDED_HEIGHT,
+  HEADER_COLLAPSED_HEIGHT,
+  ITEM_HEIGHT,
+  SCREEN_WIDTH,
+  SCREEN_HEIGHT}  from './components/StaticValues';
+import Loaing from './components/Loading';
 if(Platform.OS === 'ios'){
 
     KeyboardManager.setEnable(true);
@@ -37,8 +43,57 @@ export default class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isopenSidebar: false
+      isopenSidebar: false,
+      isloading: true,
     }
+  }
+
+  componentDidMount() {
+    const firebaseMessaging = firebase.messaging();
+    const firebaseNotifications = firebase.notifications();
+    const restaurantInfourl = BASE_API_URL+'/api/storeinfo/1/storeinfo';
+
+    firebaseMessaging.hasPermission()
+    .then((enabled) => {
+      if (enabled) {
+        // user has permissions
+        console.log(enabled);
+      } else {
+        // user doesn't have permission
+        firebaseMessaging.requestPermission()
+          .then(() => {
+            // User has authorised
+          })
+          .catch((error) => {
+            // User has rejected permissions
+          });
+      }
+    });
+
+    firebaseMessaging.getToken()
+    .then((token) => {
+      console.log(token);
+      SingleTon.devicefcm = token;
+    }).catch((error) => {
+    });
+
+    // notification badge reset
+    firebaseNotifications.setBadge(0)
+    .then(() => {
+    })
+    .catch((error) => {
+    })
+
+    fetch(restaurantInfourl)
+    .then((response) => response.json())
+    .then((responseJson) => {
+      SingleTon.restaurantInfo = responseJson.data;
+      console.log(SingleTon.restaurantInfo);
+      this.setState({isloading: false});
+    })
+    .catch((error) => {
+      console.log(error);
+    });
   }
 
   openSideBar() {
@@ -48,6 +103,16 @@ export default class App extends Component {
 
   render() {
     return (
+      this.state.isloading?
+      <View style={{
+        flex: 1,
+        backgroundColor: '#fff',
+        width: SCREEN_WIDTH,
+        height: SCREEN_HEIGHT,
+        alignItems: 'center',
+        justifyContent: 'center',
+      }} ><Loaing color={'#000'}/></View>
+      :
       <ScalingDrawer
         ref={ref => {
           this._drawer = ref

@@ -7,6 +7,8 @@
     "test": "jest"
   },
   "dependencies": {
+    "firebase-admin": "^5.12.1",
+    "firebase-functions": "^1.1.0",
     "react": "16.3.1",
     "react-native": "0.55.4",
     "react-native-animatable": "^1.2.4",
@@ -14,6 +16,7 @@
     "react-native-customisable-switch": "^0.1.0",
     "react-native-datepicker": "^1.7.2",
     "react-native-fast-image": "^4.0.14",
+    "react-native-firebase": "^4.2.0",
     "react-native-google-static-map": "^0.1.12",
     "react-native-htmlview": "^0.12.1",
     "react-native-iphone-x-helper": "^1.0.3",

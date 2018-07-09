@@ -3,7 +3,7 @@ let instance = null;
 class Singleton{
     constructor() {
         if(!instance){
-              instance = this;
+            instance = this;
         }
 
         // to test whether we have singleton or not
@@ -12,6 +12,7 @@ class Singleton{
         this.cartedList = [];
         this.isShowTab = null;
         this.mainPage = null;
+        this.devicefcm = null;
 
         return instance;
     }
