@@ -11,6 +11,7 @@ exports.notifySend = functions.database.ref("/user_notifications/{notifyId}").on
     const deviceToken = admin.database().ref(`/user_notifications/${notifyId}/device_fcm`).once('value');
     const msgTitle = admin.database().ref(`/user_notifications/${notifyId}/msg_title`).once('value');
     const msgText = admin.database().ref(`/user_notifications/${notifyId}/msg_text`).once('value');
+    const badge = admin.database().ref(`/user_notifications/${notifyId}/badge`).once('value');
 
     return Promise.all([deviceToken]).then(result => {
 
@@ -24,17 +25,22 @@ exports.notifySend = functions.database.ref("/user_notifications/{notifyId}").on
 
                 const messageText = result[0].val();
 
-                const payload = {
-                    notification: {
-                        title : `${messageTitle}`,
-                        body: `${messageText}`,
-                        sound: "default",
-                        badge: '1'
-                    }
-                };
+                return Promise.all([badge]).then(result => {
 
-                return admin.messaging().sendToDevice(deviceFcm, payload).then(response => {
-                    console.log('This was the notification Feature');
+                    const badgeNumber = result[0].val();
+    
+                    const payload = {
+                        notification: {
+                            title : `${messageTitle}`,
+                            body: `${messageText}`,
+                            sound: "default",
+                            badge: `${badgeNumber}`
+                        }
+                    };
+    
+                    return admin.messaging().sendToDevice(deviceFcm, payload).then(response => {
+                        console.log('This was the notification Feature');
+                    });
                 });
             });
         });

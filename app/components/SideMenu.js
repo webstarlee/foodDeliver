@@ -92,6 +92,14 @@ export default class SideMenu extends Component {
   }
 
   handleLogin() {
+    if(SingleTon.devicefcm == null) {
+      firebase.messaging().getToken()
+      .then((token) => {
+        SingleTon.devicefcm = token;
+      }).catch((error) => {
+      });
+    }
+
     if(this.state.email != "") {
       if(this.state.password != "") {
         this.setState({isLoading: true});
@@ -106,6 +114,7 @@ export default class SideMenu extends Component {
           body: JSON.stringify({
             email: this.state.email,
             password: this.state.password,
+            device_fcm: SingleTon.devicefcm,
           }),
         })
         .then((response) => response.json())
@@ -148,7 +157,6 @@ export default class SideMenu extends Component {
         SingleTon.devicefcm = token;
       }).catch((error) => {
       });
-
     }
 
     if(this.state.reg_name != "" && this.state.reg_email != "" && this.state.reg_pass != "" && this.state.reg_c_pass != "") {

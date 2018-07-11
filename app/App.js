@@ -4,6 +4,7 @@ import {
   StyleSheet,
   View,
   StatusBar,
+  Alert,
 } from 'react-native';
 import KeyboardManager from 'react-native-keyboard-manager';
 import firebase from 'react-native-firebase';
@@ -45,6 +46,7 @@ export default class App extends Component {
     this.state = {
       isopenSidebar: false,
       isloading: true,
+      notifymodal: false,
     }
   }
 
@@ -80,20 +82,84 @@ export default class App extends Component {
     // notification badge reset
     firebaseNotifications.setBadge(0)
     .then(() => {
-    })
-    .catch((error) => {
-    })
+      var resetBadgeurl = BASE_API_URL+"/api/clearBadge";
+      fetch(resetBadgeurl, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          device_fcm: SingleTon.devicefcm,
+        }),
+      })
+      .then((response) => response.json())
+      .then((responseJson) => {
+        console.log(SingleTon.devicefcm);
+        if(responseJson.result == "success") {
+          console.log("badge number cleared");
+        } else {
+          console.log(responseJson.result);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    });
+
+    // onNotification
+    this.notificationListener = firebaseNotifications
+    .onNotification((notification) => {
+      var notify_title = notification.title;
+      var notify_body = notification.body;
+      Alert.alert(
+        notify_title,
+        notify_body,
+        [
+          {text: 'View', onPress: () => {
+            console.log("delete");
+            firebaseNotifications.setBadge(0)
+            .then(() => {
+              console.log("badge number cleared");
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+          }},
+          {text: 'Close', onPress: () => {
+            console.log("delete");
+          }},
+        ],
+        { cancelable: false }
+      )
+    });
+
+    // onNotificationOpened
+    this.notificationOpenedListener = firebaseNotifications
+    .onNotificationOpened((notificationOpen) => {
+      firebaseNotifications.setBadge(0)
+      .then(() => {
+        console.log("badge number cleared");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    });
 
     fetch(restaurantInfourl)
     .then((response) => response.json())
     .then((responseJson) => {
       SingleTon.restaurantInfo = responseJson.data;
-      console.log(SingleTon.restaurantInfo);
       this.setState({isloading: false});
     })
     .catch((error) => {
       console.log(error);
     });
+  }
+
+  componentWillUnmount() {
+    this.notificationListener();
+    this.notificationOpenedListener();
   }
 
   openSideBar() {
