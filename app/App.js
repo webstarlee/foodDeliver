@@ -5,17 +5,16 @@ import {
   View,
   StatusBar,
   Alert,
+  Text,
 } from 'react-native';
 import KeyboardManager from 'react-native-keyboard-manager';
 import firebase from 'react-native-firebase';
 import {
   BASE_API_URL,
-  HEADER_EXPANDED_HEIGHT,
-  HEADER_COLLAPSED_HEIGHT,
-  ITEM_HEIGHT,
   SCREEN_WIDTH,
   SCREEN_HEIGHT}  from './components/StaticValues';
-import Loaing from './components/Loading';
+import MainStack from './components/HomeRouter';
+import NavigationMain from "./components/NavigationMain";
 if(Platform.OS === 'ios'){
 
     KeyboardManager.setEnable(true);
@@ -32,22 +31,14 @@ if(Platform.OS === 'ios'){
     KeyboardManager.setShouldResignOnTouchOutside(true);
     KeyboardManager.resignFirstResponder();
 }
-
-import ScalingDrawer from './components/ScalingDrawer';
-import TabBar from './components/Tabbar';
-import HomeStack from './components/Router';
-import SideMenu from './components/SideMenu';
-import NavigationService from "./components/NavigationService";
 import SingleTon from "./components/SingleTon";
 
 export default class App extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      isopenSidebar: false,
+    this.state = { 
       isloading: true,
-      notifymodal: false,
-    }
+    } 
   }
 
   componentDidMount() {
@@ -77,34 +68,6 @@ export default class App extends Component {
       console.log(token);
       SingleTon.devicefcm = token;
     }).catch((error) => {
-    });
-
-    // notification badge reset
-    firebaseNotifications.setBadge(0)
-    .then(() => {
-      var resetBadgeurl = BASE_API_URL+"/api/clearBadge";
-      fetch(resetBadgeurl, {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          device_fcm: SingleTon.devicefcm,
-        }),
-      })
-      .then((response) => response.json())
-      .then((responseJson) => {
-        console.log(SingleTon.devicefcm);
-        if(responseJson.result == "success") {
-          console.log("badge number cleared");
-        } else {
-          console.log(responseJson.result);
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
     });
 
     // onNotification
@@ -150,7 +113,9 @@ export default class App extends Component {
     .then((response) => response.json())
     .then((responseJson) => {
       SingleTon.restaurantInfo = responseJson.data;
-      this.setState({isloading: false});
+      setTimeout(function() {
+        this.setState({isloading: false});
+      }.bind(this), 1000);
     })
     .catch((error) => {
       console.log(error);
@@ -162,42 +127,19 @@ export default class App extends Component {
     this.notificationOpenedListener();
   }
 
-  openSideBar() {
-    this._drawer.open();
-    this.setState({isopenSidebar: true})
-  }
-
   render() {
     return (
       this.state.isloading?
-      <View style={{
-        flex: 1,
-        backgroundColor: '#fff',
-        width: SCREEN_WIDTH,
-        height: SCREEN_HEIGHT,
-        alignItems: 'center',
-        justifyContent: 'center',
-      }} ><Loaing color={'#000'}/></View>
+      <View style={styles.splashView} >
+        <Text style={{color: '#fff', fontSize: 24, fontWeight: 'bold'}} >FOOD DELIVER</Text>
+      </View>
       :
-      <ScalingDrawer
-        ref={ref => {
-          this._drawer = ref
-          SingleTon.sideMenu = ref
-        }}
-        style={{flex: 1}}
-        content={<SideMenu />}
-        swipeOffset={20}
-        scalingFactor={0.78}
-        minimizeFactor={0.6}
-        onClose={() => this.setState({isopenSidebar: false})} >
-        <View style={this.state.isopenSidebar? styles.containerOpen : styles.container}>
-          <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
-          <HomeStack ref={navigatorRef => {
-            NavigationService.setTopLevelNavigator(navigatorRef)
-          }}/>
-          <TabBar onItemClick={this.openSideBar.bind(this)} />
-        </View>
-      </ScalingDrawer>
+      <View style={styles.container}>
+        <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
+        <MainStack ref={navigatorRef => {
+            NavigationMain.setTopLevelNavigator(navigatorRef)
+          }} />
+      </View>
     );
   }
 }
@@ -214,4 +156,12 @@ const styles = StyleSheet.create({
     overflow: 'visible',
     borderRadius: 10,
   },
+  splashView: {
+    flex: 1,
+    width: SCREEN_WIDTH,
+    height: SCREEN_HEIGHT,
+    backgroundColor: '#0CA2E9',
+    justifyContent: 'center',
+    alignItems: 'center',
+  }
 });

@@ -114,40 +114,6 @@ export default class Main extends Component {
     });
 
     this.setState({deliveryCost: SingleTon.restaurantInfo.deliveryCost});
-
-    AsyncStorage.getItem('loginToken')
-    .then((val) => {
-      if(val != null) {
-        this.setState({authToken: val});
-        const userCheckurl = BASE_API_URL+'/api/details';
-        return fetch(userCheckurl,{
-          method: 'GET',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-            Authorization: 'Bearer '+this.state.authToken
-          }});
-      }
-    })
-    .then((response) => {
-      if(response != null)
-      {
-        return response.json()
-      } else {
-        return {"result": 'error'};
-      }
-    })
-    .then((responseJson) => {
-      if(responseJson.result == "success") {
-        this.setState({
-          isLogin: true,
-        });
-        console.log("asdfasdfasdf");
-      }
-    })
-    .catch((error) => {
-      console.log(error);
-    });
   }
 
   componentWillUnmount() {
@@ -744,7 +710,7 @@ export default class Main extends Component {
 
   //checkCupon
   checkCupon(text) {
-      clearTimeout(typingTimer);
+    clearTimeout(typingTimer);
     this.setState({
       discountString: text,
     });
@@ -760,70 +726,13 @@ export default class Main extends Component {
       })
       var cuponText = this.state.discountString;
       const cuponCheckUrl = BASE_API_URL+'/api/couponCheck/'+cuponText;
-      AsyncStorage.getItem('loginToken')
-      .then((val) => {
-        if(val != null) {
-          if(this.state.isLogin) {
-            return "logedin";
-          } else {
-            this.setState({authToken: val});
-            const userCheckurl = BASE_API_URL+'/api/details';
-            return fetch(userCheckurl,{
-              method: 'GET',
-              headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-                Authorization: 'Bearer '+this.state.authToken
-              }
-            });
-          }
-        }
-      })
-      .then((response) => {
-        if(response == "logedin") {
-
-          return fetch(cuponCheckUrl,{
-            method: 'GET',
-            headers: {
-              Accept: 'application/json',
-              'Content-Type': 'application/json',
-              Authorization: 'Bearer '+this.state.authToken
-            }
-          });
-        }else if(response != "logedin" && response != null)
-        {
-          this.setState({
-            isLogin: true,
-          });
-
-          return fetch(cuponCheckUrl,{
-            method: 'GET',
-            headers: {
-              Accept: 'application/json',
-              'Content-Type': 'application/json',
-              Authorization: 'Bearer '+this.state.authToken
-            }
-          });
-        } else {
-          this.setState({
-            isLogin: false,
-            ischeckingcuppon: false,
-          });
-          this.colseCheckOutDetail();
-
-          setTimeout(function(){
-            Alert.alert(
-              'Alert',
-              'Need to Login !',
-              [
-                {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
-                {text: 'Login', onPress: () => {
-                  SingleTon.sideMenu.open();
-                }},
-              ],
-              { cancelable: false }
-            )
-          }, 700)
+      
+      fetch(cuponCheckUrl,{
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer '+this.state.authToken
         }
       })
       .then((response) => {
@@ -947,8 +856,10 @@ export default class Main extends Component {
       // console.log(this.state.imageBlur);
     }
   }
+
   finalCheckOut() {
     if(this.state.totalCarList.length > 0) {
+      
       AsyncStorage.getItem('loginToken')
       .then((val) => {
         if(val != null) {

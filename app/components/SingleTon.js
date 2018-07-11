@@ -13,6 +13,7 @@ class Singleton{
         this.isShowTab = null;
         this.mainPage = null;
         this.devicefcm = null;
+        this.currentUser = null;
 
         return instance;
     }

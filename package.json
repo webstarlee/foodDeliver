@@ -19,6 +19,7 @@
     "react-native-firebase": "^4.2.0",
     "react-native-google-static-map": "^0.1.12",
     "react-native-htmlview": "^0.12.1",
+    "react-native-indicators": "^0.13.0",
     "react-native-iphone-x-helper": "^1.0.3",
     "react-native-keyboard-manager": "^4.0.13-7",
     "react-native-linear-gradient": "^2.4.0",
@@ -26,6 +27,7 @@
     "react-native-parallax-header": "^1.0.6",
     "react-native-switch": "^1.5.0",
     "react-native-switch-pro": "^0.4.11",
+    "react-native-triangle": "0.0.9",
     "react-native-vector-icons": "^4.6.0",
     "react-navigation": "^1.5.11"
   },

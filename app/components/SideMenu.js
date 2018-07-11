@@ -13,6 +13,7 @@ import Loaing from './Loading';
 import LinearGradient from 'react-native-linear-gradient';
 import SingleTon from "./SingleTon";
 import firebase from 'react-native-firebase';
+import NavigationMain from "./NavigationMain";
 
 export default class SideMenu extends Component {
   constructor() {
@@ -235,6 +236,10 @@ export default class SideMenu extends Component {
     this.setState({isLoginView: false})
   }
 
+  logout() {
+    NavigationMain.navigate("Welcome");
+  }
+
   renderLogin = () => {
       return (
         this.state.isLoginView?
@@ -275,7 +280,7 @@ export default class SideMenu extends Component {
               <Text style={{color: '#fff', fontSize: 22, fontWeight: 'bold'}}>LOGIN</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => this.changeToRegisterView()} style={{marginTop: 20, paddingVertical: 5,}}><Text style={{color: '#fff'}}>>Register your account here.</Text></TouchableOpacity>
-            <TouchableOpacity style={{paddingVertical: 5,}}><Text style={{color: '#fff'}}>>Foget your password?</Text></TouchableOpacity>
+            <TouchableOpacity onPress={() => this.logout()} style={{paddingVertical: 5,}}><Text style={{color: '#fff'}}>log out</Text></TouchableOpacity>
           </View>
         </View>
         :
