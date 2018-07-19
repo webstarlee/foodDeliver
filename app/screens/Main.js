@@ -114,6 +114,12 @@ export default class Main extends Component {
     });
 
     this.setState({deliveryCost: SingleTon.restaurantInfo.deliveryCost});
+
+    if(SingleTon.showPush) {
+      setTimeout(function(){
+        NavigationService.navigate("Pushhistory");
+      }, 500);
+    }
   }
 
   componentWillUnmount() {

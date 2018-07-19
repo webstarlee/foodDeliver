@@ -13,7 +13,9 @@ import {
 import { SkypeIndicator } from 'react-native-indicators';
 import SingleTon from "../components/SingleTon";
 import FastImage from 'react-native-fast-image';
+import firebase from 'react-native-firebase';
 import NavigationMain from "../components/NavigationMain";
+import NavigationHome from "../components/NavigationService";
 
 export default class Welcome extends Component {
     constructor() {
@@ -68,6 +70,15 @@ export default class Welcome extends Component {
         })
         .catch((error) => {
             console.log(error);
+        });
+
+        this.notificationOpenedListener = firebase.notifications()
+        .onNotificationOpened((notificationOpen) => {
+            console.log("asdfasdfasdfasdf");
+            SingleTon.showPush = true;
+            if(SingleTon.nowLogin) {
+                NavigationHome.navigate('Pushhistory');
+            }
         });
     }
 

@@ -31,6 +31,8 @@ export default class PushHistory extends Component {
     }
 
     componentDidMount() {
+        SingleTon.showPush = false;
+
         AsyncStorage.getItem('loginToken')
         .then((val) => {
             const historyFetchUrl = BASE_API_URL+'/api/getpushhistory';
@@ -95,12 +97,17 @@ export default class PushHistory extends Component {
         if(SingleTon.isShowTab) {
             SingleTon.isShowTab.setState({isShowTabbar: true});
         }
+
+        if(SingleTon.isOpenTab) {
+            SingleTon.sideMenu.open();
+        }
+        SingleTon.isOpenTab = false;
         NavigationHome.back();
     }
 
     renderHistoryData = ({item, index}) => {
         return (
-            <View style={{backgroundColor: '#4AA0FA', padding: 10, marginTop: 10, borderRadius: 5}}>
+            <View style={styles.historyTextView}>
                 <Text style={{color: '#fff', fontSize: 16, fontWeight: 'bold'}}>{item.msg_title}</Text>
                 <Text style={{color: '#fff', fontSize: 15}}>{item.msg_text}</Text>
                 <View style={{width: '100%', alignItems: 'flex-end'}} >
@@ -111,17 +118,16 @@ export default class PushHistory extends Component {
     }
 
     renderHistory = ({item, index}) => {
-        console.log(item);
         return (
             <View style={{width: '100%',paddingHorizontal: 20, paddingVertical: 5, alignItems: 'center', marginTop: 5}}>
-                <View style={{padding: 5, backgroundColor: '#4AA0FA', borderRadius: 5, marginBottom: 5,}} >
+                <View style={styles.historyDateView} >
                     <Text style={{color: '#fff', fontSize: 17}} >{item.date}</Text>
                 </View>
                 <FlatList
-                        style={{flex: 1,width: '100%'}}
-                        data={item.data}
-                        renderItem={this.renderHistoryData}
-                        keyExtractor={(item, index) => index.toString()}/>
+                    style={{flex: 1,width: '100%'}}
+                    data={item.data}
+                    renderItem={this.renderHistoryData}
+                    keyExtractor={(item, index) => index.toString()}/>
             </View>
         )
     }
@@ -165,6 +171,30 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         justifyContent: 'center',
     },
+    historyDateView: {
+        padding: 5,
+        backgroundColor: '#4AA0FA',
+        borderRadius: 5,
+        marginBottom: 5,
+        shadowColor: '#666',
+        shadowOffset: {width: 0, height: 2,},
+        shadowOpacity: 0.9,
+        shadowRadius: 1,
+        elevation: 3,
+    },
+    historyTextView: {
+        backgroundColor: '#4AA0FA',
+        padding: 10,
+        marginTop: 15,
+        borderTopRightRadius: 5,
+        borderTopLeftRadius: 5,
+        borderBottomLeftRadius: 5,
+        shadowColor: '#666',
+        shadowOffset: {width: 0, height: 2,},
+        shadowOpacity: 0.9,
+        shadowRadius: 1,
+        elevation: 3,
+    },
     viewHeader: {
         width: SCREEN_WIDTH,
         alignItems: 'center',
@@ -197,5 +227,5 @@ const styles = StyleSheet.create({
         elevation: 3,
         borderTopWidth: 1,
         borderTopColor: '#4AA0FA',
-      },
+    },
 })

@@ -10,7 +10,6 @@ import {
   AsyncStorage,
   NetInfo,
   Modal,
-  TouchableOpacity,
 } from 'react-native';
 import KeyboardManager from 'react-native-keyboard-manager';
 import firebase from 'react-native-firebase';
@@ -46,7 +45,7 @@ export default class App extends Component {
       isloading: true,
       isloadingTest: true,
       appState: AppState.currentState,
-    } 
+    }
   }
 
   handleConnectivityChange = isConnected => {
@@ -54,6 +53,8 @@ export default class App extends Component {
     if(isConnected) {
       this.loadAllComponent();
     }
+
+    console.log(isConnected);
   };
 
   _handleAppStateChange = (nextAppState) => {
@@ -163,17 +164,13 @@ export default class App extends Component {
       )
     });
 
-    // onNotificationOpened
-    this.notificationOpenedListener = firebaseNotifications
-    .onNotificationOpened((notificationOpen) => {
-      firebaseNotifications.setBadge(0)
-      .then(() => {
-        console.log("badge number cleared");
-      })
-      .catch((error) => {
-        console.log(error);
+    firebaseNotifications.getInitialNotification()
+      .then((notificationOpen) => {
+        if (notificationOpen) {
+          console.log("asdfasdfasdf");
+          SingleTon.showPush = true;
+        }
       });
-    });
 
     fetch(restaurantInfourl)
     .then((response) => response.json())
@@ -205,11 +202,6 @@ export default class App extends Component {
     AppState.removeEventListener('change', this._handleAppStateChange);
   }
 
-  reloadApp() {
-    // this.setState({isConnected: true});
-    this.componentDidMount();
-  }
-
   render() {
     if(this.state.isloading){
       return (
@@ -221,20 +213,8 @@ export default class App extends Component {
           visible={!this.state.isConnected}>
           <View style={styles.networkModal}>
             <View style={styles.networkErrorView} >
-              <Text style={{marginTop: 10, fontWeight: 'bold', fontSize: 16}} >Connection Failed</Text>
-              <TouchableOpacity
-                style={{
-                  padding: 10,
-                  width: '100%',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  borderRadius: 5,
-                  backgroundColor: '#0CA2E9',
-                  shadowColor: '#000',
-                  shadowOffset: {width: 0, height: 1,},
-                  shadowOpacity: 0.5,
-                  elevation: 3,}}
-                  onPress={() => this.reloadApp()} ><Text style={{color: '#fff', fontSize: 15,fontWeight: 'bold'}} >Try Again</Text></TouchableOpacity>
+              <Text style={{fontWeight: 'bold', fontSize: 16}} >Connection Failed</Text>
+              <Text style={{marginTop: 10, fontSize: 14}}>Please check your Connection</Text>
             </View>
           </View>
         </Modal>
@@ -284,7 +264,6 @@ const styles = StyleSheet.create({
   },
   networkErrorView: {
     width: 250,
-    height: 150,
     backgroundColor: '#fff',
     borderRadius: 8,
     shadowColor: '#000',

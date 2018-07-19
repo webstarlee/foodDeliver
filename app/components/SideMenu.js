@@ -65,11 +65,13 @@ export default class SideMenu extends Component {
 
   handleLogout() {
     AsyncStorage.removeItem('loginToken');
+    SingleTon.nowLogin = false;
     NavigationMain.navigate("Before");
   }
 
   goToPushhistory() {
     SingleTon.sideMenu.close();
+    SingleTon.isOpenTab = true;
     NavigationHome.navigate('Pushhistory');
   }
 

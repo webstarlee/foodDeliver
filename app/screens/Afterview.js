@@ -21,6 +21,7 @@ export default class After extends Component {
       isopenSidebar: false,
       isloading: true,
     }
+    SingleTon.nowLogin = true;
   }
 
   openSideBar() {

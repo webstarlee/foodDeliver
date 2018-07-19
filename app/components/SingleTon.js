@@ -16,6 +16,11 @@ class Singleton{
         this.currentUser = null;
         this.beforeScreen = null;
         this.push = null;
+        this.showPush = false;
+        this.isOpenTab = false;
+        this.resetUser = null;
+        this.resetCode = null;
+        this.nowLogin = false;
 
         return instance;
     }

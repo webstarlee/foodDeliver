@@ -23,13 +23,14 @@ import firebase from 'react-native-firebase';
 import FastImage from 'react-native-fast-image';
 import NavigationMain from "../components/NavigationMain";
 
-export default class Login extends Component {
+export default class ForgetPass extends Component {
     constructor() {
         super();
         this.state = {
             scrollY: new Animated.Value(0),
-            lo_email: null,
-            lo_password: null,
+            for_email: null,
+            for_code: null,
+            isSendMail: false,
             loginLoading: false,
         }
     }
@@ -48,93 +49,55 @@ export default class Login extends Component {
         });
     }
 
-    goSignup (){
-        if(SingleTon.beforeScreen == "first" || SingleTon.beforeScreen == "login") {
-            SingleTon.beforeScreen = "login";
-            NavigationMain.navigate("Signup");
+    goLogin (){
+        NavigationMain.back();
+    }
+
+    handleSendEmail() {
+        console.log(this.state.for_email);
+        if(this.state.for_email === null) {
+            Alert.alert(
+                'Alert',
+                'Please Input Email',
+                [
+                  {text: 'OK', onPress: () => {
+                    console.log("delete");
+                  }},
+                ],
+                { cancelable: false }
+            );
         } else {
-            NavigationMain.back();
-        }
-    }
-
-    goForgetPass() {
-        NavigationMain.navigate("ForgetPass");
-    }
-
-    goToMain() {
-        NavigationMain.navigate("Home");
-    }
-
-    handleLogin() {
-        if(this.state.lo_email === null) {
-            alert("Please input Email");
-            return false;
-        }
-        
-        if(this.state.lo_password === null) {
-            alert("Please input Password");
-            return false;
-        }
-
-        if(this.state.lo_email !== null && this.state.lo_password !== null) {
-            if(SingleTon.devicefcm == null) {
-                firebase.messaging().getToken()
-                .then((token) => {
-                    SingleTon.devicefcm = token;
-                }).catch((error) => {
-                });
-            }
-
             this.setState({
                 loginLoading: true,
             });
 
-            AsyncStorage.setItem("loginEmail", this.state.lo_email);
-
-            const loginUrl = BASE_API_URL+"/api/login";
-
-            fetch(loginUrl, { 
+            var sendResetEmailUrl = BASE_API_URL+"/api/sendResetEmail";
+            fetch(sendResetEmailUrl, { 
                 method: 'POST', 
                 headers: { 
                     Accept: 'application/json', 
                     'Content-Type': 'application/json', 
                 }, 
                 body: JSON.stringify({ 
-                    email: this.state.lo_email, 
-                    password: this.state.lo_password, 
-                    device_fcm: SingleTon.devicefcm, 
+                    resetEmail: this.state.for_email,
                 }), 
             }) 
             .then((response) => response.json()) 
             .then((responseJson) => {
-                this.setState({ 
+                this.setState({
                     loginLoading: false,
-                }); 
-
-                if(responseJson.result == "success") { 
-                    AsyncStorage.setItem("loginToken", responseJson.token);
-                    SingleTon.currentUser = responseJson.user;
+                });
+                console.log(responseJson);
+                if(responseJson.result === "success") {
+                    SingleTon.resetUser = responseJson.user_id;
+                    SingleTon.resetCode = responseJson.confirmCode;
                     this.setState({
-                        lo_email: null,
-                        lo_password: null,
+                        isSendMail: true,
                     });
-
-                    this.goToMain();
-                } else if(responseJson.result == "error") {
+                } else {
                     Alert.alert(
                         'Error',
-                        responseJson.message,
-                        [
-                          {text: 'OK', onPress: () => {
-                            console.log("delete");
-                          }},
-                        ],
-                        { cancelable: false }
-                    );
-                } else { 
-                    Alert.alert(
-                        'Error',
-                        'Something went Wrong',
+                        responseJson.msg,
                         [
                           {text: 'OK', onPress: () => {
                             console.log("delete");
@@ -143,10 +106,40 @@ export default class Login extends Component {
                         { cancelable: false }
                     );
                 }
-            }) 
+            })
             .catch((error) => { 
                 console.error(error); 
             });
+        }
+    }
+
+    handleCheckCode() {
+        if(this.state.for_code === null) {
+            Alert.alert(
+                'Alert',
+                'Please Input Code',
+                [
+                  {text: 'OK', onPress: () => {
+                    console.log("delete");
+                  }},
+                ],
+                { cancelable: false }
+            );
+        } else {
+            if(this.state.for_code == SingleTon.resetCode) {
+                NavigationMain.navigate("ResetPass");
+            } else {
+                Alert.alert(
+                    'Alert',
+                    "Code don't match",
+                    [
+                      {text: 'OK', onPress: () => {
+                        console.log("delete");
+                      }},
+                    ],
+                    { cancelable: false }
+                );
+            }
         }
     }
 
@@ -156,8 +149,6 @@ export default class Login extends Component {
       outputRange: [0, 1],
       extrapolate: 'clamp'
     });
-
-    const mapWidth = SCREEN_WIDTH - 30;
 
     return (
       <View style={styles.container}>
@@ -212,41 +203,56 @@ export default class Login extends Component {
             />
             <View style={{width: '100%', backgroundColor: '#fff'}}>
                 <View style={styles.loginInputContainer} >
-                    <TextInput
-                        placeholder='EMAIL'
-                        placeholderTextColor='#969696'
-                        underlineColorAndroid={'transparent'}
-                        autoCapitalize="none"
-                        autoCorrect={false}
-                        value={this.state.lo_email}
-                        keyboardType="email-address"
-                        onChangeText={(text) => this.setState({ lo_email: text })}
-                        style={[styles.loginInputBox, {marginTop: 50}]}
-                        />
-                    <TextInput
-                        placeholder='PASSWORD'
-                        placeholderTextColor='#969696'
-                        underlineColorAndroid={'transparent'}
-                        secureTextEntry={true}
-                        autoCapitalize="none"
-                        autoCorrect={false}
-                        onChangeText={(text) => this.setState({ lo_password: text })}
-                        style={[styles.loginInputBox, {marginTop: 45}]}
-                        />
+                    <Text style={{textAlign: 'center', marginTop: 30, fontSize: 30,color: '#4AA0FA'}} >Forget Password</Text>
+                    {this.state.isSendMail?
+                        <View>
+                            <TextInput
+                                placeholder='Input 6 digit code'
+                                placeholderTextColor='#969696'
+                                underlineColorAndroid={'transparent'}
+                                autoCapitalize="none"
+                                autoCorrect={false}
+                                value={this.state.for_code}
+                                keyboardType="number-pad"
+                                onChangeText={(text) => this.setState({ for_code: text })}
+                                style={[styles.loginInputBox, {marginTop: 50}]}
+                                />
+                            <TouchableOpacity
+                                disabled={this.state.loginLoading}
+                                onPress={() => this.handleCheckCode()}
+                                style={[styles.loginBtn, {backgroundColor: this.state.loginLoading? '#a7a7a7': '#4AA0FA', marginTop: 50,}]} >
+                                <Text style={{color: '#fff', fontWeight: 'bold', fontSize: 19}} >CONFIRM</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => this.handleSendEmail()} style={{flexDirection: 'row', justifyContent: 'center', marginTop: 20}}>
+                                <Text style={{color: '#5e5e5e', fontSize: 16, marginTop: 3}} >Resend Email</Text>
+                            </TouchableOpacity>
+                        </View>
+                    :
+                        <View>
+                            <TextInput
+                                placeholder='EMAIL'
+                                placeholderTextColor='#969696'
+                                underlineColorAndroid={'transparent'}
+                                autoCapitalize="none"
+                                autoCorrect={false}
+                                value={this.state.for_email}
+                                keyboardType="email-address"
+                                onChangeText={(text) => this.setState({ for_email: text })}
+                                style={[styles.loginInputBox, {marginTop: 50}]}
+                                />
+                            <TouchableOpacity
+                                disabled={this.state.loginLoading}
+                                onPress={() => this.handleSendEmail()}
+                                style={[styles.loginBtn, {backgroundColor: this.state.loginLoading? '#a7a7a7': '#4AA0FA', marginTop: 50,}]} >
+                                <Text style={{color: '#fff', fontWeight: 'bold', fontSize: 19}} >SEND EMAIL</Text>
+                            </TouchableOpacity>
+                        </View>
+                    }
                 </View>
-                <View style={{width: SCREEN_WIDTH, paddingTop: 50,alignItems: 'center', position: 'relative'}}>
-                    <TouchableOpacity
-                        disabled={this.state.loginLoading}
-                        onPress={() => this.handleLogin()}
-                        style={[styles.loginBtn, {backgroundColor: this.state.loginLoading? '#a7a7a7': '#4AA0FA'}]} >
-                        <Text style={{color: '#fff', fontWeight: 'bold', fontSize: 19}} >LOGIN</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => this.goForgetPass()} style={{flexDirection: 'row', justifyContent: 'flex-start', marginTop: 30}}>
-                        <Text style={{color: '#5e5e5e', fontSize: 16, marginTop: 1}} >Forget Password ? </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => this.goSignup()} style={{flexDirection: 'row', justifyContent: 'center', marginTop: 30}}>
-                        <Text style={{color: '#5e5e5e', fontSize: 16, marginTop: 1}} >Don't have an account? </Text>
-                        <Text style={{color: '#4AA0FA', fontWeight: 'bold', fontSize: 19}} >SIGN UP</Text>
+                <View style={{width: SCREEN_WIDTH, paddingTop: 30,alignItems: 'center', position: 'relative'}}>
+                    <TouchableOpacity onPress={() => this.goLogin()} style={{flexDirection: 'row', justifyContent: 'center', marginTop: 30}}>
+                        <Text style={{color: '#5e5e5e', fontSize: 16, marginTop: 3}} >Back To </Text>
+                        <Text style={{color: '#4AA0FA', fontWeight: 'bold', fontSize: 19}} >LOGIN</Text>
                     </TouchableOpacity>
                 </View>
             </View>
