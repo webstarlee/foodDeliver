@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import {
   StyleSheet,
   View,
-  StatusBar,
 } from 'react-native';
 import {
   SCREEN_WIDTH,
@@ -15,19 +14,13 @@ import SideMenu from '../components/SideMenu';
 import NavigationService from "../components/NavigationService";
 import SingleTon from "../components/SingleTon";
 
-export default class App extends Component {
+export default class After extends Component {
   constructor(props) {
     super(props);
     this.state = {
       isopenSidebar: false,
       isloading: true,
     }
-  }
-
-  componentDidMount() {
-  }
-
-  componentWillUnmount() {
   }
 
   openSideBar() {

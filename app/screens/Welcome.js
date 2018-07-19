@@ -1,34 +1,18 @@
 import React, { Component } from 'react';
 import {
-  Animated,
-  ScrollView,
   StyleSheet,
   Text,
   View,
-  Image,
-  TouchableOpacity,
   AsyncStorage,
 } from 'react-native';
 import {
     BASE_API_URL,
-    HEADER_EXPANDED_HEIGHT,
-    HEADER_COLLAPSED_HEIGHT,
     SCREEN_WIDTH,
     SCREEN_HEIGHT
 }  from '../components/StaticValues';
-import {
-    BallIndicator,
-    BarIndicator,
-    DotIndicator,
-    MaterialIndicator,
-    PacmanIndicator,
-    PulseIndicator,
-    SkypeIndicator,
-    UIActivityIndicator,
-    WaveIndicator,
-  } from 'react-native-indicators';
-import { ifIphoneX } from 'react-native-iphone-x-helper';
+import { SkypeIndicator } from 'react-native-indicators';
 import SingleTon from "../components/SingleTon";
+import FastImage from 'react-native-fast-image';
 import NavigationMain from "../components/NavigationMain";
 
 export default class Welcome extends Component {
@@ -103,12 +87,19 @@ export default class Welcome extends Component {
             <View style={styles.container}>
                 <View style={{flex: 1,zIndex: 2, alignItems: 'center', justifyContent: 'center'}} >
                     <View style={{width: '100%', height: 70}}>
-                        <SkypeIndicator count={5} size={50} color='#00e6c8' />
+                        <SkypeIndicator count={5} size={50} color='#4AA0FA' />
                     </View>
-                    <Text style={{color: '#00e6c8', fontSize: 17,fontWeight: 'normal'}}>Loading Data ...</Text>
+                    <Text style={{color: '#4AA0FA', fontSize: 17,fontWeight: 'normal'}}>Loading Data ...</Text>
                 </View>
                 <View style={styles.backgroundImgContainer} >
-                    <Image style={styles.backgroundImg} source={{uri: BASE_API_URL+'/uploads/storeinfo/'+SingleTon.restaurantInfo.bg_img}} />
+                    <FastImage
+                        style={styles.backgroundImg}
+                        source={{
+                            uri: BASE_API_URL+'/uploads/storeinfo/'+SingleTon.restaurantInfo.bg_img,
+                            headers:{ Authorization: 'backgroundImage' },
+                            priority: FastImage.priority.normal,
+                        }}
+                        resizeMode={FastImage.resizeMode.cover} />
                 </View>
             </View>
         )
@@ -135,6 +126,5 @@ const styles = StyleSheet.create({
     backgroundImg: {
         width: SCREEN_WIDTH,
         height: SCREEN_WIDTH*2/3,
-        resizeMode: 'cover',
     },
 })

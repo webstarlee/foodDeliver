@@ -981,7 +981,14 @@ export default class Main extends Component {
             opacity: this.state.isSearch? 1: headerColor,
           }} />
           <View style={styles.headerImageView} >
-            <Image ref={(ref) => this.imageBlurRef = ref} style={styles.headerImage} source={{uri: BASE_API_URL+'/uploads/storeinfo/'+SingleTon.restaurantInfo.header_img}} blurRadius={0} />
+            <FastImage
+              style={styles.headerImage}
+              source={{
+                  uri: BASE_API_URL+'/uploads/storeinfo/'+SingleTon.restaurantInfo.header_img,
+                  headers:{ Authorization: 'backgroundImage' },
+                  priority: FastImage.priority.normal,
+              }}
+              resizeMode={FastImage.resizeMode.cover} />
             <Image style={styles.headerOverlayImage} source={require('../resources/images/overlay.png')} />
           </View>
         </Animated.View>
@@ -1504,7 +1511,6 @@ const styles = StyleSheet.create({
   headerImage: {
     width: '100%',
     height: '100%',
-    resizeMode: 'cover',
     position: 'absolute'
   },
   headerOverlayImage: {

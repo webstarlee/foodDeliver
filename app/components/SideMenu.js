@@ -9,386 +9,126 @@ import {
   AsyncStorage,
 } from 'react-native';
 import {BASE_API_URL, ITEM_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT}  from './StaticValues';
-import Loaing from './Loading';
 import LinearGradient from 'react-native-linear-gradient';
 import SingleTon from "./SingleTon";
 import firebase from 'react-native-firebase';
 import NavigationMain from "./NavigationMain";
+import NavigationHome from "./NavigationService";
+import Icon from 'react-native-vector-icons/Ionicons';
 
 export default class SideMenu extends Component {
   constructor() {
     super();
-    this.state={
-      isLogin: false,
-      isLoginView: true,
-      email: "",
-      password: "",
-      authToken: null,
-      currentUser: [],
-      isLoading: false,
-      reg_name: "",
-      reg_email: "",
-      reg_pass: "",
-      reg_c_pass: "",
+    this.state ={
+      isBadge: false,
+      badgeNumber: 0,
     }
-  }
 
-  handleEmail = (text) => {
-    this.setState({ email: text })
-  }
-
-  handlePassword = (text) => {
-    this.setState({ password: text })
-  }
-
-  handleRegEmail = (text) => {
-    this.setState({ reg_email: text })
-  }
-
-  handleRegName = (text) => {
-    this.setState({ reg_name: text })
-  }
-
-  handleRegPass = (text) => {
-    this.setState({ reg_pass: text })
-  }
-
-  handleRegCPass = (text) => {
-    this.setState({ reg_c_pass: text })
+    SingleTon.push = this;
   }
 
   componentDidMount() {
+    console.log(SingleTon.currentUser);
     AsyncStorage.getItem('loginToken')
     .then((val) => {
-      if(val != null) {
-        this.setState({authToken: val});
-        const userCheckurl = BASE_API_URL+'/api/details';
-        return fetch(userCheckurl,{
-          method: 'GET',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-            Authorization: 'Bearer '+this.state.authToken
-          }});
-      }
+        const badgeFetchUrl = BASE_API_URL+'/api/getbadgeNumber';
+        return fetch(badgeFetchUrl,{
+            method: 'GET',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                Authorization: 'Bearer '+val
+            }
+        });
     })
-    .then((response) => {
-      if(response != null)
-      {
-        return response.json()
-      } else {
-        return {"result": 'error'};
-      }
-    })
+    .then((response) => response.json())
     .then((responseJson) => {
-      if(responseJson.result == "success") {
-        this.setState({currentUser: responseJson.user, isLogin: true});
-      } else {
-        this.handleLogout();
-      }
+        console.log(responseJson);
+        if(responseJson.result === "success") {
+          this.setState({
+            isBadge: true,
+            badgeNumber: responseJson.number,
+          })
+
+          if(SingleTon.isShowTab) {
+            SingleTon.isShowTab.setState({
+                isBadge: true,
+                badgeNumber: responseJson.number,
+            });
+          }
+        }
     })
     .catch((error) => {
-      console.log(error);
+        console.log(error);
     });
-  }
-
-  handleLogin() {
-    if(SingleTon.devicefcm == null) {
-      firebase.messaging().getToken()
-      .then((token) => {
-        SingleTon.devicefcm = token;
-      }).catch((error) => {
-      });
-    }
-
-    if(this.state.email != "") {
-      if(this.state.password != "") {
-        this.setState({isLoading: true});
-        const loginUrl = BASE_API_URL+"/api/login";
-
-        fetch(loginUrl, {
-          method: 'POST',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            email: this.state.email,
-            password: this.state.password,
-            device_fcm: SingleTon.devicefcm,
-          }),
-        })
-        .then((response) => response.json())
-        .then((responseJson) => {
-            console.log(responseJson);
-            if(responseJson.result == "success") {
-              AsyncStorage.setItem("loginToken", responseJson.token);
-              this.setState({
-                authToken: responseJson.token,
-                currentUser: responseJson.user,
-                isLogin: true,
-                isLoading: false,
-                email: "",
-                password: "",
-              });
-            } else if(responseJson.result == "error") {
-              alert(responseJson.message);
-            } else {
-              alert('something went Wrong');
-            }
-            this.setState({
-              isLoading: false,
-            });
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-      } else {
-        alert('Input Password');
-      }
-    } else {
-      alert('Input Email');
-    }
-  }
-
-  handleRegister() {
-    if(SingleTon.devicefcm == null) {
-      firebase.messaging().getToken()
-      .then((token) => {
-        SingleTon.devicefcm = token;
-      }).catch((error) => {
-      });
-    }
-
-    if(this.state.reg_name != "" && this.state.reg_email != "" && this.state.reg_pass != "" && this.state.reg_c_pass != "") {
-      if(this.state.reg_pass == this.state.reg_c_pass) {
-        this.setState({isLoading: true});
-        const registerUrl = BASE_API_URL+"/api/register";
-
-        fetch(registerUrl, {
-          method: 'POST',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            name: this.state.reg_name,
-            email: this.state.reg_email,
-            password: this.state.reg_pass,
-            c_password: this.state.reg_c_pass,
-            device_fcm: SingleTon.devicefcm,
-          }),
-        })
-        .then((response) => response.json())
-        .then((responseJson) => {
-            console.log(responseJson);
-            this.setState({
-              isLoading: false,
-            });
-            if(responseJson.result == "success") {
-              AsyncStorage.setItem("loginToken", responseJson.token);
-              this.setState({
-                authToken: responseJson.token,
-                currentUser: responseJson.user,
-                isLogin: true,
-                isLoading: false,
-                reg_name: "",
-                reg_email: "",
-                reg_pass: "",
-                reg_c_pass: "",
-              });
-            } else if(responseJson.result == "error") {
-              if(responseJson.message.email[0]){
-                alert(responseJson.message.email[0]);
-              } else {
-                alert('something went Wrong');
-              }
-            } else {
-              alert('something went Wrong');
-            }
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-      } else {
-        alert('Password Confirm not match');
-      }
-    } else {
-      alert('Input Email');
-    }
   }
 
   handleLogout() {
     AsyncStorage.removeItem('loginToken');
-    this.setState({
-      authToken: null,
-      currentUser: [],
-      isLogin: false,
-      isLoginView: true,
-    });
+    NavigationMain.navigate("Before");
   }
 
-  changeToLoinView() {
-    this.setState({isLoginView: true})
-  }
-
-  changeToRegisterView() {
-    this.setState({isLoginView: false})
-  }
-
-  logout() {
-    NavigationMain.navigate("Welcome");
-  }
-
-  renderLogin = () => {
-      return (
-        this.state.isLoginView?
-        <View>
-          <View
-            style={{
-              paddingVertical: 10,
-              paddingLeft: 20,
-              borderBottomColor: '#01917c',
-              borderBottomWidth: 1,
-              shadowColor: '#000',
-              shadowOffset: {width: 0, height: 1,},
-              shadowOpacity: 0.3,
-              shadowRadius: 1,}}>
-            <Text style={{color: '#fff', fontSize: 22, fontWeight: 'bold'}}>User account</Text>
-          </View>
-          <View style={{paddingTop: 20, paddingHorizontal: 20, paddingBottom: 10}}>
-            <TextInput
-              placeholder='Email'
-              underlineColorAndroid={'transparent'}
-              placeholderTextColor='#6f6f6f'
-              style={styles.sideMenuTextInput}
-              onChangeText={this.handleEmail}
-              autoCapitalize="none"
-              autoCorrect={false}
-              keyboardType="email-address" />
-            <TextInput
-              placeholder='Password'
-              secureTextEntry={true}
-              underlineColorAndroid={'transparent'}
-              placeholderTextColor='#6f6f6f'
-              style={styles.sideMenuTextInput}
-              onChangeText={this.handlePassword}
-              autoCapitalize="none" />
-            <TouchableOpacity
-              style={styles.sidemenuLoginButton}
-              onPress={() => this.handleLogin()}>
-              <Text style={{color: '#fff', fontSize: 22, fontWeight: 'bold'}}>LOGIN</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => this.changeToRegisterView()} style={{marginTop: 20, paddingVertical: 5,}}><Text style={{color: '#fff'}}>>Register your account here.</Text></TouchableOpacity>
-            <TouchableOpacity onPress={() => this.logout()} style={{paddingVertical: 5,}}><Text style={{color: '#fff'}}>log out</Text></TouchableOpacity>
-          </View>
-        </View>
-        :
-        <View>
-          <View
-            style={{
-              paddingVertical: 10,
-              paddingLeft: 20,
-              borderBottomColor: '#01917c',
-              borderBottomWidth: 1,
-              shadowColor: '#000',
-              shadowOffset: {width: 0, height: 1,},
-              shadowOpacity: 0.3,
-              shadowRadius: 1,}}>
-            <Text style={{color: '#fff', fontSize: 22, fontWeight: 'bold'}}>Register account</Text>
-          </View>
-          <View style={{paddingTop: 20, paddingHorizontal: 20, paddingBottom: 10}}>
-            <TextInput
-              placeholder='Name'
-              underlineColorAndroid={'transparent'}
-              placeholderTextColor='#6f6f6f'
-              style={styles.sideMenuTextInput}
-              onChangeText={this.handleRegName}
-              autoCapitalize="none"
-              autoCorrect={false} />
-            <TextInput
-              placeholder='Email'
-              secureTextEntry={false}
-              underlineColorAndroid={'transparent'}
-              placeholderTextColor='#6f6f6f'
-              style={styles.sideMenuTextInput}
-              onChangeText={this.handleRegEmail}
-              autoCapitalize="none"
-              autoCorrect={false}
-              keyboardType="email-address" />
-            <TextInput
-              placeholder='Password'
-              secureTextEntry={true}
-              underlineColorAndroid={'transparent'}
-              placeholderTextColor='#6f6f6f'
-              style={styles.sideMenuTextInput}
-              onChangeText={this.handleRegPass}
-              autoCapitalize="none" />
-            <TextInput
-              placeholder='Confirm Password'
-              secureTextEntry={true}
-              underlineColorAndroid={'transparent'}
-              placeholderTextColor='#6f6f6f'
-              style={styles.sideMenuTextInput}
-              onChangeText={this.handleRegCPass}
-              autoCapitalize="none" />
-            <TouchableOpacity
-              style={styles.sidemenuLoginButton}
-              onPress={() => this.handleRegister()}>
-              <Text style={{color: '#fff', fontSize: 22, fontWeight: 'bold'}}>REGISTER</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => this.changeToLoinView()} style={{marginTop: 20, paddingVertical: 5,}}><Text style={{color: '#fff'}}>>Login your account here.</Text></TouchableOpacity>
-          </View>
-        </View>
-      )
-  }
-
-  renderUser = () => {
-    return (
-      this.state.currentUser != null &&
-      <View>
-        <View
-          style={{
-            paddingVertical: 10,
-            paddingLeft: 20,
-            borderBottomColor: '#01917c',
-            borderBottomWidth: 1,
-            shadowColor: '#000',
-            shadowOffset: {width: 0, height: 1,},
-            shadowOpacity: 0.3,
-            shadowRadius: 1,}}>
-          <Text style={{color: '#fff', fontSize: 22, fontWeight: 'bold'}}>{this.state.currentUser.email}</Text>
-        </View>
-        <View style={{paddingTop: 20, paddingHorizontal: 20, paddingBottom: 10}}>
-          <TouchableOpacity style={styles.sidemenuLogoutButton} onPress={() => this.handleLogout()}><Text style={{color: '#fff', fontSize: 22, fontWeight: 'bold'}}>SIGN OUT</Text></TouchableOpacity>
-        </View>
-      </View>
-    )
-  }
-
-  renderLoading = () => {
-    return (
-      <View style={{flex: 1, position: 'absolute', top:0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center'}}>
-        <View style={{flex: 1,backgroundColor: '#000', position: 'absolute', top: 0, right: 0, left: 0, bottom: 0, opacity: 0.5}}></View>
-        <Loaing color={'#fff'} />
-      </View>
-    )
+  goToPushhistory() {
+    SingleTon.sideMenu.close();
+    NavigationHome.navigate('Pushhistory');
   }
 
   render() {
     return (
-      <LinearGradient colors={['#33a39f', '#146c69']} style={styles.container}>
+      <LinearGradient colors={['#4abafa', '#0071b1']} style={styles.container}>
         <View style={styles.sideMenuContentContainer} >
           <View style={{position: 'relative', justifyContent: 'center', alignItems: 'center'}}>
-            <View style={styles.backgroundBlurBehind}/>
-            <View style={styles.backgroundBlur}/>
-            <View style={{width: '100%',}}>
-              <Image style={styles.sideMenuLogo} source={{uri: BASE_API_URL+'/uploads/storeinfo/'+SingleTon.restaurantInfo.logo_img}} />
-              {this.state.isLogin ? this.renderUser(): this.renderLogin()}
-              {this.state.isLoading && this.renderLoading()}
+            <View style={{width: '100%', paddingHorizontal: 20}}>
+              <Image style={styles.sideMenuLogo} source={{uri: SingleTon.currentUser.avatar_url}} />
+              <View>
+                <View
+                  style={{
+                    borderBottomColor: '#fff',
+                    borderBottomWidth: 1,
+                    paddingTop: 10,
+                    flexDirection: 'row',
+                    alignItems: 'center',}}>
+                  <Text style={{color: '#fff', fontSize: 22, fontWeight: 'bold'}}>Name: {SingleTon.currentUser.name}</Text>
+                </View>
+                <View style={{paddingTop: 20,}}>
+                  <TouchableOpacity style={styles.sidemenuButton}>
+                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                      <Icon name="ios-contact" style={{width: 20,marginRight: 10,color: '#fff', fontSize: 23}} />
+                      <Text style={{color: '#fff', fontSize: 18}}>Profile</Text>
+                    </View>
+                    <Icon name="ios-arrow-forward" style={{marginRight: 10,color: '#fff', fontSize: 25}} />
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.sidemenuButton} onPress={() => this.goToPushhistory()}>
+                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                      <Icon name="md-notifications" style={{width: 20, marginRight: 10,color: '#fff', fontSize: 23}} />
+                      <Text style={{color: '#fff', fontSize: 18}}>Push History</Text>
+                      {this.state.isBadge&&
+                        <View style={{width: 20, height: 20, borderRadius: 10, backgroundColor: '#ee2121', justifyContent: 'center', alignItems: 'center', marginLeft: 5, marginTop: 5}}>
+                          <Text style={{color: '#fff', fontSize: 15}}>{this.state.badgeNumber}</Text>
+                        </View>
+                      }
+                    </View>
+                    <Icon name="ios-arrow-forward" style={{marginRight: 10,color: '#fff', fontSize: 25}} />
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.sidemenuButton} >
+                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                      <Icon name="md-pizza" style={{width: 20, marginRight: 10,color: '#fff', fontSize: 23}} />
+                      <Text style={{color: '#fff', fontSize: 18}}>Order History</Text>
+                    </View>
+                    <Icon name="ios-arrow-forward" style={{marginRight: 10,color: '#fff', fontSize: 25}} />
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.sidemenuButton} onPress={() => this.handleLogout()}>
+                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                      <Icon name="md-log-out" style={{width: 20,marginRight: 10,color: '#fff', fontSize: 23}} />
+                      <Text style={{color: '#fff', fontSize: 18}}>Logout</Text>
+                    </View>
+                    <Icon name="ios-arrow-forward" style={{marginRight: 10,color: '#fff', fontSize: 25}} />
+                  </TouchableOpacity>
+                </View>
+              </View>
             </View>
           </View>
-        </View >
+        </View>
       </LinearGradient>
     );
   }
@@ -414,7 +154,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     position: 'absolute',
     top: -110,
-    left: 0,
+    left: 20,
   },
   backgroundBlurBehind: {
     position: 'absolute',
@@ -423,7 +163,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: '#01917c',
+    backgroundColor: '#0278bb',
   },
   backgroundBlur: {
     position: 'absolute',
@@ -433,7 +173,7 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     backgroundColor: 'transparent',
-    borderColor: '#01917c',
+    borderColor: '#0278bb',
     borderWidth: 1,
     shadowColor: '#000',
     shadowOffset: {width: 0, height: 1,},
@@ -442,35 +182,13 @@ const styles = StyleSheet.create({
     elevation: 3,
     overflow: 'hidden',
   },
-  sidemenuLoginButton: {
-    backgroundColor: '#0aa0ff',
-    padding: 10,
-    borderRadius: 3,
-    shadowColor: '#000',
-    shadowOffset: {width: 0, height: 1,},
-    shadowOpacity: 0.3,
-    shadowRadius: 2,
-    elevation: 3,
-    alignItems: 'center'
-  },
-  sidemenuLogoutButton: {
-    backgroundColor: '#ff4a08',
-    padding: 10,
-    borderRadius: 3,
-    shadowColor: '#000',
-    shadowOffset: {width: 0, height: 1,},
-    shadowOpacity: 0.3,
-    shadowRadius: 2,
-    elevation: 3,
-    alignItems: 'center'
-  },
-  sideMenuTextInput: {
-    backgroundColor: '#fff',
-    marginBottom: 10,
-    fontSize: 17,
-    paddingVertical: 13,
-    paddingHorizontal: 10,
-    color: '#3d3d3d',
-    borderRadius: 2,
+  sidemenuButton: {
+    paddingVertical: 5,
+    marginVertical: 5,
+    borderBottomColor: '#fff',
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
 });

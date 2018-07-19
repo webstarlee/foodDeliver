@@ -14,6 +14,8 @@ class Singleton{
         this.mainPage = null;
         this.devicefcm = null;
         this.currentUser = null;
+        this.beforeScreen = null;
+        this.push = null;
 
         return instance;
     }

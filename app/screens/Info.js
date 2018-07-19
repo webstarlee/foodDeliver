@@ -7,7 +7,6 @@ import {
   View,
   Image,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
 import {
   BASE_API_URL,
   HEADER_EXPANDED_HEIGHT,
@@ -18,6 +17,7 @@ import Loaing from '../components/Loading';
 import SingleTon from "../components/SingleTon";
 import HTMLView from 'react-native-htmlview';
 import GoogleStaticMap from 'react-native-google-static-map';
+import FastImage from 'react-native-fast-image';
 import { ifIphoneX } from 'react-native-iphone-x-helper';
 
 export default class Info extends Component {
@@ -114,7 +114,14 @@ export default class Info extends Component {
             opacity: headerColor,
           }} />
           <View style={styles.headerImageView} >
-            <Image ref={(ref) => this.imageBlurRef = ref} style={styles.headerImage} source={{uri: BASE_API_URL+'/uploads/storeinfo/'+SingleTon.restaurantInfo.header_img}} blurRadius={0} />
+            <FastImage
+              style={styles.headerImage}
+              source={{
+                  uri: BASE_API_URL+'/uploads/storeinfo/'+SingleTon.restaurantInfo.header_img,
+                  headers:{ Authorization: 'backgroundImage' },
+                  priority: FastImage.priority.normal,
+              }}
+              resizeMode={FastImage.resizeMode.cover} />
             <Image style={styles.headerOverlayImage} source={require('../resources/images/overlay.png')} />
           </View>
         </Animated.View>
@@ -248,7 +255,6 @@ const styles = StyleSheet.create({
   headerImage: {
     width: '100%',
     height: '100%',
-    resizeMode: 'cover',
     position: 'absolute'
   },
   headerOverlayImage: {

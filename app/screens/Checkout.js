@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
 import {
-  Animated,
-  Dimensions,
   Platform,
   ScrollView,
   StyleSheet,
@@ -10,19 +8,9 @@ import {
   View,
   Image,
   TouchableOpacity,
-  SectionList,
-  FlatList,
-  ActivityIndicator,
 } from 'react-native';
-import {
-  BASE_API_URL,
-  HEADER_EXPANDED_HEIGHT,
-  HEADER_COLLAPSED_HEIGHT,
-  ITEM_HEIGHT,
-  SCREEN_WIDTH,
-  SCREEN_HEIGHT}  from '../components/StaticValues';
+import { SCREEN_WIDTH }  from '../components/StaticValues';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {NavigationActions} from "react-navigation";
 import NavigationService from "../components/NavigationService";
 import SingleTon from "../components/SingleTon";
 import DatePicker from 'react-native-datepicker';
@@ -30,7 +18,7 @@ import { ifIphoneX } from 'react-native-iphone-x-helper';
 import CheckBox from 'react-native-check-box';
 import ModalSelector from 'react-native-modal-selector'
 
-export default class SideMenu extends Component {
+export default class Checkout extends Component {
   constructor() {
     super();
 

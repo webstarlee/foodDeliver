@@ -23,6 +23,8 @@ export default class Footerbar extends Component{
             selected: 'home',
             sidemenu: false,
             isShowTabbar: true,
+            isBadge: false,
+            badgeNumber: 0,
         }
         SingleTon.isShowTab = this;
     }
@@ -65,7 +67,14 @@ export default class Footerbar extends Component{
                 <View style={styles.footerview}>
                     <View style={{flex: 1}}>
                         <TouchableOpacity onPress = {this.toggleSidebar.bind(this)} style={styles.touchable}>
-                            <View style={styles.itemcontainer}><Icon name="ios-menu-outline" style={styles.footericon} /></View>
+                            <View style={[styles.itemcontainer, {position: 'relative'}]}>
+                                <Icon name="ios-menu-outline" style={styles.footericon} />
+                                {this.state.isBadge&&
+                                    <View style={{position: 'absolute', top: 0, right: 0,width: 17, height: 17, borderRadius: 8.5, backgroundColor: '#ee2121', justifyContent: 'center', alignItems: 'center', marginLeft: 5, marginTop: 5}}>
+                                        <Text style={{color: '#fff', fontSize: 12, marginLeft: 1,}}>{this.state.badgeNumber}</Text>
+                                    </View>
+                                }
+                            </View>
                         </TouchableOpacity>
                     </View>
                     <View style={{height: 25,width:0.5,backgroundColor: '#0aa0ff'}} />
